@@ -16,8 +16,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <body data-ng-controller="Main">
 	<div class="container-fluid main">
 	  <div class="row-fluid" style="border-bottom: gray solid 2px;">
-	  	<div class="span5">
-	  		<form class="form-inline float-right">
+	  	<div class="span5" style="text-align: center;">
+	  		<form class="form-inline">
 	  			学校:&nbsp;<select class="input-small width-select" data-ng-model="school.value" data-ng-change="school.change(school.value)">
 					  <option data-ng-repeat="s in school.list" data-ng-value="s.id" data-ng-bind="s.name"></option>
 					</select>&nbsp;&nbsp;
@@ -25,11 +25,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					  <option data-ng-repeat="g in grade.list" data-ng-value="g.id" data-ng-bind="g.name"></option>
 					</select>
 	  		</form>
-			<form class="form-inline middleForm float-right">
+			<form class="form-inline middleForm">
 			  姓名:&nbsp;<input type="text" class="input-small width-input" data-ng-model="query.studentName" placeholder="姓名">&nbsp;&nbsp;
 			  考号:&nbsp;<input type="text" class="input-small width-input" data-ng-model="query.examNo" placeholder="考号">
 			</form>
-			<form class="form-inline float-right">
+			<form class="form-inline">
 	  			批次:&nbsp;<select class="input-small width-select" data-ng-model="batch.value" data-ng-change="batch.change(batch.value)">
 					  <option data-ng-repeat="b in batch.list" data-ng-value="b.id" data-ng-bind="b.name"></option>
 					</select>&nbsp;&nbsp;
@@ -38,47 +38,51 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					</select>
 	  		</form>
 	  	</div>
-	  	<div class="span2">
-	  		<div style="height: 121px;position: relative;">
-		  		<form class="form-inline" style="position: absolute;top: 80px;">
-				  状态:&nbsp;<select class="input-small" style="width: 100px;" data-ng-model="subject.state">
-						  <option value="考试准备">考试准备</option>
-						  <option value="开始批阅">开始批阅</option>
-						  <option value="可以统计">可以统计</option>
-						</select>
-				</form>
-			</div>
-	  	</div>
-	  	<div class="span5">
+	  	<div class="span3" style="text-align: center;width: 20%;">
 	  		<form class="form-inline float-left">
-	  			<label class="radio">
+    			  <select class="input-small" style="width: 100px;" data-ng-model="subject.state">
+    					  <option value="考试准备">考试准备</option>
+    					  <option value="开始批阅">开始批阅</option>
+    					  <option value="可以统计">可以统计</option>
+    					</select>&nbsp;&nbsp;
+                <button class="btn btn-info" data-ng-click="subject.setStateReal()">设置</button>
+			</form>
+	  		<form class="form-inline float-left middleForm">
+			    <label class="checkbox" style="padding-right: 40px;">
+    			  <input type="checkbox" data-ng-model="count.type"> A卷50%
+    			</label>
+                <button class="btn btn-info" data-ng-disabled="subject.getState()!='可以统计'" 
+                  data-ng-click="count.action()">统计得分</button>
+			</form>
+	  		<form class="form-inline float-left">
+    			 <button class="btn btn-info" style="width: 200px;">设置缺考</button>
+			</form>
+	  	</div>
+	  	<div class="span3" style="width: 20%;text-align: center;">
+	  		<form class="form-inline">
+	  			<label class="radio" style="padding-right: 50px;">
 				  <input type="radio" name="countType" value="score" data-ng-model="query.type"> 题目分
-				</label>&nbsp;&nbsp;
+				</label>
 	  			<label class="radio">
-				  <input type="radio" name="countType" value="knowledge" data-ng-model="query.type"> 知识点
-				</label>&nbsp;&nbsp;
-	  			<label class="radio">
-				  <input type="radio" name="countType" value="power" data-ng-model="query.type"> 能力值
-				</label>&nbsp;&nbsp;
-	  			<label class="radio">
-				  <input type="radio" name="countType" value="originalAnswer" data-ng-model="query.type"> 原始答案
-				</label>&nbsp;&nbsp;
-	  			<label class="checkbox">
-				  <input type="checkbox" data-ng-model="count.type"> A卷50%
+				  <input type="radio" name="countType" value="knowledge" data-ng-model="query.type"> 知识点&nbsp;&nbsp;&nbsp;&nbsp;
 				</label>
 	  		</form>
-	  		<form class="form-inline middleForm float-left">
-	  			<button class="btn btn-info" data-ng-disabled="subject.getState()!='可以统计'" 
-	  				data-ng-click="count.action()">统计得分</button>
-	  			<button class="btn btn-info" data-ng-click="query.action()">查询</button>
-	  			<button class="btn btn-info" >设置缺考</button>
-	  			<button class="btn btn-info" >导出表格</button>
-	  			<button class="btn btn-info" >统计报表</button>
+	  		<form class="form-inline middleForm">
+	  			<label class="radio" style="padding-right: 50px;">
+				  <input type="radio" name="countType" value="power" data-ng-model="query.type"> 能力值
+				</label>
+	  			<label class="radio">
+				  <input type="radio" name="countType" value="originalAnswer" data-ng-model="query.type"> 原始答案
+				</label>
 	  		</form>
-	  		<form class="form-inline float-left" style="min-width: 300px;">
-	  			<button class="btn btn-info" data-ng-click="subject.setStateReal()">设置</button>
+	  		<form class="form-inline">
+	  			<button class="btn btn-info" data-ng-click="query.action()">查询</button>
+	  			<button class="btn btn-info" >导出表格</button>
 	  		</form>
 	  	</div>
+        <div class="span1" style="width: 10%;text-align: center;">
+	  			<button class="btn btn-info" style="width: 60px;padding: 10px;height: 60px;margin-top: 26px;" >统计报表</button>
+        </div>
 	  </div>
 	  <div class="row-fluid">
 	    <div class="span2" style="border-right: gray solid 2px;width: 19.52991452991453%">

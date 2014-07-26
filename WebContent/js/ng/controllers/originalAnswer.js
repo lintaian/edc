@@ -1,0 +1,3 @@
+function OriginalAnswer($scope) {
+
+}

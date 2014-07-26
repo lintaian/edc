@@ -1,0 +1,916 @@
+function Data($scope, $rootScope, Metric, Union, Source, $timeout, $filter) {
+	$rootScope.navigation = 'data';
+	$scope.indexPage = {
+		includeUrl: 'tpl/data/content.html',
+		filter: {
+			values: [{
+				code: 'analog',
+				name: '模拟量',
+				checked: true
+			}, {
+				code: 'switch',
+				name: '开关量',
+				checked: true
+			}, {
+				code: 'storage',
+				name: '已存储点位',
+				checked: true
+			}, {
+				code: 'unStorage',
+				name: '未存储点位',
+				checked: true
+			}, {
+				code: 'physical',
+				name: '物理点位',
+				checked: true
+			}, {
+				code: 'virtual',
+				name: '虚拟点位',
+				checked: true
+			}]	
+		},
+		expandMetrics: function(source) {
+			if (!source.metrics) {
+				source.metrics = Metric.query({
+					source_id: source.id
+				}, function() {
+				}, function() {
+					$rootScope.alert = {
+						show: true,
+						text: '获取资源下点位列表时失败!'
+					};
+				});
+			}
+			source.expand = !source.expand;
+		},
+		metricDetail: function(metric) {
+			if(this.includeUrl != 'tpl/data/metric.html') 
+				this.includeUrl = 'tpl/data/metric.html';
+			$scope.metricPage.init(metric);
+		},
+		toAddUnions: function() {
+			var show = false;
+			if(!$scope.indexPage.showAddUnions) {
+				var search = $scope.indexPage.search || {};
+				if(search.show) {
+					var values = $scope.indexPage.search.values;
+					for ( var i=0; i < values.length; i++) {
+						if(values[i].checked) {
+							show = true;
+							break;
+						}
+					}
+				} else {
+					for ( var k = 0; k < $scope.sourcesList.length; k++) {
+						var sources = $scope.sourcesList[k].content;
+						for ( var i=0; i < sources.length; i++) {
+							if(angular.isDefined(sources[i].metrics)) {
+								for ( var j=0; j < sources[i].metrics.length; j++) {
+									if(sources[i].metrics[j].checked) {
+										show = true;
+										break;
+									}
+								}
+								if(show) break;
+							}
+						}
+					}
+				}
+			}
+			$scope.indexPage.showAddUnions = show;
+		},
+		metricMouseleave: function(metric) {
+			metric.select = false;
+			metric.showAddUnions = false;
+		}
+	};
+	$scope.indexPage.search = {
+		show: false,
+		submit: function() {
+			if(this.text == '') {
+				this.show = false;
+			} else {
+				this.show = true;
+				if(this.textPrev != this.text) {
+					this.values = Metric.search({
+						name: this.text,
+						alias: this.text
+					}, function() {
+					}, function(e) {
+						$rootScope.alert = {
+							show: true,
+							text: '搜索失败!'
+						};
+					});
+				}
+			}
+			this.textPrev = this.text;
+		}
+	};
+	$scope.indexPage.union = {
+		values: Union.query(function() {
+		}, function(e) {
+			$rootScope.alert = {
+				show: true,
+				text: '获取关联查询列表失败!'
+			};
+		}),
+		addMetrics: function(i) {
+			var metricIds = [], metrics = [];
+			var index = $scope.indexPage,
+				union = this.values[i],
+				$this = this;
+			if(index.search.show) {
+				for ( var i=0; i < index.search.values.length; i++) {
+					if(index.search.values[i].checked) {
+						var flag = false;
+						for ( var k=0; k < union.metrics.length; k++) {
+							if(union.metrics[k].id == index.search.values[i].id) {
+								flag = true;
+								break;
+							}
+						}
+						if(!flag) {
+							metrics.push(index.search.values[i]);
+							metricIds.push(index.search.values[i].id);
+						}
+					}
+				}
+			} else {
+				for ( var l = 0; l < $scope.sourcesList.length; l++) {
+					var sources = $scope.sourcesList[l].content;
+					for ( var i=0; i < sources.length; i++) {
+						if(angular.isDefined(sources[i].metrics)) {
+							for ( var j=0; j < sources[i].metrics.length; j++) {
+								if(sources[i].metrics[j].checked) {
+									var flag = false;
+									for ( var k=0; k < union.metrics.length; k++) {
+										if(union.metrics[k].id == sources[i].metrics[j].id) {
+											flag = true;
+											break;
+										}
+									}
+									if(!flag) {
+										metrics.push(sources[i].metrics[j]);
+										metricIds.push(sources[i].metrics[j].id);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if(metrics.length > 0) {
+				if(metrics.length + union.metrics.length > 5) {
+					$rootScope.alert = {
+						show: true,
+						text: '一个关联查询的点位数不能超过5个!' 
+					};
+				} else {
+					union = Union.save({id: union.id}, {metrics: metricIds}, function() {
+						$this.unCheckedMetrics();
+					}, function(e) {
+						$rootScope.alert = {
+							show: true,
+							text: '向【' + union.name + '】添加多个点位失败!'
+						};
+					});
+				}
+			} else {
+				this.unCheckedMetrics();
+			}
+			index.showAddUnions = false;
+		},
+		unCheckedMetrics: function() {
+			var index = $scope.indexPage;
+			if(index.search.show) {
+				for ( var i=0; i < index.search.values.length; i++) {
+					index.search.values[i].checked = false;
+				}
+			} else {
+				for ( var k = 0; k < $scope.sourcesList.length; k++) {
+					var sources = $scope.sourcesList[k].content;
+					for ( var i=0; i < sources.length; i++) {
+						if(angular.isDefined(sources[i].metrics)) {
+							for ( var j=0; j < sources[i].metrics.length; j++) {
+								sources[i].metrics[j].checked = false;
+							}
+						}
+					}
+				}
+			}
+		},
+		addMetric: function(union, metric) {
+			var flag = false;
+			for ( var i=0; i < union.metrics.length; i++) {
+				if(union.metrics[i].id == metric.id) {
+					flag = true;
+					break;
+				}
+			}
+			if(!flag) {
+				if(union.metrics.length <= 4) {
+					union = Union.save({id: union.id}, {metrics:[metric.id]}, function() {
+					}, function(e) {
+						$rootScope.alert = {
+							show: true,
+							text: '向【' + union.name + '】添加点位失败!'
+						};
+					});
+				} else {
+					$rootScope.alert = {
+						show: true,
+						text: '该关联查询点位数已有5个,不能再添加!'
+					};
+				}
+			}
+			metric.showAddUnions = false;
+		},
+		del: function(index) {
+			var $this = this;
+			var union = $this.values[index];
+			$rootScope.confirm = {
+				show: true,
+				text: '确定删除该【' + union.name + '】？',
+				yes: function() {
+					Union.remove({id:union.id}, null, function() {
+						$this.values.splice(index, 1);
+					}, function(e) {
+						$rootScope.alert = {
+							show: true,
+							text: '删除【' + union.name + '】时失败!'
+						};
+					});
+				}
+			};
+		},
+		update: function(union) {
+			$scope.newUnion.show(union.name, '修改关联查询', function(name) {
+				$scope.dialog.show = false;
+				Union.update({id: union.id}, {name: name}, function() {
+					union.name = name;
+				}, function(e) {
+					if(e.status == 403) {
+						$rootScope.alert = {
+							show: true,
+							text: '名字【' + name + '】重复!'
+						};
+					} else {
+						$rootScope.alert = {
+							show: true,
+							text: '修改【' + union.name + '】失败!'
+						};
+					}
+				});
+			});
+		},
+		add: function() {
+			$scope.newUnion.show(null, null, function(name) {
+				$scope.dialog.show = false;
+				Union.save({name: name}, function(data) {
+					data.metrics = [];
+					$scope.indexPage.union.values.push(data);
+				}, function(e) {
+					if(e.status == 403) {
+						$rootScope.alert = {
+								show: true,
+								text: '名字【' + name + '】重复!'
+						};
+					} else {
+						$rootScope.alert = {
+								show: true,
+								text: '添加【' + name + '】失败!'
+						};
+					}
+				});
+			});
+		},
+		addWithMetric: function(metric) {
+			$scope.newUnion.show(null, null, function(name) {
+				$scope.dialog.show = false;
+				$scope.indexPage.union.values.push(
+					Union.save({name: name, metrics: [metric.id]}, function() {
+					}, function() {
+						$rootScope.alert = {
+							show: true,
+							text: '添加【' + name + '】失败!'
+					};
+				}));
+			});
+			metric.showAddUnions = false;
+		},
+		addWithMetrics: function() {
+			var metrics = [];
+			var index = $scope.indexPage;
+			if(index.search.show) {
+				for ( var i=0; i < index.search.values.length; i++) {
+					if(index.search.values[i].checked)
+						metrics.push(index.search.values[i].id);
+				}
+			} else {
+				for ( var k = 0; k < $scope.sourcesList.length; k++) {
+					var sources =  $scope.sourcesList[k].content;
+					for ( var i=0; i < sources.length; i++) {
+						if(angular.isDefined(sources[i].metrics)) {
+							for ( var j=0; j < sources[i].metrics.length; j++) {
+								if(sources[i].metrics[j].checked)
+									metrics.push(sources[i].metrics[j].id);
+							}
+						}
+					}
+				}
+			}
+			if(metrics.length > 5) {
+				$rootScope.alert = {
+					show: true,
+					text: '一个关联查询的点位数不能超过5个!'
+				};
+			} else {
+				var $this = this;
+				$scope.newUnion.show(null, null, function(name) {
+					$scope.dialog.show = false;
+					index.union.values.push(Union.save({name: name, metrics: metrics}, function() {
+						$this.unCheckedMetrics();
+					}, function() {
+						$rootScope.alert = {
+								show: true,
+								text: '添加【' + name + '】失败!'
+						};
+					}));
+				});
+				index.showAddUnions = false;
+			}
+		},
+		detail: function(union) {
+			$scope.unionPage.init(union);
+		}
+	};
+	$scope.newUnion = {
+		name: '',
+		show: function(name, title, yes) {
+			title = (title == '' || title == null) ? '新建关联查询' : title;
+			this.name = (name == '' || name == null) ? this.getName() : name;
+			this.yes = angular.isFunction(yes) ? yes : function() {};
+			$scope.dialog = {
+				show: true,
+				title: title
+			};
+		},
+		confirm: function(name) {
+			this.yes(name);
+		},
+		getName: function() {
+			var values = $scope.indexPage.union.values;
+			var int = 0;
+			for ( var i=0; i < values.length; i++) {
+				if (angular.isDefined(values[i].name)) {
+					var name = values[i].name;
+					if(name.indexOf('查询') != -1) {
+						var tmp = name.substring(name.indexOf('查询') + 2, name.length);
+						if(tmp != '' && parseInt(tmp) > int) 
+							int = parseInt(tmp);
+					}
+				}
+			}
+			int++;
+			return '关联查询' + int;
+		}
+	};
+	//indexPage end
+	//metricPage start
+	$scope.metricPage = {
+		metric: null,
+		metricChart: null,
+		oldMetric: null,
+		init: function(metric) {
+			var $this = this;
+			$this.oldMetric = metric;
+			if($scope.unionPage.unionChart) {
+				$scope.unionPage.unionChart.destroy();
+				$scope.unionPage.unionChart = null;
+			}
+			$this.metric = Metric.get({id: metric.id}, function(metric) {
+				var config = {
+						domId: 'metricChart',
+						dynamic: true,
+						metrics: [{
+							id: metric.id,
+							displayName: metric.alias,
+							unit: metric.unit
+						}],
+						param: 'lately=10min'
+				}; 
+				if($this.metricChart) {
+					$this.metricChart.updateConfig(config).reStart();
+				} else {
+					$this.metricChart = new HQuery(config);
+					$timeout(function() {
+						$this.metricChart.start();
+					},100);
+				}
+				$this.query = {
+					type: 'current',
+					typeName: '实时数据'
+				};
+			}, function() {
+				$rootScope.alert = {
+					show: true,
+					text: '获取点位信息失败!'
+				};
+			});
+		},
+		updateMetric: function() {
+			var $this = this;
+			if($this.metric.edit) {
+				Metric.update({id: $this.metric.id}, {alias: $this.metric.alias}, function() {
+					$this.oldMetric.alias = $this.metric.alias;
+				}, function() {
+					$rootScope.alert = {
+						show: true,
+						text: '更新【' + $this.metric.name + '】失败!'
+					};
+				});
+			}
+			$this.metric.edit = !$this.metric.edit;
+		},
+		updateMetricHistorical: function() {
+			var $this = this;
+			var text = '你确定要【';
+			text += $this.metric.historical ? '关闭' : '开启';
+			text += '】存储历史数据功能?';
+			$rootScope.confirm = {
+				show: true,
+				title: '提示信息',
+				text:  text,
+				yes: function() {
+					var his = $this.metric.historical ? 0 : 1;
+					Metric.update({id: $this.metric.id}, {historical: his}, function() {
+						$this.metric.historical = !$this.metric.historical;
+						$this.oldMetric.historical = $this.metric.historical;
+					}, function() {
+						$rootScope.alert = {
+							show: true,
+							text: '更新【' + $this.metric.name + '】失败!'
+						};
+					});
+				}
+			};
+		},
+		changeQueryType: function(type, typeName) {
+			var close = true;
+			if(type == 'current') {
+				if(this.query.type != type) {
+					this.metricChart.updateConfig({
+						dynamic: true,
+						param: 'lately=10min'
+					});
+					this.metricChart.reStart();
+					this.query = {
+						type: 'current',
+						typeName: '实时数据'
+					};
+				}
+			} else if(type == 'lastHour' || type == 'lastDay') {
+				var param = type == 'lastHour' ? 'lately=1h' : 'lately=1d';
+				if(this.query.samp) 
+					param += '&samp=' + this.query.samp;
+				if(this.query.aggr) 
+					param += '&aggr=' + this.query.aggr;
+				this.metricChart.updateConfig({
+					dynamic: false,
+					param: param
+				}).reStart();
+			} else if(type == 'custom') {
+				var start = this.customTime.startTime;
+				var end = this.customTime.endTime;
+				if(end.time < start.time) {
+					close = false;
+					$rootScope.alert = {
+						show: true,
+						text: '结束时间不能小于开始时间!'
+					};
+				} else {
+					var param = 'b=' + this.customTime.startTime.time;
+					param += '&e=' + this.customTime.endTime.time;
+					if(this.query.samp) 
+						param += '&samp=' + this.query.samp;
+					if(this.query.aggr) 
+						param += '&aggr=' + this.query.aggr;
+					this.metricChart.updateConfig({
+						dynamic: false,
+						param: param
+					}).reStart();
+				}
+			}
+			if(close) {
+				this.query.type = type;
+				this.query.typeName = typeName;
+				this.query.showType = false;
+				this.isShowCustom = false;
+			}
+		},
+		changeQuerySamp: function(samp, sampName) {
+			this.query.sampTemp = samp;
+			this.query.sampNameTemp = sampName;
+			this.query.showSamp = false;
+		},
+		changeQueryAggr: function(aggr, aggrName) {
+			this.query.aggrTemp = aggr;
+			this.query.aggrNameTemp = aggrName;
+			this.query.showAggr = false;
+		},
+		changeQueryDS: function() {
+			if(this.query.sampTemp && this.query.aggrTemp) {
+				this.query.samp = angular.copy(this.query.sampTemp);
+				this.query.sampName = angular.copy(this.query.sampNameTemp);
+				this.query.aggr = angular.copy(this.query.aggrTemp);
+				this.query.aggrName = angular.copy(this.query.aggrNameTemp);
+				var param = '';
+				switch (this.query.type) {
+				case 'lastHour':
+					param = 'lately=1h';
+					break;
+				case 'lastDay':
+					param = 'lately=1d';
+					break;
+				case 'custom': 
+					param = 'b=' + this.customTime.startTime.time;
+					param += '&e=' + this.customTime.endTime.time;
+					break;
+				default:
+					break;
+				}
+				param += '&samp=' + this.query.samp;
+				param += '&aggr=' + this.query.aggr;
+				this.metricChart.updateConfig({
+					dynamic: false,
+					param: param
+				});
+				this.metricChart.reStart();
+				this.query.showDS = false;
+			} else {
+				$rootScope.alert = {
+					show: true,
+					text: '请选择采样频率和计算方式!'
+				};
+			}
+		},
+		clickDS: function() {
+			if(this.query.type != 'current') {
+				this.query.showDS =! this.query.showDS;
+			}
+		}
+	};
+	//metricPage end
+	//unionPage start
+	$scope.unionPage = {
+		union: null,
+		unionChart: null,
+		metrics: [],
+		query: {},
+		types: [{
+			name: 'line',
+			displayName: '趋势图'
+		}, {
+			name: 'area',
+			displayName: '区域图'
+		}, {
+			name: 'column',
+			displayName: '柱状图'
+		}],
+		init: function(union) {
+			var $this = this;
+			Union.get({id: union.id}, function(union) {
+				if(union.metrics.length > 0) {
+					$this.union = union;
+					if($scope.metricPage.metricChart) {
+						$scope.metricPage.metricChart.destroy();
+						$scope.metricPage.metricChart = null;
+					}
+					if($scope.indexPage.includeUrl != 'tpl/data/union.html')
+						$scope.indexPage.includeUrl = 'tpl/data/union.html';
+					var metrics = [];
+					for ( var i=0; i < union.metrics.length; i++) {
+						metrics.push({
+							id: union.metrics[i].id,
+							displayName: union.metrics[i].alias,
+							unit: union.metrics[i].unit,
+							type: {
+								name: 'line',
+								displayName: '趋势图'
+							},
+							name: union.metrics[i].name,
+							checked: true
+						});
+					}
+					$this.metrics = metrics;
+					var config = {
+							domId: 'unionChart',
+							dynamic: true,
+							metrics: metrics,
+							param: 'lately=10min',
+							multiY: true,
+							scope: $scope
+					};
+					if($this.unionChart) {
+						$this.unionChart.updateConfig(config).reStart(function() {
+							for ( var i=0; i < $this.metrics.length; i++) {
+								$this.metrics[i].color = {background: $this.unionChart.getColor($this.metrics[i].id)};
+								if(!$this.metrics[i].checked) {
+									$this.unionChart.hideSeries($this.metrics[i]);
+								}
+							}
+						});
+					} else {
+						$this.unionChart = new HQuery(config);
+						$timeout(function() {
+							$this.unionChart.start(function() {
+								for ( var i=0; i < $this.metrics.length; i++) {
+									$this.metrics[i].color = {background: $this.unionChart.getColor($this.metrics[i].id)};
+									if(!$this.metrics[i].checked) {
+										$this.unionChart.hideSeries($this.metrics[i]);
+									}
+								}
+							});
+						},100);
+					}
+					$this.query = {
+						type: 'current',
+						typeName: '实时数据'
+					};
+				} else {
+					$rootScope.alert = {
+						show: true,
+						text: '该关联查询还没有添加点位,无法打开!'
+					};
+				}
+			}, function() {
+				$rootScope.alert = {
+					show: true,
+					text: '获取【' + $this.union.name + '】点位失败!'
+				};
+			});
+		},
+		changeQueryType: function(type, typeName) {
+			var $this = this;
+			var close = true;
+			if(type == 'current') {
+				if($this.query.type != type) {
+					$this.unionChart.updateConfig({
+						dynamic: true,
+						metrics: $this.metrics,
+						param: 'lately=10min'
+					}).reStart(function() {
+						for ( var i=0; i < $this.metrics.length; i++) {
+							$this.metrics[i].color = {background: $this.unionChart.getColor($this.metrics[i].id)};
+							if(!$this.metrics[i].checked) {
+								$this.unionChart.hideSeries($this.metrics[i]);
+							}
+						}
+					});
+					this.query = {
+						type: 'current',
+						typeName: '实时数据'
+					};
+				}
+			} else if(type == 'lastHour' || type == 'lastDay') {
+				var param = type == 'lastHour' ? 'lately=1h' : 'lately=1d';
+				var metrics = $this.metrics;
+				for ( var i=0; i < metrics.length; i++) {
+					var temp = param;
+					if(metrics[i].samp) 
+						temp += '&samp=' + metrics[i].samp;
+					if(metrics[i].aggr) 
+						temp += '&aggr=' + metrics[i].aggr;
+					$this.metrics[i].param = temp;
+				}
+				$this.unionChart.updateConfig({
+					dynamic: false,
+					metrics: metrics,
+					param: param
+				}).reStart(function() {
+					for ( var i=0; i < $this.metrics.length; i++) {
+						$this.metrics[i].color = {background: $this.unionChart.getColor($this.metrics[i].id)};
+						if(!$this.metrics[i].checked) {
+							$this.unionChart.hideSeries($this.metrics[i]);
+						}
+					}
+				});
+			} else if(type == 'custom') {
+				var start = this.customTime.startTime;
+				var end = this.customTime.endTime;
+				if(end.time < start.time) {
+					close = false;
+					$rootScope.alert = {
+						show: true,
+						text: '结束时间不能小于开始时间!'
+					};
+				} else {
+					var param = 'b=' + $this.customTime.startTime.time;
+					param += '&e=' + $this.customTime.endTime.time;
+					var metrics = $this.metrics;
+					for ( var i=0; i<metrics.length; i++) {
+						var temp = param;
+						if(metrics[i].samp) 
+							temp += '&samp=' + metrics[i].samp;
+						if(metrics[i].aggr) 
+							temp += '&aggr=' + metrics[i].aggr;
+						$this.metrics[i].param = temp;
+					}
+					$this.unionChart.updateConfig({
+						dynamic: false,
+						metrics: metrics,
+						param: param
+					}).reStart(function() {
+						for ( var i=0; i < $this.metrics.length; i++) {
+							$this.metrics[i].color = {background: $this.unionChart.getColor($this.metrics[i].id)};
+							if(!$this.metrics[i].checked) {
+								$this.unionChart.hideSeries($this.metrics[i]);
+							}
+						}
+					});
+				}
+			}
+			if(close) {
+				this.query.type = type;
+				this.query.typeName = typeName;
+				this.query.showType = false;
+				this.isShowCustom = false;
+			}
+		},
+		changeQuerySamp: function(samp, sampName, index) {
+			var metric = this.metrics[index];
+			metric.sampTemp = samp;
+			metric.sampNameTemp = sampName;
+			metric.showSamp = false;
+		},
+		changeQueryAggr: function(aggr, aggrName, index) {
+			var metric = this.metrics[index];
+			metric.aggrTemp = aggr;
+			metric.aggrNameTemp = aggrName;
+			metric.showAggr = false;
+		},
+		changeQueryDS: function(index) {
+			var $this = this;
+			var metric = $this.metrics[index];
+			if(metric.sampTemp && metric.aggrTemp) {
+				metric.samp = angular.copy(metric.sampTemp);
+				metric.sampName = angular.copy(metric.sampNameTemp);
+				metric.aggr = angular.copy(metric.aggrTemp);
+				metric.aggrName = angular.copy(metric.aggrNameTemp);
+				var param = '';
+				switch ($this.query.type) {
+				case 'lastHour':
+					param = 'lately=1h';
+					break;
+				case 'lastDay':
+					param = 'lately=1d';
+					break;
+				case 'custom': 
+					param = 'b=' + $this.customTime.startTime.time;
+					param += '&e=' + $this.customTime.endTime.time;
+					break;
+				default:
+					break;
+				}
+				param += '&samp=' + metric.samp;
+				param += '&aggr=' + metric.aggr;
+				metric.param = param;
+				$this.unionChart.updateConfig({
+					dynamic: false,
+					metrics: $this.metrics,
+					param: param
+				}).reStart(function() {
+					for ( var i=0; i < $this.metrics.length; i++) {
+						$this.metrics[i].color = {background: $this.unionChart.getColor($this.metrics[i].id)};
+						if(!$this.metrics[i].checked) {
+							$this.unionChart.hideSeries($this.metrics[i]);
+						}
+					}
+				});
+				metric.showDS = false;
+			} else {
+				$rootScope.alert = {
+					show: true,
+					text: '请选择采样频率和计算方式!'
+				};
+			}
+		},
+		dsShow: function(index) {
+			if(this.query.type != 'current') {
+				var metric = this.metrics[index];
+				if(metric.showDS) {
+					metric.showDS = false;
+				} else {
+					for ( var i=0; i<this.metrics.length; i++) {
+						this.metrics[i].showDS = false;
+					}
+					metric.showDS = true;
+				}
+			}
+		},
+		typeShow: function(index) {
+			var metric = this.metrics[index];
+			metric.type = metric.type || {};
+			if(metric.type.show) {
+				metric.type.show = false;
+			} else {
+				for ( var i=0; i < this.metrics.length; i++) {
+					$.extend(this.metrics[i].type, {show: false});
+				}
+				metric.type.show = true;
+			}
+		},
+		changeType: function(index, type) {
+			var $this = this;
+			var metric = $this.metrics[index];
+			if(metric.type.name != type.name) {
+				metric.type = type;
+				$this.unionChart.updateConfig({
+					metrics: $this.metrics
+				}).reStart(function() {
+					for ( var i=0; i < $this.metrics.length; i++) {
+						$this.metrics[i].color = {background: $this.unionChart.getColor($this.metrics[i].id)};
+						if(!$this.metrics[i].checked) {
+							$this.unionChart.hideSeries($this.metrics[i]);
+						}
+					}
+				});
+			}
+			metric.type.show = false;
+		},
+		setColor: function() {
+			var $this = this;
+			for ( var i=0; i < $this.metrics.length; i++) {
+				$this.metrics[i].color = {background: $this.unionChart.getColor($this.metrics[i].id)};
+				if(!$this.metrics[i].checked) {
+					$this.unionChart.hideSeries($this.metrics[i]);
+				}
+			}
+		},
+		hideOrShowSeries: function(metric) {
+			metric.checked = !metric.checked;
+			if(metric.checked) {
+				this.unionChart.showSeries(metric);
+			} else {
+				this.unionChart.hideSeries(metric);
+			}
+		},
+		delSeries: function(index) {
+			var $this = this;
+			var metric = $this.metrics[index];
+			$rootScope.confirm = {
+				show: true,
+				text: '确定删除该点位【' + metric.name + '】？',
+				yes: function() {
+					Union.rmMetrics({id: $this.union.id, metricIds: metric.id}, function() {
+						$this.unionChart.delSeries(metric);
+						$this.metrics.splice(index, 1);
+					}, function() {
+						$rootScope.alert = {
+							show: true,
+							text: '删除点位【' + metric.name + '】时失败啦。。。'
+						};
+					});
+				}
+			};
+		},
+		exportList: function() {
+			var datas = this.unionChart.datas,
+				metrics = this.metrics,
+				rs = '时间';
+			for ( var i=0; i < metrics.length; i++) {
+				rs += ',' + metrics[i].displayName;
+			}
+			rs += '\n';
+			for ( var i=0; i < datas.length; i++) {
+				rs += $filter('date')(datas[i].time, 'yyyy/MM/dd HH:mm:ss');
+				for ( var j=0; j < datas[i].values.length; j++) {
+					rs += ',';
+					for ( var k=0; k < metrics.length; k++) {
+						if(metrics[k].id == datas[i].values[j].id) {
+							rs += datas[i].values[j].value;
+							break;
+						}
+					}
+				}
+				rs += '\r\n';
+			}
+			Util.post('data/export', {data: rs, name: this.union.name});
+		},
+		showListFn: function(isShowList) {
+			this.isShowList = isShowList;
+			if(!isShowList) {
+				$('#unionChart').width($('#unionChart').parent().parent().width());
+				this.unionChart.reFlow();
+			}
+		} 
+		/*focusSeries: function(metric) {
+			this.unionChart.focusSeries(metric);
+		},
+		blurSeries: function(metric) {
+			this.unionChart.blurSeries(metric);
+		},*/
+	};
+	//unionPage end
+}

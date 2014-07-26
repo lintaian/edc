@@ -1,0 +1,70 @@
+body{
+	/*background-image: url(../img/bg1.jpg);*/
+}
+
+.ng-hide {
+	display: none;
+}
+.main {
+	margin-top: 10px;
+	padding: 0;
+	min-width: 1024px;
+}
+form .select{
+	width: 104px;
+}
+.width-input {
+	width: 150px;
+}
+.width-select {
+	width: 164px;
+}
+.middleForm {
+	margin: -10px 0 10px 0;
+}
+.row-fluid .span5{
+	margin-bottom: -12px;
+}
+.row-fluid .span5 .float-right{
+	float: right;
+}
+.row-fluid .span5 .float-left{
+	float: left;
+}
+form.form-inline{
+	min-height: 30px;
+}
+ul.sidebar{
+	margin-left: 3px;
+}
+ul.sidebar2{
+	margin-left: 23px;
+}
+.icon {
+	float: left;
+	width: 15px;
+	height: 15px;
+	position: relative;
+	background: #FFF url("../img/glyphicons-halflings.png") no-repeat;
+}
+.for-icon {
+	float: left;
+	width: 15px;
+	height: 15px;
+	position: relative;
+}
+.more{
+	background-position:89.7% 66%;
+	margin-top: 2px;
+}
+.less{
+	background-position:95.2% 66%;
+	margin-top: 2px;
+}
+
+.content{
+	width: 100%;
+}
+.sidebar ul li{
+	padding: 2px 0;
+}

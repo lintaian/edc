@@ -1,0 +1,67 @@
+function StoreDetail($scope, $rootScope, Resource, $routeParams){
+	$scope.showDropdown = false;
+	$rootScope.navigation = 'source';
+	$scope.queryParams = {type:'',name:''};
+	$scope.resource = Resource.sourcesDetail({type:2,sourceId:$routeParams.id},function(error){
+	});
+	$scope.showMetricsLoading = true;
+	Resource.sourcesMetrics({type:2,sourceId:$routeParams.id},function(data,headers){
+		$scope.showMetricsLoading = false;
+		//var date = headers('Date');
+		var now = new Date();
+		for(var i in data){
+			var storeTime = now.getTime() - data[i]['start'];
+			data[i]['store_time'] = storeTime;
+			data[i]['last_time'] =  now.getTime() - data[i]['last_time'];
+		}
+		$scope.metrics = data;
+	});
+	$scope.show_dropdown = function(){
+		$scope.showDropdown = $scope.showDropdown ? false : true;
+	};
+	
+	$scope.search = function(type,params){
+		if(type == 1){
+			if(params.keyCode == 13){
+				$scope.queryParams.name = $scope.queryName;
+			}
+		}else{
+			$scope.showDropdown = false;
+			$scope.queryParams.type = params;
+		}
+	};
+
+	$scope.search.real = function(m){
+		if($scope.queryParams.name != '' && $scope.queryParams.type == ''){
+			return m.name.indexOf($scope.queryParams.name.toUpperCase()) > -1 ||
+				   m.name.indexOf($scope.queryParams.name) > -1 ||
+				   m.alias.indexOf($scope.queryParams.name.toUpperCase()) > -1 ||
+				   m.alias.indexOf($scope.queryParams.name) > -1;
+		}else if($scope.queryParams.type != '' && $scope.queryParams.name == ''){
+			return m.type == $scope.queryParams.type;
+		}else if($scope.queryParams.type != '' && $scope.queryParams.name != ''){
+			return (m.name.indexOf($scope.queryParams.name.toUpperCase()) > -1 || 
+					m.name.indexOf($scope.queryParams.name) > -1 ||
+					m.alias.indexOf($scope.queryParams.name.toUpperCase()) > -1 ||
+					m.alias.indexOf($scope.queryParams.name) > -1 ) && m.type == $scope.queryParams.type;
+		}else{
+			return true;
+		};
+	};
+	
+	$scope.edit = function(sourceId,disabled){
+		var text = disabled == 1 ? '您确定要开通服务吗？' : '您确认关闭服务吗？';
+		var title = disabled == 1 ? '开通服务' : '关闭服务';
+		var enabled = disabled == 0 ? 1 : 0;
+		$rootScope.confirm = {
+			show: true,
+			title: title,
+			text: text,
+			yes:function(){
+				Resource.updateSource({sourceId:sourceId,type:2}, {disabled:enabled},function(data){
+					$scope.resource.disabled = disabled == 1 ? 0 : 1;
+				});
+			}
+		};
+	};
+}

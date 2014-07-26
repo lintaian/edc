@@ -1,0 +1,37 @@
+function Log($scope,$routeParams, Message) {
+	$scope.params = {
+		lately : '1h',
+		page : 1,
+		per_page : 50,
+		type : +$routeParams.type,
+		source_id : $routeParams.source_id
+	};
+
+	$scope.name = $routeParams.source_name || '系统消息';
+	
+	queryMessage();
+	
+	function queryMessage() {
+		Message.query($scope.params, function(response) {
+			$scope.messages = response;
+		});
+	}
+
+	$scope.setType = function(type) {
+		$scope.params.type = type;
+		$scope.showSource = false;
+		queryMessage();
+	};
+
+	$scope.setLevel = function(level) {
+		$scope.params.level = level;
+		$scope.showLevel = false;
+		queryMessage();
+	};
+
+	$scope.setLately = function(lately) {
+		$scope.params.lately = lately;
+		$scope.showTime = false;
+		queryMessage();
+	};
+}

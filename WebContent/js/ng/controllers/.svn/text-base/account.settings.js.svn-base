@@ -1,0 +1,83 @@
+function AccountSettings($scope, $rootScope,$parse,Account,$http) {
+	$scope.changeTab = function(tabName) {
+		$scope.showtab = tabName;
+		switch (tabName) {
+		case ('info'):
+			fillUserInfo();
+			break;
+		case ('password'):
+			break;
+		}
+	};
+
+	$scope.updateinfo = function() {
+		if(!$scope.userInfo.real_name){
+			$('#realname').focus();
+		} else if(!$scope.userInfo.email || 
+				  !/^(\w)+(\.\w+)*@[\w-_]+((\.\w+)+)$/.test($scope.userInfo.email)){
+			$('#email').focus();
+		} else {
+			$scope.infostatus = 0;
+			Account.updateinfo({
+				real_name : $scope.userInfo.real_name,
+				email : $scope.userInfo.email
+			}, function() {
+				$scope.infowarn = "修改成功";
+			}, function(response) {
+				$scope.infostatus = 1;
+				if (response.status === 401) {
+					$scope.infowarn = '没有修改权限';
+				} else if (response.status === 400) {
+					$scope.infowarn = '传入消息格式错误';
+				} else {
+					$scope.infowarn = '未知错误';
+				}
+			});
+		}
+	};
+
+	$scope.updatepwd = function() {
+		var regpwd = /^[a-zA-Z0-9]{6,18}$/;
+		if(!regpwd.test($scope.oldpwd)){
+			$parse('accountpwd.oldpwd.$dirty').assign($scope,true);
+			$('#oldpwd').focus();
+		} else if(!regpwd.test($scope.newpwd)){
+			$parse('accountpwd.newpwd.$dirty').assign($scope,true); //make it dirty so warn will show
+			$('#newpwd').focus();
+		} else if(!regpwd.test($scope.newpwd2) || $scope.newpwd !== $scope.newpwd2){
+			$parse('accountpwd.newpwd2.$dirty').assign($scope,true);
+			$('#newpwd2').focus();
+		} else {
+			$scope.pwdstatus = 0;
+			if ($scope.newpwd === $scope.newpwd2) {
+				 Account.updatepwd({
+					old : $scope.oldpwd,
+					password : $scope.newpwd
+				}, function(response) {
+					$scope.pwdwarn = '修改成功';
+					$http.defaults.headers.common.Authorization = response.Authorization;
+					Util.addCookie('Authorization',response.Authorization);
+				}, function(response) {
+					$scope.pwdstatus = 1;
+					if (response.status === 401) {
+						$scope.pwdwarn = '旧密码错误';
+					} else {
+						$scope.pwdwarn = '未知错误';
+					}
+				});
+			}
+		}
+	};
+
+	function fillUserInfo() {
+		Account.get(function(data) {
+			$scope.userInfo = data;
+		});
+	}
+
+	$scope.oldpwd = '';
+	$scope.newpwd = '';
+	$scope.newpwd2 = '';
+	$scope.userInfo = {};
+	fillUserInfo();
+}

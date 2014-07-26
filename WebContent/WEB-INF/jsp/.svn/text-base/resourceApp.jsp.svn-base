@@ -1,0 +1,68 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id="ng-app">
+  <head>
+    <base href="<%=basePath%>">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>C_11</title>
+    <link rel="stylesheet" href="css/reset.css"/>
+    <link rel="stylesheet" href="css/unimatic-style.css"/>
+    <link rel="stylesheet" href="css/unimatic_App.css"/>
+    <link rel="stylesheet" href="css/layer.css"/>
+    <link rel="stylesheet" href="css/unimatic-media.css"/>
+    <!--[if lte IE 8]>
+      <script src="js/lib/html5shiv.js"></script>
+      <script src="js/lib/json3.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+  <div class="warpper unimaitic_App clearfix" id="scroll">
+  	<!--Header-part-->
+  	<div class="h_top">
+  		<div class="fixed_top">
+		    <div id="header">
+		          <h1><a href="javascript:void()">unimatic.io</a></h1>
+		          <ul class="headerNav">
+		              <li><a class="selcet" href="javascript:void(0)">首页</a></li>
+		              <li><a href="javascript:void(0)">资源</a></li>
+		              <li><a href="javascript:void(0)">数据</a></li>
+		              <li><a href="javascript:void(0)">知识</a></li>
+		              <li><a href="javascript:void(0)">模型</a></li>
+		          </ul>
+		    	  <div class="account">
+		        	 <div class="userBar">
+		             	<ul>
+		                <li class="admin">
+			                <a class="arrowDown" href="javascript:void(0)" data-ng-click="userShow=!userShow">
+			                	<img src="images/arrow-down.png" alt="">
+			                </a>
+		                    <div class="userDropdown" data-ng-show="userShow">
+		                        <span class="arrowShow">&nbsp;</span>
+		                        <a href="javascript:void(0)">退出</a>
+		                    </div>
+		                </li>
+		                <li class="msg newMsg"><a href="#">7</a></li>
+		                </ul>
+		             </div>
+		             <div class="release"><a href="#">发布</a></div>
+		         </div>	
+		    </div>
+  		</div>
+  	</div>
+    <!--Header-part-end-->
+    
+    <!--main-container-part-->
+    <div data-ng-view></div>
+    <!--main-container-part-end-->
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+   </div>
+   <div data-confirm data-ng-model="confirm"></div>
+   <div data-alert data-ng-model="alert"></div>
+   <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=st7KcqFkL46F6RT1WMucDQey"></script>
+   <script data-main="js/ng/resourceApp" src="js/lib/require.js"></script>
+  </body>
+</html>

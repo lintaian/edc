@@ -1,0 +1,361 @@
+define(['angular'],function(angular){
+	return angular.module('myFilters', []).filter('true_or_false', function() {
+	    return function(input,trueValue,falseValue) {
+	        if(arguments.length == 1) {
+	            trueValue = '';
+	            falseValue = '';
+	        }
+	        if(arguments.length == 2) {
+	            falseValue = '';
+	        }
+	        return input ? trueValue : falseValue;
+	    };
+	}).filter('startFrom', function() {
+	    return function(input, start) {
+	        if(input) {
+	            start = +start; //parse to int
+	            return input.slice(start);
+	        }
+	    };
+	}).filter('str_sub',function() {
+	        return function(str,len) {
+	            var strlen = 0;
+	            var s = "";
+	            for(var i = 0;i < str.length;i++)
+	            {
+	                if(str.charCodeAt(i) > 128){
+	                    strlen += 2;
+	                }else{
+	                    strlen++;
+	                }
+	                s += str.charAt(i);
+	                if(strlen >= len){
+	                    return s + '...' ;
+	                }
+	            }
+	            return s;
+	        };
+	    }).filter('metric_type',function(){
+	    	return function(input){
+	    		if(input == 1){
+	    			return "Bool";
+	    		}else if(input == 2){
+	    			return "Int";
+	    		}else if(input == 3){
+	    			return "Float";
+	    		}
+	    	};
+	    }).filter('status',function(){
+	    	return function(input,value,condition){
+	    		if(value == 'source'){
+	    			if(input == 1){
+	    				return "未启用";
+	    			}else if(input == 2){
+	    				return "已连接";
+	    			}else if(input == 3){
+	    				return "断开/正在连接";
+	    			}else if(input == 4){
+	    				return "通信异常";
+	    			}
+	    		}else if(value == 'store'){
+	    			if(input == 1){
+	    				return "正常";
+	    			}else if(input == 0){
+	    				return "禁用";
+	    			}
+	    		}
+	    	};
+	    }).filter('s_driver',function(){
+	    	return function(input){
+	    		if(input == 1){
+    				return "UniReal+";
+    			}else if(input == 2){
+    				return "UniReal";
+    			}else if(input == 3){
+    				return "Modbus TCP";
+    			}
+	    	};
+	    }).filter('source_type',function(){
+	    	return function(input){
+	    		if(input == 1){
+    				return "Unimatic Historian";
+    			}else if(input == 2){
+    				return "UniReal采集器(含Box)";
+    			}else if(input == 3){
+    				return "PLC";
+    			}
+	    	};
+	    }).filter('statusColor',function(){
+	    	return function(input){
+	    		if(input == 1){
+    				return "fontBlue";
+    			}else if(input == 3 || input == 4){
+    				return "fontRed";
+    			}
+	    	};
+	    }).filter('sourceMetric',function(){
+	    	return function(input,value){
+	    		if(input != 3){
+	    			return "resourceApp#/metrics/"+value;
+	    		}else{
+	    			return "resourceApp#/metricsP/"+value;
+	    		}
+	    	};
+	    }).filter('format_time',function(){
+	        return function(input) {
+	        	if(input == null){
+	        		return 0;
+	        	}
+	        	var day = Math.floor(input / (60*60*24));
+	        	var min = Math.floor(input % (60*60*24) /(60*60));
+	        	min = min > 0 ? min + '小时' :'';
+	        	if(day > 0){
+	        		min = '';
+	        	}
+	        	day = day > 0 ? day + '天' : '0天';
+	            return day;
+	        };
+	    }).filter('detail_time',function(){
+	        return function(input) {
+	        	if(input == null){
+	        		return 0+'秒';
+	        	}
+	        	if(input < 0){
+	        		return 1+'秒';
+	        	}
+	        	var day = Math.floor(input / (60*60*24));
+	        	var hour = Math.floor(input % (60*60*24) /(60*60));
+	        	var min = Math.floor(input % (60 * 60) / 60) ;
+	            var second = Math.floor(input % 60);
+	            var min2 = day > 0 ? '' : min + '分钟';
+	            var second2 = day > 0 ? '' : second + '秒';
+	        	var hour2 = hour > 0 ? min + '小时' :'';
+	        	var day2 = day > 0 ? day + '天' : '';
+	        	if(day >= 1)return day2+hour2;
+	        	if(day < 1 && hour >= 1)return hour2+min2;
+	        	if(day < 1 && hour <1 && min >= 1)return min2+second2;
+	        	if(day < 1 && hour <1 && min < 1)return second2;
+	        };
+	    }).filter('resourceMetric',function(){
+	    	return function(input,value){
+	    		if(input != 3){
+	    			return "main#/collect_detail/"+value;
+	    		}else{
+	    			return "main#/collect_detail_p/"+value;
+	    		}
+	    	};
+    }).filter('sumMetrics', function() {
+    	return function(input) {
+    		var sum = 0;
+    		if(angular.isDefined(input)) {
+    			for(var i=0; i < input.length; i++) {
+    				if(angular.isDefined(input[i].content)) {
+    					for ( var obj=0; obj < input[i].content.length; obj++) {
+    						if(angular.isDefined(input[i].content[obj].source_metrics))
+    							sum += input[i].content[obj].source_metrics;
+    					}
+    				}
+    			}
+    		}
+    		return sum;
+    	};
+    }).filter('getNum',function(){
+    	return function(input){
+    		return input!=undefined ? Math.round(input.replace(/[^0-9]/ig,"")) : '';
+    	};
+    }).filter('getChar',function(){
+    	return function(input){
+    		return input!=undefined ? input.replace(/[^A-Za-z]/ig,"") :'';
+    	};
+    }).filter('simulation',function(){
+    	return function(input){
+    		if(input == 1){
+    			return "有线";
+    		}else if(input == 2){
+    			return "移动网络（2G/3G）";
+    		}
+    	};
+    }).filter('driver',function(){
+    	return function(input){
+    		if(input == 1){
+    			return "Modbus TCP";
+    		}else if(input == 2){
+    			return "XXMSDLED";
+    		}else if(input == 3){
+    			return "PLCTYPE";
+    		}
+    	};
+    }).filter('metrics', function() {
+    	return function(metrics, filter) {
+    		if(angular.isDefined(metrics)) {
+    			for ( var i=0; i < metrics.length; i++) {
+    				var show = false;
+    				for ( var j=0; j < filter.length; j++) {
+    					if(filter[j].checked) {
+    						switch (filter[j].code) {
+    						case 'analog':
+    							if(metrics[i].type==2 || metrics[i].type==3)
+    								show = true;
+    							break;
+    						case 'switch':
+    							if(metrics[i].type == 1)
+    								show = true;
+    							break;
+    						case 'storage':
+    							if(metrics[i].historical) 
+    								show = true;
+    							break;
+    						case 'unStorage':
+    							if(!metrics[i].historical) 
+    								show = true;
+    							break;
+    						case 'physical':
+    							if(!metrics[i].virtual)
+    								show = true;
+    							break;
+    						case 'virtual':
+    							if(metrics[i].virtual)
+    								show = true;
+    							break;
+    						default:
+    							break;
+    						}
+    						if(show) break;
+    					}
+    				}
+    				metrics[i].show = show;
+    			}
+    		}
+    		return metrics;
+    	};
+    }).filter('metrics_count', function() {
+    	return function(metrics, filter) {
+    		var count = 0;
+    		if(angular.isDefined(metrics)) {
+    			for ( var i=0; i < metrics.length; i++) {
+    				var show = false;
+    				for ( var j=0; j < filter.length; j++) {
+    					if(filter[j].checked) {
+    						switch (filter[j].code) {
+    						case 'analog':
+    							if(metrics[i].type==2 || metrics[i].type==3)
+    								show = true;
+    							break;
+    						case 'switch':
+    							if(metrics[i].type == 1)
+    								show = true;
+    							break;
+    						case 'storage':
+    							if(metrics[i].historical) 
+    								show = true;
+    							break;
+    						case 'unStorage':
+    							if(!metrics[i].historical) 
+    								show = true;
+    							break;
+    						case 'physical':
+    							if(!metrics[i].virtual)
+    								show = true;
+    							break;
+    						case 'virtual':
+    							if(metrics[i].virtual)
+    								show = true;
+    							break;
+    						default:
+    							break;
+    						}
+    						if(show) {
+    							count++;
+    							break;
+    						}
+    					}
+    				}
+    			}
+    		}
+    		return count;
+    	};
+    }).filter('show_tips', function() {
+    	return function(show, metrics, sources, searchShow) {
+    		var rs = false;
+    		if(!show) {
+    			if(searchShow) {
+    				if(angular.isDefined(metrics)) {
+    					for ( var i=0; i < metrics.length; i++) {
+    						if(metrics[i].checked) {
+    							rs = true;
+    							break;
+    						}
+    					}
+    				}
+    			} else {
+    				if(angular.isDefined(sources)) {
+    					for ( var i=0; i < sources.length; i++) {
+    						if(angular.isDefined(sources[i].content)) {
+    							for ( var j = 0; j < sources[i].content.length; j++) {
+    								if(angular.isDefined(sources[i].content[j].metrics)) {
+    									for ( var k=0; k < sources[i].content[j].metrics.length; k++) {
+    										if(sources[i].content[j].metrics[k].checked) {
+    											rs = true;
+    											break;
+    										}
+    									}
+    								}
+								}
+    						}
+    					}
+    				}
+    			}
+    		}
+    		return rs;
+    	};
+    })
+    .filter('loglevel', function () {
+    	return function(input) {
+    		switch(input)
+    		{
+    		case (1):
+    			return '错误';
+    		case (2):
+    			return '警告';
+    		case (3):
+    			return '消息';
+    		default:
+    			return '未知';
+    		}
+    	};
+    })
+    .filter('logtype',function(){
+    	return function(input){
+    		switch(input){
+    		case(1):
+    			return '采集服务';
+    		case(2):
+    			return '存储服务';
+    		case(3):
+    			return '计算服务';
+    		case(4):
+    			return '订阅服务';
+    		case(5):
+    			return '开发服务';
+    		default:
+    			return '未知';
+    		}
+    	};
+    })
+    .filter('lately',function(){
+    	return function(input){
+    		switch(input){
+    		case('1h'):
+    			return '最近一小时';
+    		case('1d'):
+    			return '最近一天';
+    		case('1w'):
+    			return '最近一周';
+    		case('1mon'):
+    			return '最近一月';
+    		default:
+    			return '用户自定义';
+    		}
+    	};
+    });
+});

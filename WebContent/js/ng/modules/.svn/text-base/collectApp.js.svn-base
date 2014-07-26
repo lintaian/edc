@@ -1,0 +1,22 @@
+/*global define*/
+'use strict';
+
+define(['angular'], function (angular) {
+	return angular.module('toolApp', ['myFilters', 'resource', 'ngRoute', 'angularFileUpload', 
+	                                  'dialog', 'myDirectives', 'loading']).
+	  config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
+		  $routeProvider.
+		      when('/', {templateUrl: 'tpl/resourceApp/index.html', controller: Index}).
+		      when('/metrics/:id', {templateUrl: 'tpl/resourceApp/metrics.html', controller: Metrics}).
+		      when('/metricsP/:id', {templateUrl: 'tpl/resourceApp/metricsPLC.html', controller: Metrics}).
+		      otherwise({redirectTo: '/'});
+		  
+			$httpProvider.defaults.headers.common.Authorization= Util.getCookie('authorization');
+			$httpProvider.defaults.headers.common['Content-Type'] = Util.getCookie('content-type');
+			$httpProvider.defaults.headers.post['Content-Type'] = Util.getCookie('content-type');
+			$httpProvider.defaults.headers.put['Content-Type'] = Util.getCookie('content-type');
+			$httpProvider.defaults.headers.patch = {
+				  'Content-Type' : Util.getCookie('content-type')
+			};
+		}]);;
+});

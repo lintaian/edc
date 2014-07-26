@@ -1,0 +1,231 @@
+function Metrics($scope, Metric, Source, $routeParams, $q, $http, $timeout){
+	$scope.showDropdown = false;
+	$scope.addShow = false;
+	$scope.metrics = Source.get({"id":$routeParams.id});
+	$scope.key = $routeParams.id;
+	
+	$scope.show_dropdown = function(){
+		$scope.showDropdown = $scope.showDropdown ? false : true;
+	};
+	
+	$scope.searchType = function(type){
+		$scope.showDropdown = false;
+		$scope.queryParams = type;
+		$scope.query = {"type":type};
+	};
+	
+	$scope.add = function(){
+		if($scope.addShow){
+			$scope.params = [];
+			for ( var i = 1; i < 5; i++) {
+				var param = 'metrics' + i;
+				$scope.params.push(param);
+				$scope.params[i-1] = {};
+			}
+		}
+		$scope.addShow = $scope.addShow ? false : true;
+	};
+	
+	$scope.params = [];
+	for ( var i = 1; i < 5; i++) {
+		var param = 'metrics' + i;
+		$scope.params.push(param);
+		$scope.params[i-1] = {};
+	}
+	
+	$scope.save = function(){
+		var error = 0;
+		for ( var int = 0; int < $scope.params.length; int++) {
+			var val = $scope.params[int];
+			if((val.name != null && val.name != '') || 
+				(val.type != null && val.type != '') || 
+				(val.addr != null && val.addr != '') || 
+				(val.alias != null && val.alias != '') || 
+				(val.gather != null && val.gather != '')){
+				$scope.params[int].error = {};
+				if(val.name == null || val.name == ''){
+					error++;
+					$scope.params[int].error.name = '点位标识不能为空';
+				}else{
+					//TODO:判断点位名重复
+					$scope.params[int].error = {};
+					/*var metric = $scope.params[int];
+					Metric.get({'name':val.name},function(data){
+						error++;
+						metric.error = '点位标识已存在';
+					});*/
+				} 
+				if(val.type == null || val.type == ''){
+					error++;
+					$scope.params[int].error.type = '点位类型不能为空';
+				}
+				if(val.alias == null || val.alias == ''){
+					error++;
+					$scope.params[int].error.comment = '点位描述不能为空';
+				}
+			}
+		};
+		var metrics = [];
+		if(error == 0){
+			for ( var int = 0; int < $scope.params.length; int++) {
+				if($scope.params[int].name != null){
+					Metric.save($scope.params[int]);
+					metrics.push($scope.params[int].id);	
+				}else{
+					error++;
+				}
+			}
+			if(error == $scope.params.length){
+				$scope.params[0].error = {};
+				$scope.params[0].error.name = '点位标识不能为空';
+			}
+		}
+		if(metrics.length != 0){
+			Source.save({'id':$scope.key},{'metrics':metrics},function(data){
+				$scope.params = [];
+				for ( var i = 1; i < 5; i++) {
+					var param = 'metrics' + i;
+					$scope.params.push(param);
+					$scope.params[i-1] = {};
+					$scope.addShow = false;
+				}
+			},function(error){
+				console.log(error);
+			});
+		}
+	};
+	
+	$scope.addRow = function(){
+		var num = $scope.params.length+1;
+		$scope.params.push('metrics'+num);
+		for ( var int = ($scope.params.length-1); int < num; int++) {
+			$scope.params[int] = {};
+		}
+	};
+	
+	$scope.showList = function(i){
+		$scope.params[i].show_list = $scope.params[i].show_list ? false : true;
+	};
+	
+	$scope.selectType = function(i,type){
+		$scope.params[i].type = type;
+		$scope.params[i].show_list = false;
+	};
+	
+	$scope.edit = function(index,id){
+		$scope.sourceType = 1;
+		$scope.index = index;
+		$scope.metric = Metric.get({'id':id});
+		$scope.dialog = {
+			show:true,
+			title: '编辑点位'
+		};
+	};
+	$scope.ShowEdit = function(){
+		$scope.editShow = false;
+	};
+	
+	$scope.showMtype = false;
+	$scope.show_mtype = function(){
+		$scope.showMtype = $scope.showMtype ? false : true; 
+	};
+	
+	$scope.edit.save = function(){
+		$scope.editMetric = {
+			'alias':$scope.metric.alias,
+			'interval' : $scope.metric.interval
+		};
+		Metric.update({id:$scope.metric.id}, $scope.editMetric,function(data){
+			$scope.dialog = {
+				show:false
+			};
+			$scope.metrics.metrics[$scope.index] = $scope.metric;
+		});
+	};
+
+	$scope.test = function(){
+		var metrics=[];
+		$scope.errors = [];
+		$scope.testing= true;
+		for(m in $scope.metrics.metrics){
+			metrics.push($scope.metrics.metrics[m].id);
+		}
+		$scope.stop = false;
+		$scope.canceler = $q.defer();
+		$http.post('api/metrics/current', {"metrics": metrics},{timeout: $scope.canceler.promise}).
+			success(function(data) {
+				$scope.testing= false;
+				$scope.stop = true;
+				for(var d in data){
+					var dName = data[d]['id'];
+					for(var m in $scope.metrics.metrics){
+						var mName = $scope.metrics.metrics[m]['id'];
+						if(dName == mName && d == m){
+							if(data[m]['values'].length == 0){
+								$scope.errors.push(data[m]['id']);
+								$scope.metrics.metrics[m].test = "BAD";
+								var date = new Date();
+								var time = date.getTime()/1000;
+								$scope.metrics.metrics[m].time = time;
+							}else{
+								$scope.metrics.metrics[m].test = data[m]['values'][1];
+								$scope.metrics.metrics[m].time = data[m]['values'][0];
+							}
+						}
+					}
+				};
+		}).error(function(error) {
+			$scope.testError = true;
+			$scope.testing= false;
+			$scope.errors = [];
+		});
+		$timeout(function() {
+			$scope.stopTest();
+		},60000);
+	};
+	
+	$scope.stopTest = function(){
+		$scope.stop = true;
+		$scope.testing= false;
+		$scope.canceler.resolve('dfdf');
+	};
+	
+	$scope.sourceCode=-1;
+	$scope.preScroll = 0;
+	$scope.preScroll;
+	$scope.scroll =[];
+	$scope.nextError = function(){
+		if($scope.sourceCode < $scope.errors.length){
+			$scope.sourceCode++;
+		}
+		var next = $scope.errors[$scope.sourceCode];
+		$('.unimaitic_App').scrollIntoView('#' + next);
+	};
+	
+	$scope.preError = function(){
+		if($scope.sourceCode > 0){
+			$scope.sourceCode--;
+		}
+		var next = $scope.errors[$scope.sourceCode];
+		$('.unimaitic_App').scrollIntoView('#' + next);
+	};
+	
+	$scope.exportMetrics = function(){
+		location.href = 'metrics/export?id='+$routeParams.id;
+	}; 
+	
+	$scope.importMetrics = function($file){
+		$http.uploadFile({
+			url: 'metrics/import',
+			file: $file[0],
+			data: {"id":$routeParams.id}
+		}).success(function(data) {
+			if(data['rs']){
+				$scope.metrics = data['msg'];
+				$scope.errors = [];
+			}else{
+				alert(data['msg']);
+			}
+		});
+	};
+}

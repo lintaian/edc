@@ -1,0 +1,447 @@
+define([ 'jquery', 'highcharts'], function(jquery, highcharts) {
+	(function($, highcharts) {
+		Highcharts.setOptions({
+			global: {
+				useUTC: false
+			},
+			legend : {
+				enabled : false
+			},
+			exporting : {
+				enabled : false
+			},
+			credits : {
+				enabled : false
+			},
+		    lang: {
+	            months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+	            shortMonths: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+	            weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+	            resetZoom: '重置',
+	            resetZoomTitle: null
+	        }
+		});
+		var HQuery = function(config) {
+			$.extend(this.config, config);
+			if(this.config.metrics.length==0) {
+				throw 'the parameter metrics can not be null';
+			}
+		};
+		HQuery.prototype = {
+			constructor : HQuery,
+			config : {
+				url : '/api/metrics/:id/query',
+				updateUrl: '/api/metrics/current',
+				dynamic : false,
+				rate: 10000,
+				domId: 'highcharts',
+				type: 'line',
+				multiY: false,
+				metrics: [],
+				param: '',
+				pointLength: 20,
+				scope: null
+			},
+			option: {},
+			interval: null,
+			highcharts: null,
+			datas: [],
+			allAjax: [],
+			setColor: null,
+			start: function(setColor) {
+				var $this = this;
+				$this.setColor = $.isFunction(setColor) ? setColor : function() {};
+				$this.option = $this.getOption($this.config.type);
+				$this.option.chart['renderTo'] = $('#'+$this.config.domId)[0];
+				if($this.config.dynamic)
+					$this.option.chart['zoomType'] = null;
+				$this.setYAxis();
+				for ( var m=0; m < $this.config.metrics.length; m++) {
+					var metric = $this.config.metrics[m];
+					$this.getHistory(metric, parseInt(m));
+				}
+				return this;
+			},
+			stop: function() {
+				var $this = this;
+				if ($this.config.dynamic) {
+					clearInterval($this.interval);
+					$this.interval = null;
+				}
+				return this;
+			},
+			destroy: function() {
+				this.stop();
+				if(this.highcharts != null) {
+					this.highcharts.destroy();
+					this.highcharts = null;
+				}
+				for ( var i = 0; i < this.allAjax.length; i++) {
+					this.allAjax[i].abort();
+				}
+				this.allAjax = [];
+				return this;
+			},
+			reStart: function(setColor) {
+				this.stop();
+				this.destroy();
+				this.start(setColor);
+				return this;
+			},
+			reDraw: function() {
+				this.highcharts.redraw();
+			},
+			reFlow: function() {
+				this.highcharts.reflow();
+			},
+			update: function() {
+				var $this = this;
+				if($this.config.dynamic) {
+					$this.getCurrent();
+				}
+			},
+			addSeries: function(metric) {
+				var $this = this;
+				$this.config.metrics.push(metric);
+				$this.reStart();
+				return this;
+			},
+			delSeries: function(metric) {
+				var $this = this;
+				var index = $this.searchMetric(metric);
+				if(index > -1) {
+					$this.delMetric(index);
+				}
+				$this.highcharts.get($this.parseId(metric.id, 'y')).remove();
+				return this;
+			},
+			hideSeries: function(metric) {
+				this.highcharts.get(this.parseId(metric.id, 's')).hide();
+				this.highcharts.get(this.parseId(metric.id, 'y')).setTitle({
+					text: null
+				});
+				return this;
+			},
+			showSeries: function(metric) {
+				var $this = this;
+				$this.highcharts.get($this.parseId(metric.id, 's')).show();
+				metric = $this.config.metrics[$this.searchMetric(metric)];
+				$this.highcharts.get($this.parseId(metric.id, 'y')).setTitle({
+					text: metric.displayName
+				});
+				return this;
+			},
+			focusSeries: function(metric) {
+				this.highcharts.get(this.parseId(metric.id, 's')).update({
+					lineWidth: 4,
+					selected: true,
+					marker: {
+                        radius: 6,
+                        lineWidth: 2
+                    }
+				});
+				return this;
+			},
+			blurSeries: function(metric) {
+				this.highcharts.get(this.parseId(metric.id, 's')).update({
+					lineWidth: 2,
+					selected: false,
+					marker: {
+                        radius: 4,
+                        lineWidth: 1
+                    }
+				});
+				return this;
+			},
+			getColor: function(id) {
+				var se = this.highcharts.get(this.parseId(id, 's'));
+				if( se != null && se.data.length > 0) {
+					return this.highcharts.get(this.parseId(id, 's')).data[0].series.color;
+				}
+			},
+			delMetric: function(index) {
+				this.config.metrics.splice(index, 1);
+			},
+			searchMetric: function(metric) {
+				var $this = this;
+				for ( var m=0; m < $this.config.metrics.length; m++) {
+					if($this.config.metrics[m].id == metric.id) {
+						return parseInt(m);
+					}
+				}
+				return -1;
+			},
+			parseId: function(id, type) {
+				switch (type) {
+				case 'y':
+					id += '-yAxis';
+					break;
+				case 's': 
+					id += '-series';
+					break;
+				default:
+					break;
+				}
+				return id;
+			},
+			parseMetric: function(metric) {
+				var rs = [];
+				for ( var m=0; m < metric.length; m++) {
+					rs.push(metric[m].id);
+				}
+				return rs;
+			},
+			parseUrl: function(url, placed) {
+				return url.replace(/:id/, placed);
+			},
+			getHistory : function(metric, index) {
+				(function($this, metric, index) {
+					var type = $this.config.type;
+					var param = $this.config.dynamic ? $this.config.param : metric.param || $this.config.param;
+					var aj = $.ajax({
+						type: 'GET',
+						dataType: 'json',
+						url: $this.parseUrl($this.config.url, metric.id) + '?' + param + '&random=' + Math.random(),
+						headers: {
+							'ContentType': Util.getCookie('content-type'),
+							'Authorization': Util.getCookie('authorization')
+						},
+						success: function(data) {
+//							data = $this.parseData(data);
+							if(type=='line') {
+								var se = {
+									name: metric.displayName + '(' + metric.unit + ')',
+									data: data,
+									type: metric.type ? metric.type.name : 'line',
+									id: $this.parseId(metric.id, 's'),
+									realId: metric.id
+								};
+								if($this.config.multiY)
+									se['yAxis'] = index;
+								$this.option.series.push(se);
+								if ($this.highcharts == null || $this.highcharts.series.length == 0) {
+									$this.highcharts = new Highcharts.Chart($this.option);
+								} else {
+									$this.highcharts.addSeries(se);
+								}
+								$this.setColor();
+								if($this.config.scope)
+									$this.config.scope.$apply();
+							}
+							if($this.config.metrics.length == $this.option.series.length) {
+								$this.transformData();
+								if($this.config.scope)
+									$this.config.scope.$apply();
+								if ($this.config.dynamic) {
+									$this.interval = setInterval(function() {
+										$this.update();
+									}, $this.config.rate);
+								} 
+							}
+						}
+					});
+					$this.allAjax.push(aj);
+				})(this, metric, index);
+			},
+			getCurrent: function() {
+				var $this = this;
+				if($('#'+$this.config.domId).length > 0) {
+					var aj = $.ajax({
+						type: 'POST',
+						dataType: 'json',
+						url: $this.config.updateUrl,
+						data: '{"metrics": [' + $this.parseMetric($this.config.metrics) + ']}',
+						headers: {
+							'ContentType': Util.getCookie('content-type'),
+							'Authorization': Util.getCookie('authorization')
+						},
+						success: function(data) {
+							var rs = $this.datas;
+							for ( var d=0; d < data.length; d++) {
+								var value = data[d].values;
+//								value[0] = value[0] * 1000;
+								if(value.length > 0) {
+									if($this.highcharts.get($this.parseId(data[d].id, 's'))) {
+										var series  = $this.highcharts.get($this.parseId(data[d].id, 's'));
+										series.addPoint(value, true, series.data.length > $this.config.pointLength);
+										if(series.data.length == 1) {
+											$this.setColor();
+											if($this.config.scope)
+												$this.config.scope.$apply();
+										}
+										var flag = false;
+										var tmp = {
+												id: data[d].id,
+												value: data[d].values[1]
+										};
+										for ( var k=0; k < rs.length; k++) {
+											if(parseInt(rs[k].time/1000) == parseInt(data[d].values[0]/1000)) {
+												rs[k].values.push(tmp);
+												flag = true;
+												break;
+											}
+										}
+										if(!flag) {
+											rs.unshift({
+												time: data[d].values[0],
+												values: [tmp]
+											});
+											rs.pop();
+										}
+									}
+								}
+							}
+							if($this.config.scope)
+								$this.config.scope.$apply();
+						},
+						error: function(e) {
+							$this.stop();
+						}
+					});
+					$this.allAjax.push(aj);
+				} else {
+					$this.stop();
+				}
+			},
+			transformData: function() {
+				var rs = [];
+				var series = this.option.series;
+				for ( var i=0; i < series.length; i++) {
+					for ( var j=0; j < series[i].data.length; j++) {
+						var flag = false;
+						var tmp = {
+							id: series[i].realId,
+							value: series[i].data[j][1]
+						};
+						for ( var k=0; k < rs.length; k++) {
+							if(parseInt(rs[k].time/1000) == parseInt(series[i].data[j][0]/1000)) {
+								rs[k].values.push(tmp);
+								flag = true;
+								break;
+							}
+						}
+						if(!flag) {
+							rs.unshift({
+								time: series[i].data[j][0],
+								values: [tmp]
+							});
+						}
+					}
+				}
+				rs.sort(function(x, y) {
+					return y.time - x.time;
+				});
+				this.datas = rs;
+			},
+			parseData: function(data) {
+				for ( var i=0; i < data.length; i++) {
+					data[i][0] = data[i][0] * 1000;
+				}
+				return data;
+			},
+			updateConfig: function(cfg) {
+				$.extend(this.config, cfg);
+				return this;
+			},
+			setYAxis: function() {
+				var $this = this;
+				switch ($this.config.type) {
+				case 'line':
+					var yAxis = [];
+					if($this.config.multiY) {
+						for ( var m=0; m < $this.config.metrics.length; m++) {
+							var metric = $this.config.metrics[m];
+							if($.isPlainObject(metric)) {
+								yAxis.push({
+									minRange : 0.01,
+									title : {
+										text : metric.displayName
+									},
+									opposite: m > 0,
+									id: $this.parseId(metric.id, 'y')
+								});
+							}
+						}
+					} else {
+						yAxis = {
+								minRange : 0.01,
+								title : {
+									text : null
+								}
+							};
+					}
+					$this.option.yAxis = yAxis;
+					break;
+				default:
+					break;
+				}
+			},
+			getOption : function(type) {
+				switch (type) {
+				case 'line':
+					return {
+						chart : {
+							type : 'spline',
+							zoomType: 'xy'
+//							animation: Highcharts.svg // don't animate in old IE
+							//marginRight: 10
+						},
+						title : {
+							text : null
+						},
+						plotOptions: {
+			                series: {
+			                    marker: {
+			                        radius: 4,
+			                        lineWidth: 1,
+			                        fillColor: '#FFFFFF',
+			                        lineColor: null,
+			                        symbol: 'circle'
+			                    }
+			                }
+			            },
+						xAxis : {
+							type : 'datetime',
+							tickPixelInterval : 150,
+							dateTimeLabelFormats : {
+								millisecond : '%H:%M:%S', // %H:%M:%S.%L
+								second : '%H:%M:%S',
+								minute : '%H:%M',
+								hour : '%H:%M',
+								day : '%e. %b',
+								week : '%e. %b',
+								month : '%b \'%y',
+								year : '%Y'
+							}
+						},
+						yAxis : [{
+							minRange : 0.01,
+							title : {
+								text : null
+							}
+						}],
+						tooltip : {
+							formatter : function() {
+								var name = this.series.name;
+								var unit = name.substr(name.lastIndexOf('(') + 1, name.lastIndexOf(')') - name.lastIndexOf('(') - 1);
+								return '<b>'
+										+ name
+										+ '</b><br/>'
+										+ Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x)
+										+ '<br/>'
+										+ Highcharts.numberFormat(this.y, 2, '.', ',')
+										+ ' '
+										+ unit;
+							}
+						},
+						series : []
+					};
+					break;
+				}
+			}
+		};
+		if (!window.HQuery) {
+			window['HQuery'] = HQuery;
+		}
+	})(jquery, highcharts);
+});

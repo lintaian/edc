@@ -1,0 +1,3 @@
+function Knowledge($scope,$rootScope) {
+	$rootScope.navigation = 'knowledge';
+}

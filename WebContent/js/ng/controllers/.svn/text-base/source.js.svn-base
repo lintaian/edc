@@ -1,0 +1,28 @@
+function Source($scope,$rootScope,Resource) {
+	$rootScope.navigation = 'source';
+	$scope.service = {};
+	$scope.collect = {};
+	$scope.collect.disabled = -1;
+	$scope.store = {};
+	$scope.store.disabled = -1;
+	Resource.query(function(data){
+		//TODO:暂时将状态默认为开通
+		data[0]['disabled'] = 0;
+		data[1]['disabled'] = 0;
+		var width = Math.floor(data[0]['cur_connections']/data[0]['max_connections']*100)+'%';
+		data[0].style1 = {width:width};
+		width = Math.floor(data[0]['cur_metrics']/data[0]['max_metrics']*100)+'%';
+		data[0].style2 = {width:width};
+		$scope.collect = data[0];
+		data[1].style = {width:Math.floor(data[1]['cur_strean_num']/data[1]['max_stream_num']*100)+'%'};
+		$scope.store = data[1];
+		$scope.publish = data[2];
+		$scope.develop = data[3];
+	});
+	
+	$scope.service.open = function(){
+		$scope.dialog = {
+			show: true
+		};
+	};
+}

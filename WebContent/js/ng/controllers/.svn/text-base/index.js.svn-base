@@ -1,0 +1,51 @@
+function Index($scope,$rootScope) {
+	$rootScope.navigation = 'index';
+	$rootScope.test = function() {
+		var marker = [];
+		var content = "<div>" +
+              "<h3>6号厂DCS</h3>" +
+              "<p>来源IP：192.168.1.26<p>" +
+              "<p>类型：Unimatic Historian</p>" +
+              "<pre>采集点位：1700  储存点位：30</pre>" +
+              "<p>状态：通讯异常</p>" +
+          "</div>";
+		for(var i = 0; i < 1; i++) {
+			marker.push({
+				lng: 116.403839,
+				lat: 39.915169,
+				content: Util.mapConetent({
+					name: '6号厂DCS',
+					ip_addr: '192.168.1.26',
+					type: 1,
+					collection_sum: 1700,
+					status: Math.random() > 0.5 ? 1 : 0
+				}),
+				relId: 'marker-' + i,
+				status: Math.random() > 0.5 ? 1 : 0
+			});
+		}
+		$('#map-places-finder').map({
+			markers: marker,
+			markerDraggable: true,
+			center: { 
+				lng: 116.404,
+				lat: 39.915
+			},
+			zoom: 15,
+			scope: $scope
+//			markerZoom: false
+		});
+	};
+	$scope.getPosition = function() {
+		var position = $('#map-places-finder').markerPosition(0);
+		$('#map-places-finder').markerAddr(0, function(addr) {
+			console.log(addr);
+		});
+		console.log(position);
+	};
+	$scope.testCookie = function() {
+		Util.addCookie("test_cookie", "ncheuhmivcfv");
+		console.log(Util.getCookie("test_cookie"));
+		console.log(Util.getCookie("content-type"));
+	};
+}

@@ -1,0 +1,185 @@
+define(['jquery'], function($) {
+	var Map = function(config) {
+		$.extend(this.config, config);
+		this.init();
+	};
+	Map.prototype = {
+		constructor : Map,
+		config : {
+			id: '',
+			center: {
+				lng: 105,
+				lat: 37
+			},
+			zoom: 4,
+			markers: [],
+			markerDraggable: false,
+			markerZoom: true,
+			markerConetent: true,
+			scope: null
+		},
+		markers: [],
+		map: null,
+		currentViewPort: null,
+		gc: null,
+		init: function() {
+			var $this = this;
+			$this.markers = [];
+			var map = new BMap.Map($this.config.id);
+			map.centerAndZoom(new BMap.Point($this.config.center.lng, $this.config.center.lat), $this.config.zoom);
+			map.addControl(new BMap.NavigationControl());               // 添加平移缩放控件
+			map.addControl(new BMap.ScaleControl());                    // 添加比例尺控件
+			map.addControl(new BMap.OverviewMapControl());              //添加缩略地图控件
+			map.enableScrollWheelZoom();                            //启用滚轮放大缩小
+//			map.addControl(new BMap.MapTypeControl());          //添加地图类型控件
+			map.addEventListener('dragstart', function() {
+				$this.currentViewPort = this.getViewport();
+			});
+			map.addEventListener('dragend', function(e) {
+				var bs = this.getBounds();   //获取可视区域
+				var bssw = bs.getSouthWest();   //可视区域左下角
+				var bsne = bs.getNorthEast();
+				if(bssw.lng < -196 || bssw.lat < -81 || bsne.lng > 206 || bsne.lat > 85) {
+					this.setViewport($this.currentViewPort);
+				}
+			});
+			$this.map = map;
+			$('body').find('ul .focus').removeClass('focus');
+			for ( var i = 0; i < $this.config.markers.length; i++) {
+				var marker = $this.config.markers[i];
+				if($.isNumeric(marker.lng) && $.isNumeric(marker.lat)) {
+					$this.addMaker($this.config.markers[i], i);
+				}
+			}
+			$this.gc = new BMap.Geocoder(); 
+		},
+		addMaker: function(marker, index) {
+			var $this = this;
+			var pt = new BMap.Point(marker.lng, marker.lat);
+			var iconSmall = marker.status == 2 ? 'images/marker-green1.png' : 'images/marker-red1.png';
+			var iconBig = marker.status == 2 ? 'images/marker-green2.png' : 'images/marker-red2.png';
+			var myIconSmall = new BMap.Icon(iconSmall, new BMap.Size(25,38));
+			var myIconBig = new BMap.Icon(iconBig, new BMap.Size(25,38));
+			var offsetSmall = new BMap.Size(5, -10);
+			var offsetBig = new BMap.Size(0, -23);
+			var marker2 = new BMap.Marker(pt,{icon:myIconSmall, offset: offsetSmall});  // 创建标注
+			$this.map.addOverlay(marker2);              // 将标注添加到地图中
+			if($this.config.markerDraggable) {
+				marker2.enableDragging();
+				marker2.addEventListener('dragend', function() {
+					var position = this.getPosition();
+					$this.gc.getLocation(position, function(rs){
+				        var addComp = rs.addressComponents;
+				        var addr = addComp.province + " " + addComp.city + " " + addComp.district + " " 
+				        + addComp.street + " " + addComp.streetNumber;
+				        var scope = $this.config.scope;
+				        scope.baiduMarkersPosition = scope.baiduMarkersPosition ? scope.baiduMarkersPosition : {};
+				        scope.baiduMarkersPosition[marker.relId] = {
+				        	lng: position.lng,
+				        	lat: position.lat,
+				        	addr: addr
+				        };
+				        scope.$apply();
+				    });    
+				});
+			}
+			if($this.config.markerZoom) {
+				marker2.addEventListener("mouseover", function() {
+					this.setIcon(myIconBig);
+					this.setOffset(offsetBig);
+					this.setTop(true);
+				});
+				marker2.addEventListener("mouseout", function() {
+					if(!infoWindow.isOpen()) {
+						this.setIcon(myIconSmall);
+						this.setOffset(offsetSmall);
+						this.setTop(false);
+					}
+				});
+				$('body').on('mouseenter', '#' + marker.relId, function() {
+					marker2.setIcon(myIconBig);
+					marker2.setOffset(offsetBig);
+					marker2.setTop(true);
+				});
+				$('body').on('mouseleave', '#' + marker.relId, function() {
+					if(!infoWindow.isOpen()) {
+						marker2.setIcon(myIconSmall);
+						marker2.setOffset(offsetSmall);
+						marker2.setTop(false);
+					}
+				});
+			}
+			if($this.config.markerConetent) {
+				var infoWindow = new BMap.InfoWindow(marker.content, {
+					enableMessage: false,
+					offset: new BMap.Size(5, -17)
+				});
+				marker2.addEventListener("click", function() {
+					this.openInfoWindow(infoWindow);
+					infoWindow.redraw();
+				});
+				infoWindow.addEventListener("close", function() {
+					$('#' + marker.relId).removeClass('focus');
+					marker2.setIcon(myIconSmall);
+					marker2.setOffset(offsetSmall);
+					marker2.setTop(false);
+				});
+				$('body').on('click', '#' + marker.relId, function() {
+					$('#' + marker.relId).addClass('focus');
+					marker2.openInfoWindow(infoWindow);
+				});
+			}
+			$this.markers.push(marker2);
+		},
+		getPosition: function(index) {
+			var $this = this;
+			var position = $this.markers[index].getPosition();
+			return {
+				lng: position.lng,
+				lat: position.lat
+			};
+		},
+		getAddr: function(index, callback) {
+			var $this = this;
+			var position = $this.markers[index].getPosition();
+			$this.gc.getLocation(position, function(rs){
+		        var addComp = rs.addressComponents;
+		        var addr = addComp.province + " " + addComp.city + " " + addComp.district + " " 
+		        + addComp.street + " " + addComp.streetNumber;
+		        callback(addr);
+		    });       
+		}
+	};
+
+
+	var old = $.fn.map;
+	$.fn.map = function(config) {
+		return this.each(function() {
+			var $this = $(this);
+			config.id = $this.attr('id');
+			var map = new Map(config);
+			$this.data('map', map);
+		});
+	};
+	$.fn.map.Constructor = Map;
+	$.fn.map.noConflict = function() {
+		$.fn.map = old;
+		return this;
+	};
+	$.fn.markerPosition = function(index) {
+		var $this = $(this);
+		if($this.data('map')) {
+			return $this.data('map').getPosition(index);
+		} else {
+			return null;
+		}
+	};
+	$.fn.markerAddr = function(index, callback) {
+		var $this = $(this);
+		if($this.data('map')) {
+			return $this.data('map').getAddr(index, callback);
+		} else {
+			return null;
+		}
+	};
+});

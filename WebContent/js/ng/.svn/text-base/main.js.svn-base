@@ -1,0 +1,59 @@
+/*global require*/
+'use strict';
+
+require.config({
+	paths: {
+		jquery: '../lib/jquery',
+		highcharts: '../lib/highcharts',
+		angular: '../lib/angular',
+		angularResource: '../lib/angular-resource',
+		angularRoute: '../lib/angular-route',
+		app: 'modules/app',
+		collect:'controllers/source.collect',
+		collectDetail:'controllers/source.collect.detail',
+		filter: 'filters/filters',
+		appCtrl: 'controllers/app',
+		index: 'controllers/index',
+		source: 'controllers/source',
+		data: 'controllers/data',
+		knowledge: 'controllers/knowledge',
+		model: 'controllers/model',
+		store:'controllers/source.store',
+		storeDetail: 'controllers/source.store.detail',
+		account_settings : 'controllers/account.settings',
+		log : 'controllers/log',
+		resource: 'services/resource',
+		hquery: '../plugin/hquery',
+		util: '../plugin/util',
+		datetimepicker: 'directives/datetime-picker',
+		moment: '../lib/moment.min',
+		mydirectives : 'directives/directives',
+		dialog: 'directives/dialog',
+		map: '../plugin/map',
+		loading: 'directives/loading',
+		scrollLoading: 'directives/scroll-loading'
+	},
+	shim: {
+		angular: {
+			exports: 'angular'
+		},
+		angularResource: {deps: ['angular']},
+		angularRoute: {deps: ['angular']},
+		datePicker: {deps: ['angular','moment']},
+		datetimepicker: {deps: ['angular','moment', 'jquery']},
+		mydirectives : {deps:['angular']},
+		hquery: {deps: ['jquery']},
+		dialog: {deps: ['jquery', 'angular']},
+		map: {deps: ['jquery']},
+		loading: {deps: ['angular']},
+		scrollLoading: {deps: ['angular', 'jquery']}
+	}
+});
+
+require(['angular', 'angularResource', 'angularRoute', 'app',  'index', 'source',
+         'filter', 'data', 'appCtrl', 'knowledge', 'model', 'collect','collectDetail',
+         'resource', 'store', 'storeDetail', 'jquery', 'hquery', 'util', 
+         'datetimepicker', 'dialog', 'account_settings','mydirectives', 
+          'map', 'loading', 'log', 'scrollLoading'], function (angular) {
+	angular.bootstrap(document, ['myapp']);
+});

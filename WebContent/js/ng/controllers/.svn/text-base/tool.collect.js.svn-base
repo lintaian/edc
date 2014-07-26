@@ -1,0 +1,224 @@
+function Index($scope, $rootScope, Source, $timeout){
+	$scope.showDropdown = false;
+	$scope.showDropdown2 = false;
+	$scope.showDriver = false;
+	$scope.showConnect = false;
+	$scope.add = false;
+	$scope.Math = window.Math;
+	$scope.queryParams = {
+		page: 1,
+		per_page: 15
+	};
+	$scope.source = {};
+	
+	function fetchSources(page) {
+		if (page)
+			$scope.queryParams.page = page;
+		$scope.sources = Source.get($scope.queryParams,function(data){
+			$scope.queryParams.page = data['current'];
+			$scope.queryParams.per_page = data['limit'];
+			$scope.count = data['count'];
+		});
+	}
+	fetchSources();
+	
+	$scope.show_dropdown = function(){
+		$scope.showDropdown = $scope.showDropdown ? false : true;
+	};
+	$scope.show_dropdown2 = function(){
+		$scope.showDropdown2 = $scope.showDropdown2 ? false : true;
+	};
+	$scope.show_driver = function(){
+		$scope.showDriver = $scope.showDriver ? false : true;
+	};
+	$scope.show_connect = function(){
+		$scope.showConnect = $scope.showConnect ? false : true;
+	};
+	
+	$scope.search = function(type,params){
+		if(type == 1){
+			if(params.keyCode == 13){
+				$scope.queryParams.name = $scope.queryParams.name == '' ? null : $scope.queryParams.name;
+				fetchSources(1);
+			}
+		}else{
+			if(type == 2){
+				$scope.showDropdown = false;
+				$scope.queryParams.type = params;
+			}else if(type == 3){
+				$scope.showDropdown2 = false;
+				$scope.queryParams.status = params;
+			}
+			fetchSources(1);
+		}
+	};
+	
+	$scope.dialog={};
+	$scope.addShow = function(){
+		$scope.source = {};
+		$scope.editSource = false;
+		$scope.dialog.addOne = {
+			show: true,
+			title: '添加数据源'
+		};
+	};
+	
+	$scope.next = function(type){
+		$scope.error={};
+		$scope.baiduMarkersPosition={};
+		$scope.source.type=type;
+		$scope.editSource = false;
+		$scope.dialog.addOne = {
+			show: false
+		};
+		if(type == 2){
+			$scope.source.driver = 2;
+		}else{
+			$scope.source.driver = 1;
+		}
+		$scope.dialog.addTwo = {
+			show: true,
+			title: '添加数据源'
+		};
+		$scope.showMap();
+		$('#name').removeClass('error');
+		$('#interval').removeClass('error');
+	};
+	
+	$scope.save = function(){
+		$scope.error = {};
+		if($scope.source.id != null){
+			var source = $scope.source.lng!=null;
+			var bmap = $scope.baiduMarkersPosition.marker!= null;
+			if((!source && bmap) || (source && bmap)){
+				$scope.source.lng = $scope.baiduMarkersPosition.marker.lng;
+				$scope.source.lat = $scope.baiduMarkersPosition.marker.lat;
+			}
+			Source.updateAll({"id":$scope.source.id},$scope.source,function(result){
+				$scope.add=false;
+				$scope.editResource = false;
+				$scope.sources.content[$scope.source.index] = $scope.source;
+				$scope.source = {};
+				$scope.dialog.addTwo = {
+						show:false
+				};
+				$scope.baiduMarkersPosition={};
+			},function(error){
+				if(error.status == 403){
+					$scope.dialog.addTwo = {
+							show:false
+					};
+					$rootScope.alert = {
+							show: true,
+							text: '数据源名称【'+$scope.name+'】重复'
+						};
+				}
+			});
+		}else{
+			if($scope.baiduMarkersPosition.marker!=null){
+				$scope.source.lng = $scope.baiduMarkersPosition.marker.lng;
+				$scope.source.lat = $scope.baiduMarkersPosition.marker.lat;
+			}
+			Source.save($scope.source,function(result){
+				$scope.add=false;
+				fetchSources($scope.queryParams.page);
+				$scope.source = {};
+				$scope.dialog.addTwo = {
+						show:false
+				};
+				$scope.baiduMarkersPosition={};
+			},function(error){
+				if(error.status == 403){
+					$scope.dialog.addTwo = {
+							show:false
+					};
+					$rootScope.alert = {
+							show: true,
+							text: '数据源名称【'+$scope.name+'】重复'
+						};
+				}
+			});
+		}
+	};
+	
+	$scope.select_driver = function(type){
+		$scope.source.driver = type;
+		$scope.showDriver = false;
+	};
+	$scope.select_simulation = function(type){
+		$scope.source.communication = type;
+		$scope.showConnect = false;
+		$scope.source.sim = null;
+	};
+	
+	$scope.edit = function(index,source){
+		$scope.error={};
+		$scope.source.index = index;
+		$scope.editSource = true;
+		$scope.source = source;
+		$scope.dialog.addTwo = {
+			show: true,
+			title: '编辑'+$scope.source.name+'数据源'
+		};
+		$scope.showMap();
+		if($scope.source.lng!=null){
+			$timeout(function() {
+				$('#show_map').markerAddr(0, function(addr) {
+					$scope.baiduMarkersPosition = {
+						marker: {
+							addr: addr,
+							lng: $scope.source.lng,
+							lat: $scope.source.lat
+						}	
+					};
+					$scope.$apply();
+				});
+			});
+		}else{
+			$scope.baiduMarkersPosition = {};
+		}
+	};
+	
+	$scope.del = function(id, name){
+		$rootScope.confirm = {
+			show : true,
+			title : '删除',
+			text : '您确定要删除数据源【'+name+'】吗？',
+			yes : function() {
+				Source.remove({
+					id : id
+				}, function(data) {
+					fetchSources($scope.queryParams.page);
+				});
+			}
+		};
+	};
+	
+	$scope.showMap = function(){
+		var marker = [];
+		var lng = $scope.source.lng == null ? 104.073589 : $scope.source.lng;
+		var lat = $scope.source.lat == null ? 30.661328 : $scope.source.lat;
+		marker.push({
+			lng: lng,
+			lat: lat,
+			status: 2,
+			relId: 'marker' 
+		});
+		$timeout(function() {
+			$('#show_map').map({
+				markers: marker,
+				center: {
+					lng: lng,
+					lat: lat
+				},
+				zoom: 5,
+				markerDraggable: true,
+				scope:$scope
+			});
+		});
+	};
+
+	$scope.onPageChanged = function(page) {
+		fetchSources(page);
+	};
+}

@@ -1,0 +1,31 @@
+/*global define*/
+'use strict';
+
+define(['angular'], function (angular) {
+	return angular.module('myapp', ['myFilters', 'resource', 'ngRoute', 'datetimepicker', 'dialog',
+	                                'myDirectives', 'loading', 'scrollLoading']).
+	  config(['$routeProvider', '$httpProvider', function($routeProvider, $httpProvider) {
+		  $routeProvider.
+		      when('/', {templateUrl: 'tpl/index.html', controller: Index}).
+		      when('/source', {templateUrl: 'tpl/source/index.html', controller: Source}).
+		      when('/collect/:type', {templateUrl: 'tpl/source/collect.html', controller: Collect}).
+		      when('/collect_detail/:id/:type', {templateUrl: 'tpl/source/collect_detail.html', controller: CollectDetail}).
+		      when('/collect_detail_p/:id/:type', {templateUrl: 'tpl/source/collect_detail_PLC.html', controller: CollectDetail}).
+		      when('/store', {templateUrl: 'tpl/source/store.html', controller: Store}).
+		      when('/store_detail/:id', {templateUrl: 'tpl/source/store_detail.html', controller: StoreDetail}).
+		      when('/log/:type',{templateUrl:'tpl/source/log.html',controller:Log}).
+		      when('/log/:type/:source_id/:source_name',{templateUrl:'tpl/source/log.html',controller:Log}).
+		      when('/data', {templateUrl: 'tpl/data/index.html', controller: Data}).
+		      when('/knowledge', {templateUrl: 'tpl/knowledge/index.html', controller: Knowledge}).
+		      when('/model', {templateUrl: 'tpl/model/index.html', controller: Model}).
+		      when('/account_settings',{templateUrl:'tpl/account/settings.html',controller:AccountSettings}).
+		      otherwise({redirectTo: '/'});
+		  $httpProvider.defaults.headers.common.Authorization= Util.getCookie('authorization');
+		  $httpProvider.defaults.headers.common['Content-Type'] = Util.getCookie('content-type');
+		  $httpProvider.defaults.headers.post['Content-Type'] = Util.getCookie('content-type');
+		  $httpProvider.defaults.headers.put['Content-Type'] = Util.getCookie('content-type');
+		  $httpProvider.defaults.headers.patch = {
+			  'Content-Type' : Util.getCookie('content-type')
+		  };
+		}]);
+});

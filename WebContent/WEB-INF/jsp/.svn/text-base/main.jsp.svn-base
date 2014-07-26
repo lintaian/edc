@@ -1,0 +1,102 @@
+<%@page import="com.c11.model.User"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%><!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id="ng-app">
+  <head>
+    <base href="<%=basePath%>">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>C_11</title>
+    <link rel="stylesheet" href="css/datetimepicker.css" />
+    <link rel="stylesheet" href="css/reset.css"/>
+    <link rel="stylesheet" href="css/unimatic-style.css"/>
+    <link rel="stylesheet" href="css/unimatic-media.css"/>
+    <link rel="stylesheet" href="css/layer.css"/>
+    <!--[if lte IE 9]>
+      <script src="js/lib/html5shiv.js"></script>
+      <script src="js/lib/json3.js"></script>
+      <script src="js/lib/ie-fix.js"></script>
+    <![endif]-->
+  </head>
+  <body data-ng-controller="appCtrl">
+  <div class="warpper clearfix">
+    <!--Header-part-->
+    <div class="h_top">
+    <div class="fixed_top">
+    <div id="header">
+      <h1><a href="javascript:void(0)" data-ng-click="test()">unimatic.io</a></h1>
+      <ul class="headerNav">
+        <li><a href="main#/" data-ng-class="navigation=='index' | true_or_false:'selcet':''">首页</a></li>
+        <li><a href="main#/source" data-ng-class="navigation=='source' | true_or_false:'selcet':''">资源</a></li>
+        <li><a href="main#/data" data-ng-class="navigation=='data' | true_or_false:'selcet':''">数据</a></li>
+        <li><a href="main#/knowledge" data-ng-class="navigation=='knowledge' | true_or_false:'selcet':''">知识</a></li>
+        <li><a href="main#/model" data-ng-class="navigation=='model' | true_or_false:'selcet':''">模型</a></li>
+      </ul>
+      <div class="account">
+       <div class="userBar">
+        <ul>
+          <li class="admin" data-ng-click="userShow=!userShow">
+              <a class="arrowDown" href="javascript:void(0)" >
+                 <img src="images/arrow-down.png" alt=""/>
+              </a>
+              <div class="userDropdown ng-hide" data-ng-show="userShow">
+                  <span class="arrowShow">&nbsp;</span>
+                  <a href="main#/account_settings">${user.getName()}</a><hr>
+                  <a href="javascript:void(0)">用户和权限</a><hr>
+                  <a href="javascript:void(0)">退出</a>
+              </div>
+          </li>
+          <li><a class="msg newMsg" href="javascript:void(0)"></a></li>
+          </ul>
+       </div>
+       <div class="release"><a href="javascript:void(0)">发布</a></div>
+      </div>  
+    </div>
+    </div>
+   </div>
+    <!--Header-part-end-->
+	<div class="main2" data-ng-class="openSidebar | true_or_false:'main1':'main2'">
+      <!--sidebar-menu-->
+		<div id="sidebar">
+    		<div class="systemTools">
+          	<h2><span class="text">系统</span>工具</h2>
+            <ul>
+               <li>
+                  <a href="resourceApp" target="_blank">  
+                    <span class="icon"><img src="images/icon-Config.png" alt=""></span>
+                    <span class="text">采集配置</span>
+                  </a>
+                </li>
+               <li>
+                  <a href="javascript:void(0)">  
+                    <span class="icon"><img src="images/icon-Modle.png" alt=""></span>
+                    <span class="text">模型管理</span>
+                  </a>
+                </li>
+               <li>
+                  <a href="javascript:void(0)">  
+                    <span class="icon"><img src="images/icon-HMI.png" alt=""></span>
+                    <span class="text">HMI设计</span>
+                  </a>
+                </li>
+           </ul>
+         </div>
+         <div class="systemSet">
+	         <a href="javascript:void(0)"><img src="images/icon-Set.png" alt="系统设置"></a>
+	         <div class="foldArrow">
+	         	 <a href="javascript:void(0)" class="fold" data-ng-class="openSidebar | true_or_false:'':'fold'" 
+	              data-ng-click="openSidebar=!openSidebar"></a>
+	         </div> 
+         </div>
+		</div>
+      <!--sidebar-menu-end-->
+      <div data-ng-view></div>
+    </div>
+   </div>
+   <div data-confirm data-ng-model="confirm"></div>
+  <div data-alert data-ng-model="alert"></div>
+  <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=st7KcqFkL46F6RT1WMucDQey"></script>
+  <script data-main="js/ng/main" src="js/lib/require.js"></script>
+  </body>
+</html>

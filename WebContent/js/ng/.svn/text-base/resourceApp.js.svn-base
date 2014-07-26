@@ -1,0 +1,42 @@
+/*global require*/
+'use strict';
+
+require.config({
+	paths: {
+		jquery: '../lib/jquery',
+		angular: '../lib/angular',
+		angularResource: '../lib/angular-resource',
+		angularRoute: '../lib/angular-route',
+		app: 'modules/collectApp',
+		filter: 'filters/filters',
+		resource: 'services/resource',
+		index: 'controllers/tool.collect',
+		detail: 'controllers/tool.collect.detail',
+		angularFileUpload:'../lib/angular-file-upload',
+		mydirectives : 'directives/directives',
+		util : '../plugin/util',
+		dialog: 'directives/dialog',
+		map: '../plugin/map',
+		scrollIntoView: '../plugin/scrollIntoView',
+		loading: 'directives/loading'
+	},
+	shim: {
+		angular: {
+			exports: 'angular'
+		},
+		angularRoute: {deps: ['angular']},
+		angularResource: {deps: ['angular']},
+		angularFileUpload: {deps: ['angular']},
+		mydirectives: {deps: ['angular']},
+		dialog: {deps: ['jquery', 'angular']},
+		map: {deps: ['jquery']},
+		scrollIntoView: {deps: ['jquery']},
+		loading: {deps: ['angular']}
+	}
+});
+
+require(['angular', 'angularResource', 'angularRoute', 'app', 'filter', 'resource', 
+         'index', 'detail', 'angularFileUpload', 'jquery','mydirectives', 'util',
+         'dialog', 'map', 'scrollIntoView', 'loading'], function (angular) {
+	angular.bootstrap(document, ['toolApp']);
+});

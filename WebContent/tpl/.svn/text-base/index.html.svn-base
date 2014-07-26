@@ -1,0 +1,105 @@
+<!--main-container-part-->
+<div id="content">
+  <div class="clearfix" style="height: 425px; width: 100%;">
+    <div class="myApp desktop_1">
+      <ul class="data-stats">
+        <li id="marker-0" data-ng-click="getPosition()">
+          <h3>数据源</h3>
+          <p class="dataMsg">100</p>
+        </li>
+        <li id="marker-1">
+          <h3>点位总数</h3>
+          <p class="dataMsg">74,321</p>
+        </li>
+        <li id="marker-2">
+          <h3>存储点位</h3>
+          <p class="dataMsg">5,908</p>
+        </li>
+        <li id="marker-3">
+          <h3>设备</h3>
+          <p class="dataMsg">2,321</p>
+        </li>
+        <li id="marker-4">
+          <h3>订阅帐户</h3>
+          <p class="dataMsg">8</p>
+        </li>
+      </ul>
+    </div>
+    <div class="myApp desktop_2" data-ng-click="testCookie()">
+      <div class="widget">
+        <div class="widget-header">
+          <h3>设备分布</h3>
+        </div>
+        <!-- /widget-header -->
+        <div class="widget-content clearfix">
+          <div id="map-places-finder" class="myApp" style="width: 60%; height: 334px;">
+            <!--地图最大宽度444px 最大高度334px -->
+          </div>
+          <div class="myApp" style="width: 37%; height: 334px; margin-left: 3%; display: inline;">
+            <p class="total">全部&nbsp;1500</p>
+            <img src="images/pie.jpg" class="imgAuto" alt="Echart/pie" />
+          </div>
+        </div>
+        <!-- /widget-content -->
+      </div>
+      <!-- /widget -->
+    </div>
+    <div class="myApp desktop_3">
+      <div class="widget">
+        <div class="widget-header">
+          <h3>最新动态</h3>
+        </div>
+        <!-- /widget-header -->
+        <div  class="latestNews">
+          <span data-ng-bind="baiduMarkersPosition | json"></span>
+          <ul>
+            <li><a href="javascript:void(0)">Admin创建了新的数据源吉林风场</a></li>
+            <li><a href="javascript:void(0)">宁夏中卫香山上线</a></li>
+            <li><a href="javascript:void(0)">Admin创建了设备模型风机1.5mw</a></li>
+            <li><a href="javascript:void(0)">云南风场断开连接</a></li>
+            <li><a href="javascript:void(0)">Admin创建了新的数据源吉林风场</a></li>
+            <li><a href="javascript:void(0)">沈阳上线</a></li>
+            <li><a href="javascript:void(0)">云南风场上线</a></li>
+            <li><a href="javascript:void(0)">Admin创建了设备模型风机1.8mw</a></li>
+            <li><a href="javascript:void(0)">Admin创建了辽宁风场</a></li>
+            <li><a href="javascript:void(0)">宁夏中卫香山上线</a></li>
+          </ul>
+        </div>
+        <!-- /widget-content -->
+      </div>
+      <!-- /widget -->
+    </div>
+  </div>
+  <div class="clearfix" style="height: 325px; width: 100%;">
+    <div class="myApp desktop_half" style="margin-right: 2%;">
+      <div class="widget">
+        <div class="widget-header">
+          <h3>报警设备数统计</h3>
+        </div>
+        <!-- /widget-header -->
+        <div class="widget-content">
+          <!--图柱图最大宽度554px-->
+          <img src="images/bar.jpg" class="imgAuto" alt="Echart/bar" />
+        </div>
+        <!-- /widget-content -->
+      </div>
+      <!-- /widget -->
+    </div>
+    <div class="myApp desktop_half">
+      <div class="widget">
+        <div class="widget-header">
+          <h3>报警数统计</h3>
+        </div>
+        <!-- /widget-header -->
+        <div class="widget-content">
+          <!--折线图最大宽度554px-->
+          <img src="images/line.jpg" class="imgAuto" alt="Echart/line">
+        </div>
+        <!-- /widget-content -->
+      </div>
+      <!-- /widget -->
+    </div>
+  </div>
+</div>
+<!--main-container-part-end-->
+<!-- Include all compiled plugins (below), or include individual files as needed -->

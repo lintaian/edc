@@ -1,0 +1,43 @@
+/*global define*/
+'use strict';
+
+define(['angular'], function(angular) {
+	return angular.module('resource', ['ngResource']).constant('cfg', {
+		baseUrl: '/api/'
+	}).factory('Metric', ['$resource', 'cfg', function($resource, cfg) {
+			return $resource(cfg.baseUrl + 'metrics/:id',{},{
+				'updateAll' : {method: 'PUT'},
+				'update' : {method: 'PATCH'},
+				'current' : {method: 'POST', url: cfg.baseUrl + 'metrics/current', isArray: true},
+				'history' : {method: 'GET', url: cfg.baseUrl + 'metrics/:id/query', isArray: true},
+				'search' : {method: 'GET', url: cfg.baseUrl + 'metrics/query', isArray: true}
+			});
+		}]).factory('Source', ['$resource', 'cfg', function($resource, cfg) {
+			return $resource(cfg.baseUrl + 'source/:id',{},{
+				'updateAll' : {method: 'PATCH'},
+				'getMetrics' : {method: 'GET', url: cfg.baseUrl + 'source/:id/metrics', isArray: true}
+			});
+		}]).factory('Union', ['$resource', 'cfg', function($resource, cfg) {
+			return $resource(cfg.baseUrl + 'union/:id',{},{
+				'update' : {method: 'PATCH'},
+				'rmMetrics' : {method: 'DELETE', url: cfg.baseUrl + 'union/:id/metrics/:metricIds'}
+			});
+		}]).factory('Resource', ['$resource', 'cfg', function($resource, cfg) {
+			return $resource(cfg.baseUrl + 'resource/:type',{},{
+				'sources' : {method: 'GET', url: cfg.baseUrl + 'resource/:resourceType/source'},
+				'sourcesDetail' : {method: 'GET', url: cfg.baseUrl + 'resource/:type/:sourceId'},
+				'sourcesMetrics' : {method: 'GET', url: cfg.baseUrl + 'resource/:type/:sourceId/metrics',isArray: true},
+				'updateSource': {method: 'PATCH', url: cfg.baseUrl + 'resource/:type/:sourceId'},
+				'updateResource':{method: 'PATCH'}
+			});
+		}]).factory('Message', ['$resource', 'cfg', function($resource, cfg) {
+			return $resource(cfg.baseUrl + 'log',{},{
+				'unRead' : {method: 'GET', url: cfg.baseUrl + 'log/unread', isArray: true}
+			});
+		}]).factory('Account',['$resource', 'cfg',function($resource, cfg){
+			return $resource(cfg.baseUrl + 'user',{},{
+				'updatepwd' : {method:'PATCH',url:cfg.baseUrl+'user/password'},
+				'updateinfo' : {method:'PATCH',url:cfg.baseUrl+'user/info'}
+			});
+		}]);
+});

@@ -1,0 +1,151 @@
+function Collect($scope, $rootScope, Resource, $timeout, $routeParams) {
+	$rootScope.navigation = 'source';
+	$scope.showDropdown = false;
+	$scope.showDropdown2 = false;
+	$scope.queryParams = {};
+	$scope.edit = {};
+	$scope.Math = window.Math;
+	$scope.mapShow = $routeParams.type == 'map' ? true : false;
+	$scope.queryParams = {
+		page : 1,
+		per_page : 14,
+		resourceType : 1
+	};
+
+	function fetchSources(page) {
+		if (page)
+			$scope.queryParams.page = page;
+		$scope.resources = Resource.sources($scope.queryParams, function(data) {
+			$scope.queryParams.page = data['current'];
+			$scope.queryParams.per_page = data['limit'];
+			$scope.count = data['count'];
+			if($scope.mapShow){
+				$scope.toMap();
+			}
+		});
+	}
+	
+	$scope.toMap = function(){
+		$scope.mapShow = true;
+		var marker = [];
+		for(var i = 0; i < $scope.resources.content.length; i++) {
+			marker.push({
+				lng: $scope.resources.content[i]['lng'],
+				lat: $scope.resources.content[i]['lat'],
+				content: Util.mapConetent($scope.resources.content[i]),
+				relId: 'marker-' + i,
+				status: $scope.resources.content[i]['status']
+			});
+		};
+		$timeout(function() {
+			$('#source_map').map({
+				markers: marker,
+				center: {
+					lng: 105,
+					lat: 38
+				},
+				zoom: 5
+			});
+		});
+	};
+
+	fetchSources();
+	Resource.get({
+		type : 1
+	}, function(data) {
+		var collected = data['cur_connections'] / data['max_connections'] * 100;
+		data['collect_style'] = {
+			width : collected + '%'
+		};
+		data['collected'] = collected;
+		var stream = data['cur_metrics'] / data['max_metrics'] * 100;
+		data['stream_style'] = {
+			width : stream + '%'
+		};
+		data['streamed'] = stream;
+		$scope.resource = data;
+	});
+
+	$scope.show_dropdown = function() {
+		$scope.showDropdown = !$scope.showDropdown;
+	};
+	$scope.show_dropdown2 = function() {
+		$scope.showDropdown2 = !$scope.showDropdown2;
+	};
+
+	$scope.search = function(type,params){
+		if(type == 1){
+			if(params.keyCode == 13){
+				$scope.queryParams.name = $scope.queryParams.name == '' ? null : $scope.queryParams.name;
+				fetchSources(1);
+			}
+		}else{
+			if(type == 2){
+				$scope.showDropdown = false;
+				$scope.queryParams.type = params;
+			}else if(type == 3){
+				$scope.showDropdown2 = false;
+				$scope.queryParams.status = params;
+			}
+			fetchSources(1);
+		}
+	};
+
+	$scope.edit.source = function(source, index) {
+		var text = source.disabled == 1 ? '您确定要开通【'+source.name+'】的采集服务吗？' : '您确定要关闭【'+source.name+'】的采集服务吗？';
+		var title = source.disabled == 1 ? '开通服务' : '关闭服务';
+		var disabled = source.disabled == 1 ? 0 : 1;
+		$rootScope.confirm = {
+			show : true,
+			title : title,
+			text : text,
+			yes : function() {
+				Resource.updateSource({
+					sourceId : source.source_id,
+					type : 1
+				}, {
+					disabled : disabled
+				}, function(data) {
+					$scope.resources.content[index].disabled = source.disabled == 1 ? 0 : 1;
+				});
+			}
+		};
+	};
+
+	$scope.edit.resource = function(status) {
+		var text = status == 1 ? '您确定要开通采集服务吗？' : '您确定要关闭采集服务吗？';
+		var title = status == 1 ? '开通服务' : '关闭服务';
+		var disabled = status == 0 ? 1 : 0;
+		$rootScope.confirm = {
+			show : true,
+			title : title,
+			text : text,
+			yes : function() {
+				Resource.updateResource({
+					type : 1
+				}, {
+					disabled : disabled
+				}, function(data) {
+					$scope.resource.disabled = status == 0 ? 1 : 0;
+				});
+			}
+		};
+	};
+
+	$scope.onPageChanged = function(page) {
+		fetchSources(page);
+	};
+	
+	$scope.showTips = function(source){
+		if(source.lat == null || source.lng == null){
+			$rootScope.alert = {
+					show: true,
+					text: '该资源没有详细地址，请先设置'	
+			};
+		}
+	};
+	
+	$scope.stopPro = function(e){
+		e.stopPropagation();
+	};
+}

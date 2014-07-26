@@ -1,0 +1,74 @@
+function CollectDetail($scope, $rootScope, Resource, $routeParams, $location){
+	$scope.showDropdown = false;
+	$rootScope.navigation = 'source';
+	$scope.queryParams = {type:'',name:'',alias:''};
+	$scope.type = $routeParams.type;
+	Resource.sourcesDetail({type:1,sourceId:$routeParams.id},function(data){
+		var cpu_radio = data['cpu_ratio'];
+		if(cpu_radio > 0){
+			data['cpuStyle'] = {width:(cpu_radio*100+'%')};
+		}
+		var memory_ratio = data['memory_ratio'];
+		if(memory_ratio > 0){
+			data['memoryStyle'] = {width:(memory_ratio*100+'%')};
+		}
+		var disk_ratio = data['disk_ratio'];
+		if(disk_ratio > 0){
+			data['diskStyle'] = {width:(disk_ratio*100+'%')};
+		}
+		$scope.resource =  data;
+		$scope.resource.id = $routeParams.id;
+	},function(error){
+		
+	});
+	$scope.metrics = Resource.sourcesMetrics({type:1,sourceId:$routeParams.id});
+	
+	$scope.show_dropdown = function(){
+		$scope.showDropdown = $scope.showDropdown ? false : true;
+	};
+	
+	$scope.search = function(type,params){
+		if(type == 1){
+			if(params.keyCode == 13){
+				$scope.queryParams.name = $scope.queryName;
+			}
+		}else{
+			$scope.showDropdown = false;
+			$scope.queryParams.type = params;
+		}
+	};
+	
+	$scope.search.real = function(m){
+		if($scope.queryParams.name != '' && $scope.queryParams.type == ''){
+			return m.name.indexOf($scope.queryParams.name.toUpperCase()) > -1 ||
+				   m.name.indexOf($scope.queryParams.name) > -1 ||
+				   m.alias.indexOf($scope.queryParams.name.toUpperCase()) > -1 ||
+				   m.alias.indexOf($scope.queryParams.name) > -1;
+		}else if($scope.queryParams.type != '' && $scope.queryParams.name == ''){
+			return m.type == $scope.queryParams.type;
+		}else if($scope.queryParams.type != '' && $scope.queryParams.name != ''){
+			return (m.name.indexOf($scope.queryParams.name.toUpperCase()) > -1 || 
+					m.name.indexOf($scope.queryParams.name) > -1 ||
+					m.alias.indexOf($scope.queryParams.name.toUpperCase()) > -1 ||
+					m.alias.indexOf($scope.queryParams.name) > -1 ) && m.type == $scope.queryParams.type;
+		}else{
+			return true;
+		};
+	};
+	
+	$scope.edit = function(source){
+		var text = source.disabled == 1 ? '您确定要开通【'+source.name+'】的采集服务吗？' : '您确认关闭【'+source.name+'】的采集服务吗？';
+		var title = source.disabled == 1 ? '开通服务' : '关闭服务';
+		var disabled = source.disabled == 1 ? 0 : 1;
+		$rootScope.confirm = {
+			show: true,
+			title: title,
+			text: text,
+			yes:function(){
+				Resource.updateSource({sourceId:source.id,type:1}, {disabled:disabled},function(data){
+					$scope.resource.disabled = source.disabled == 1 ? 0 : 1;
+				});
+			}
+		};
+	};
+}

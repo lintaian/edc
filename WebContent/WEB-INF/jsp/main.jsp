@@ -29,7 +29,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			  姓名:&nbsp;<input type="text" class="input-small width-input" data-ng-model="query.studentName" placeholder="姓名">&nbsp;&nbsp;
 			  考号:&nbsp;<input type="text" class="input-small width-input" data-ng-model="query.examNo" placeholder="考号">
 			</form>
-			<form class="form-inline">
+			<form class="form-inline last">
 	  			批次:&nbsp;<select class="input-small width-select" data-ng-model="batch.value" data-ng-change="batch.change(batch.value)">
 					  <option data-ng-repeat="b in batch.list" data-ng-value="b.id" data-ng-bind="b.name"></option>
 					</select>&nbsp;&nbsp;
@@ -54,7 +54,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 <button class="btn btn-info" data-ng-disabled="subject.getState()!='可以统计'" 
                   data-ng-click="count.action()">统计得分</button>
 			</form>
-	  		<form class="form-inline float-left">
+	  		<form class="form-inline float-left last">
     			 <button class="btn btn-info" style="width: 200px;">设置缺考</button>
 			</form>
 	  	</div>
@@ -75,7 +75,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <input type="radio" name="countType" value="originalAnswer" data-ng-model="query.type"> 原始答案
 				</label>
 	  		</form>
-	  		<form class="form-inline">
+	  		<form class="form-inline last">
 	  			<button class="btn btn-info" data-ng-click="query.action()">查询</button>
 	  			<button class="btn btn-info" >导出表格</button>
 	  		</form>
@@ -86,7 +86,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	  </div>
 	  <div class="row-fluid">
 	    <div class="span2" style="border-right: gray solid 2px;width: 19.52991452991453%">
-	    	<div>
+	    	<div id="classes">
 		    	<div class="form-inline" style="padding: 5px 0;border-bottom: gray solid 1px;text-align: center;">
 		      		<span>选择班级: </span>&nbsp;&nbsp;
 		      		<label class="checkbox">
@@ -95,17 +95,19 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				    </label>
 		    	</div>
 		    	<div style="height: 137px;overflow-y: auto;">
-		    		<ul class="unstyled" style="margin-left: 18px;">
-		    			<li data-ng-repeat="c in classes.list" class="form-inline">
+		    		<ul class="unstyled">
+		    			<li data-ng-repeat="c in classes.list" class="form-inline"
+                          data-ng-class-odd="'info'" data-ng-class-even="'success'" data-ng-class="{last: $last}">
 		    				<label class="checkbox">
     							<input type="checkbox" data-ng-model="c.checked">
    							</label>&nbsp;
-	    					<span data-ng-bind="c.name"></span>
+	    					<span data-ng-bind="c.name"></span> 
+                            (<span data-ng-bind="c.wlType"></span>)
 		    			</li>
 		    		</ul>
 		    	</div>
 	    	</div>
-	    	<div>
+	    	<div id="questions">
 	    		<div class="form-inline" style="padding: 5px 0;border-bottom: gray solid 1px;border-top: gray solid 1px;text-align: center;">
 		      		<span>选择试题: </span>&nbsp;&nbsp;
 		      		<label class="checkbox">
@@ -115,16 +117,23 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		    	</div>
 		    	<div id="question" style="height: 450px;overflow: auto;">
 		    		<ul class="unstyled sidebar">
-		    			<li data-ng-repeat="q in question.list" class="form-inline inline-block" style="white-space:nowrap;">
-		    				<span class="for-icon" data-ng-class="{icon: q.child.length>0, more: !q.open, less: q.open}"
-		    					data-ng-click="q.open = !q.open"></span>
-		    				<i class="icon-wrench"></i>
-		    				<label class="checkbox">
-    							<input type="checkbox" data-ng-model="q.checked">
-   							</label>
-	    					<span data-ng-bind="q.show"></span>
-	    					<ul class="unstyled sidebar2" data-ng-show="q.open">
-	    						<li data-ng-repeat="c in q.child" class="form-inline inline-clock" style="white-space: nowrap;">
+		    			<li data-ng-repeat="q in question.list" class="form-inline inline-block" style="white-space:nowrap;" 
+                            data-ng-class-odd="'info'" data-ng-class-even="'success'" data-ng-class="{last: $last}"
+                            data-ng-mouseenter="q.edit = true" data-ng-mouseleave="q.edit = false">
+                            <span class="edit" data-ng-show="q.edit"></span>
+                            <i class="icon-pencil" data-ng-show="q.edit"></i>
+  		    				<span class="for-icon" data-ng-class="{icon: q.child.length>0, more: !q.open, less: q.open}"
+  		    					data-ng-click="q.open = !q.open"></span>
+  		    				<label class="checkbox">
+      							<input type="checkbox" data-ng-model="q.checked">
+     						</label>
+  	    					<span data-ng-bind="q.show"></span>
+	    					<ul class="unstyled sidebar2" data-ng-show="q.open" data-ng-mouseenter="q.edit=false">
+	    						<li data-ng-repeat="c in q.child" class="form-inline inline-clock" style="white-space: nowrap;"
+                                  data-ng-class-odd="'info'" data-ng-class-even="'success'" data-ng-class="{last: $last}"
+                                  data-ng-mouseenter="c.edit = true" data-ng-mouseleave="c.edit = false">
+                                    <span class="edit" data-ng-show="c.edit"></span>
+        		    				<i class="icon-pencil" data-ng-show="c.edit"></i>
 	    							<label class="checkbox">
 	    								<input type="checkbox" data-ng-model="c.checked">
 	    							</label>

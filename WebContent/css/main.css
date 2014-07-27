@@ -1,12 +1,14 @@
 body{
-	/*background-image: url(../img/bg1.jpg);*/
+	background: #FFF url(../img/bg.jpg) no-repeat 0 0 fixed;
+}
+.bg1 {
+	/* background: #FFF url(../img/bg.jpg) no-repeat 0 0 fixed; */
 }
 
 .ng-hide {
 	display: none;
 }
 .main {
-	margin-top: 10px;
 	padding: 0;
 	min-width: 1024px;
 }
@@ -22,8 +24,12 @@ form .select{
 .middleForm {
 	margin: -10px 0 10px 0;
 }
-.row-fluid .span5, .row-fluid .span4, .row-fluid .span3{
-	margin-bottom: -12px;
+form.last {
+	margin-bottom: 0;
+}
+.row-fluid .span5, .row-fluid .span3, .row-fluid .span1{
+	margin-top: 5px;
+	margin-bottom: 5px;
 }
 .row-fluid .span5 .float-right{
 	float: right;
@@ -65,9 +71,41 @@ ul.sidebar2{
 .content{
 	width: 100%;
 }
-.sidebar ul li{
-	padding: 2px 0;
-}
 .btn{
 	width: 90px;
 }
+ul {
+	margin-bottom: 0px;
+}
+ul li{
+	padding: 1px 0;
+}
+ul li.last{
+	padding-bottom: 0;
+}
+ul li.success{
+	background-color: rgb(233,240,216);
+}
+ul li.info{
+	background-color: rgb(217,237,247);
+}
+#classes ul li {
+	padding-left: 18px;
+}
+#questions ul li {
+	position: relative;
+	cursor: pointer;
+}
+#questions ul li .edit {
+	background-color: rgb(0, 0, 0);
+	opacity: 0.25;
+	filter:alpha(opacity=25);
+	width: 100%;
+	height: 23px;
+	position: absolute;
+}
+.icon-pencil {
+	position: absolute;
+	left: 91%;
+}
+

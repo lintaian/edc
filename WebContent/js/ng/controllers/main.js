@@ -1,13 +1,13 @@
 function Main($scope, $rootScope, BaseData, Question, Count) {
 	$scope.dialog = function() {
 		$scope.dialog = {show: true};
-	}
+	};
 	$scope.loading = function() {
 		$scope.loader = {
 			show: true,
 			text: 'test...'
 		};
-	}
+	};
 	$scope.query = {
 		gradeId: '',
 		examId: '',
@@ -19,7 +19,7 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 		action: function() {
 			
 		}
-	}
+	};
 	$scope.count = {
 		type: false,
 		action: function() {
@@ -28,7 +28,7 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 				
 			});
 		}
-	}
+	};
 	
 	$scope.school = {
 		list: BaseData.getSchools(function(data) {
@@ -50,13 +50,14 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 				}
 			});
 		}
-	}
+	};
 	$scope.grade = {
 		list: null,
 		value: '',
 		change: function(gradeId) {
 			$scope.query.greadeId = gradeId;
 			BaseData.getClasses({id: gradeId}, function(data) {
+				console.log(data);
 				for (var i = 0; i < data.length; i++) {
 					data[i].checked = true;
 				}
@@ -64,7 +65,7 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 				$scope.classes.checkAll = true;
 			});
 		}
-	}
+	};
 	$scope.batch = {
 		list: null,
 		value: '',
@@ -75,7 +76,7 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 				}
 			});
 		}
-	}
+	};
 	$scope.subject = {
 		list: null,
 		value: '',
@@ -128,7 +129,7 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 			}
 			return '';
 		}
-	}
+	};
 	$scope.classes = {
 		list: null,
 		checkAllFn: function(checked) {
@@ -137,7 +138,7 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 				data[i].checked = checked;
 			}
 		}
-	}
+	};
 	$scope.question = {
 		list: null,
 		checkAllFn: function(checked) {
@@ -149,7 +150,7 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 				}
 			 }
 		}
-	}
+	};
 	
 	
 	$(function() {
@@ -163,8 +164,8 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 		if (height < 600) {
 			height = 600;
 		}
-		$('#report').height(height - 137);
-		$('#question').height(height - 339);
+		$('#report').height(height - 122);
+		$('#question').height(height - 324);
 		var width = Util.getWinWidth();
 		if (width < 1024) {
 			width = 1024;

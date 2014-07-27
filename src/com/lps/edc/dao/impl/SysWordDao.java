@@ -13,8 +13,9 @@ public class SysWordDao extends BaseDao implements SysWordDaoIF {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<SimpleDto> getClasses(String gradeId) throws Exception {
-		String hql = "select new com.lps.edc.dto.SimpleDto(a.wordId, a.wordInfo) from SysWord a,"
-				+ "InfSchoolClass b where a.wordId=b.classId and b.gradeId = ?";
+		String hql = "select new com.lps.edc.dto.SimpleDto(a.wordId, a.wordInfo, c.extent, c.wordInfo) from SysWord a,"
+				+ "InfSchoolClass b, SysWord c where a.wordId=b.classId and b.gradeId = ? and b.wlTypeId = c.wordId" +
+				" order by a.id";
 		List<SimpleDto> sysWords = (List<SimpleDto>)getHibernateTemplate().find(hql, gradeId);
 		return sysWords;
 	}

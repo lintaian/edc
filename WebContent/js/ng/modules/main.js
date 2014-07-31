@@ -2,7 +2,7 @@
 'use strict';
 
 define(['angular'], function (angular) {
-	return angular.module('mainApp', ['myFilters', 'resource', 'ngRoute', 'dialog', 'loading']).
+	return angular.module('mainApp', ['myFilters', 'resource', 'ngRoute', 'dialog', 'loading', 'angularFileUpload']).
 	  config(['$routeProvider', function($routeProvider) {
 		  $routeProvider.
 		      when('/', {templateUrl: 'tpl/index.html'}).

@@ -11,6 +11,7 @@ import com.lps.edc.dao.interfaces.InfExamAbsStudentDaoIf;
 import com.lps.edc.dto.AbsStudentDto;
 import com.lps.edc.dto.SimpleDto;
 import com.lps.edc.entity.InfExamAbsStudent;
+import com.lps.edc.entity.SysStudent;
 import com.lps.edc.service.interfaces.InfExamAbsStudentServiceIF;
 
 @Service("absStudentService")
@@ -39,8 +40,16 @@ public class InfExamAbsStudentService implements InfExamAbsStudentServiceIF {
 		return absStudentDao.query(examId);
 	}
 	@Override
+	public AbsStudentDto query(String examId, String examNo) throws Exception {
+		return absStudentDao.query(examId, examNo);
+	}
+	@Override
 	public List<SimpleDto> queryAllExceptAbs(String gradeId, String examId)
 			throws Exception {
 		return absStudentDao.queryAllExceptAbs(gradeId, examId);
+	}
+	@Override
+	public SysStudent queryExceptAbs(String gradeId, String examNo) throws Exception {
+		return absStudentDao.queryExceptAbs(gradeId, examNo);
 	}
 }

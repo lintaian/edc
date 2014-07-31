@@ -35,5 +35,21 @@ define(['angular'],function(angular){
             }
             return s;
         };
-	})
+	}).filter('parentShow',function() {
+        return function(edit, child) {
+        	if (!edit) {
+				return false;
+			}
+			var flag = true;
+			for ( var i = 0; i < child.length; i++) {
+				if (child[i].edit = true) {
+					flag = false;
+					break;
+				}
+			}
+			console.log(edit);
+			console.log(flag);
+			return edit && flag;
+        };
+	});
 });

@@ -21,7 +21,7 @@ public class InfExamQuestionDao extends BaseDao implements InfExamQuestionDaoIF 
 	public void update(String questionId, String questionName,
 			String questionOrder) throws Exception {
 		String hql = "update InfExamQuestion a set a.questionName=?, a.questionOrder=? where a.questionId=?";
-		Query q = getSession().createQuery(hql);
+		Query q = getSession(true).createQuery(hql);
 		q.setString(0, questionName);
 		q.setString(1, questionOrder);
 		q.setString(2, questionId);

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -14,10 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.lps.edc.dto.AbsStudentDto;
 import com.lps.edc.dto.SimpleDto;
 import com.lps.edc.entity.InfExamAbsStudent;
+import com.lps.edc.entity.SysStudent;
 import com.lps.edc.service.interfaces.InfExamAbsStudentServiceIF;
 
 @Controller
@@ -37,11 +41,27 @@ public class StudentController {
 	@RequestMapping(value="", method=RequestMethod.POST)
 	public JSONObject add(@RequestBody JSONObject reqBody) throws Exception {
 		JSONObject json = new JSONObject();
-		InfExamAbsStudent as = new InfExamAbsStudent();
-		as.setExamid(reqBody.getString("examId"));
-		as.setExamno(reqBody.getString("examNo"));
-		as.setInserttime(new Date());
-		json.put("status", true);
+		String examId = reqBody.getString("examId");
+		String examNo = reqBody.getString("examNo");
+		String gradeId = reqBody.getString("gradeId");
+		AbsStudentDto dto = absStudentService.query(examId, examNo);
+		SysStudent student = absStudentService.queryExceptAbs(gradeId, examNo);
+		if (dto != null) {
+			json.put("status", false);
+			json.put("msg", "该学生已经添加");
+		} else if (student == null) {
+			json.put("status", false);
+			json.put("msg", "该学号不存在");
+		} else {
+			InfExamAbsStudent as = new InfExamAbsStudent();
+			as.setExamid(examId);
+			as.setExamno(examNo);
+			as.setInserttime(new Date());
+			absStudentService.add(as);
+			AbsStudentDto abs = absStudentService.query(examId, examNo);
+			json.put("status", true);
+			json.put("obj", abs);
+		}
 		return json;
 	}
 	
@@ -52,6 +72,13 @@ public class StudentController {
 		absStudentService.del(id);
 		json.put("status", true);
 		return json;
+	}
+	@ResponseBody
+	@RequestMapping(value="/upload", method=RequestMethod.POST)
+	public JSONObject upload(String examId, String gradeId, 
+			MultipartHttpServletRequest req) throws Exception {
+		MultipartFile file = req.getFile("file");
+		return null;
 	}
 	
 	@ResponseBody

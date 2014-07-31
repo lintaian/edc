@@ -4,14 +4,13 @@ define(['angular'], function(angular) {
 			restrict: 'AE',
 	        require: 'ngModel',
 	        priority: 0,
-	        template: "<div data-ng-show=\"loading.show\"> " +
-	        		"<div class=\"Pane_shade\" data-ng-show=\"loading.modal\"></div>" + 
-	        		"<div class=\"Pane_layer dialogBody row-fluid\" data-ng-style=\"style\">" +
-	        		"<div class='span3'>" +
-	        		"<img src=\"img/loader.gif\" class=\"load_icon\"/>" +
-	        		"</div><div class='span8'>" +
-	        		"<h4 data-ng-bind='loading.text' style='margin-left: 50px;'></h4>" +
-	        		"</div></div></div>",
+	        template: '<div data-ng-show="loading.show">' +
+	        	      '<div class="modal" data-ng-show="loading.modal"></div>' +
+	        	      '<div class="loader" data-ng-style="style">' +
+	        	          '<img src="img/loader.gif" class="load_icon"/>' +
+	        	          '<span class="text" data-ng-bind="loading.text"></span>' +
+	        	      '</div>' +
+	        	  '</div>',
 	        scope: {
 	            ngModel: "=ngModel"
 	        },
@@ -19,21 +18,19 @@ define(['angular'], function(angular) {
 	        link: function (scope, element, attrs) {
 	        	scope.loading = {
         			show: false,
-        			modal: false,
+        			modal: true,
         			type: 'resource',
         			text: '加载中...'
 	        	};
 	        	var config = scope.$eval(attrs.config);
 	        	angular.extend(scope.loading, config);
-	        	scope.style = {
+	        	scope.style = angular.extend({
 	        		width: 300,
 	        		height: 30
-	        	};
-	        	var width = 300;
-    			var height = 50;
+	        	}, config);
     			angular.extend(scope.style, {
-    				left: (Util.getWinWidth() - width) / 2,
-    				top: (Util.getWinHeight() - height) / 2
+    				left: (Util.getWinWidth() - scope.style.width) / 2,
+    				top: (Util.getWinHeight() - scope.style.height) / 2 - 50
     			});
 	        	var type = scope.loading.type;
         		if(type == 'resource') {
@@ -53,7 +50,7 @@ define(['angular'], function(angular) {
         					scope.loading.show = scope.ngModel.show;
         					scope.loading.text = scope.ngModel.text;
 						}
-        			});
+        			}, true);
         		}
 	        }
 		};

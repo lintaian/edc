@@ -72,6 +72,7 @@ public class InfExamQuestionService implements InfExamQuestionServiceIF {
 		QuestionDto dto = new QuestionDto();
 		dto.setId(q.getQuestionId());
 		dto.setName(q.getQuestionName());
+		dto.setOrder(q.getQuestionOrder());
 		StringBuffer sb = new StringBuffer();
 		sb.append("名称:");
 		sb.append(q.getQuestionName());

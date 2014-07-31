@@ -11,9 +11,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css">
   <link rel="stylesheet" type="text/css" href="css/main.css">
-  <link rel="stylesheet" type="text/css" href="css/layer.css">
+  <link rel="stylesheet" type="text/css" href="css/dialog.css">
 </head>
-<body data-ng-controller="Main">
+<body data-ng-controller="Main" data-nv-file-drop="" data-uploader="abs.upload.uploader" data-filters="queueLimit, customFilter">
 	<div class="container-fluid main">
 	  <div class="row-fluid" style="border-bottom: gray solid 2px;">
 	  	<div class="span5" style="text-align: center;">
@@ -26,10 +26,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					</select>
 	  		</form>
 			<form class="form-inline middleForm">
-			  姓名:&nbsp;<input type="text" class="input-small width-input" data-ng-model="query.studentName" placeholder="姓名">&nbsp;&nbsp;
-			  考号:&nbsp;<input type="text" class="input-small width-input" data-ng-model="query.examNo" placeholder="考号">
-			</form>
-			<form class="form-inline last">
 	  			批次:&nbsp;<select class="input-small width-select" data-ng-model="batch.value" data-ng-change="batch.change(batch.value)">
 					  <option data-ng-repeat="b in batch.list" data-ng-value="b.id" data-ng-bind="b.name"></option>
 					</select>&nbsp;&nbsp;
@@ -37,6 +33,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					  <option data-ng-repeat="s in subject.list" data-ng-value="s.id" data-ng-bind="s.name"></option>
 					</select>
 	  		</form>
+			<form class="form-inline last">
+			  姓名:&nbsp;<input type="text" class="input-small width-input" data-ng-model="query.studentName" placeholder="姓名">&nbsp;&nbsp;
+			  考号:&nbsp;<input type="text" class="input-small width-input" data-ng-model="query.examNo" placeholder="考号">
+			</form>
 	  	</div>
 	  	<div class="span3" style="text-align: center;width: 20%;">
 	  		<form class="form-inline float-left">
@@ -52,10 +52,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     			  <input type="checkbox" data-ng-model="count.type"> A卷50%
     			</label>
                 <button class="btn btn-info" data-ng-disabled="subject.getState()!='可以统计'" 
-                  data-ng-click="count.action()">统计得分</button>
+                  data-ng-click="count.exec()">统计得分</button>
 			</form>
 	  		<form class="form-inline float-left last">
-    			 <button class="btn btn-info" style="width: 200px;">设置缺考</button>
+    			 <button class="btn btn-info" style="width: 200px;" data-ng-click="abs.open()">设置缺考</button>
 			</form>
 	  	</div>
 	  	<div class="span3" style="width: 20%;text-align: center;">
@@ -76,7 +76,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</label>
 	  		</form>
 	  		<form class="form-inline last">
-	  			<button class="btn btn-info" data-ng-click="query.action()">查询</button>
+	  			<button class="btn btn-info" data-ng-click="query.exec()">查询</button>
 	  			<button class="btn btn-info" >导出表格</button>
 	  		</form>
 	  	</div>
@@ -94,13 +94,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				      	data-ng-change="classes.checkAllFn(classes.checkAll)"> 全选
 				    </label>
 		    	</div>
-		    	<div style="height: 137px;overflow-y: auto;">
-		    		<ul class="unstyled">
+		    	<div style="height: 137px;overflow-y: auto;" >
+		    		<ul class="unstyled ng-hide" data-ng-show="classes.list != null">
 		    			<li data-ng-repeat="c in classes.list" class="form-inline"
                           data-ng-class-odd="'info'" data-ng-class-even="'success'" data-ng-class="{last: $last}">
 		    				<label class="checkbox">
     							<input type="checkbox" data-ng-model="c.checked">
-   							</label>&nbsp;
+   							</label>&nbsp;&nbsp;
 	    					<span data-ng-bind="c.name"></span> 
                             (<span data-ng-bind="c.wlType"></span>)
 		    			</li>
@@ -116,27 +116,27 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				    </label>
 		    	</div>
 		    	<div id="question" style="height: 450px;overflow: auto;">
-		    		<ul class="unstyled sidebar">
+		    		<ul class="unstyled sidebar ng-hide" data-ng-show="question.list != null">
 		    			<li data-ng-repeat="q in question.list" class="form-inline inline-block" style="white-space:nowrap;" 
                             data-ng-class-odd="'info'" data-ng-class-even="'success'" data-ng-class="{last: $last}"
                             data-ng-mouseenter="q.edit = true" data-ng-mouseleave="q.edit = false">
                             <span class="edit" data-ng-show="q.edit"></span>
-                            <i class="icon-pencil" data-ng-show="q.edit"></i>
+                            <i class="icon-pencil" data-ng-show="q.edit" data-ng-click="question.update.to(q)"></i>
   		    				<span class="for-icon" data-ng-class="{icon: q.child.length>0, more: !q.open, less: q.open}"
   		    					data-ng-click="q.open = !q.open"></span>
   		    				<label class="checkbox">
       							<input type="checkbox" data-ng-model="q.checked">
-     						</label>
+     						</label>&nbsp;&nbsp;
   	    					<span data-ng-bind="q.show"></span>
-	    					<ul class="unstyled sidebar2" data-ng-show="q.open" data-ng-mouseenter="q.edit=false">
+	    					<ul class="unstyled sidebar2" data-ng-show="q.open">
 	    						<li data-ng-repeat="c in q.child" class="form-inline inline-clock" style="white-space: nowrap;"
                                   data-ng-class-odd="'info'" data-ng-class-even="'success'" data-ng-class="{last: $last}"
-                                  data-ng-mouseenter="c.edit = true" data-ng-mouseleave="c.edit = false">
-                                    <span class="edit" data-ng-show="c.edit"></span>
-        		    				<i class="icon-pencil" data-ng-show="c.edit"></i>
+                                  data-ng-mouseenter="c.edit=true" data-ng-mouseleave="c.edit = false">
+                                    <span class="edit2" data-ng-show="c.edit"></span>
+        		    				<i class="icon-pencil child" data-ng-show="c.edit" data-ng-click="question.update.to(c)"></i>
 	    							<label class="checkbox">
 	    								<input type="checkbox" data-ng-model="c.checked">
-	    							</label>
+	    							</label>&nbsp;&nbsp;
 	    							<span data-ng-bind="c.show"></span>
 	    						</li>
 	    					</ul>
@@ -150,29 +150,65 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	    </div>
 	  </div>
 	</div>
-	<div data-dialog data-ng-model="dialog" data-config="{width:340,height:230}" class="ng-hide">
-		<form class="form-horizontal">
+	<div data-dialog data-ng-model="updateQuestion" data-config="{width:327,height:175}" class="ng-hide">
+		<form class="form-horizontal" style="margin-left: -88px;">
 			<div class="control-group info">
-				<label class="control-label" for="username">设置名称:</label>
+				<label class="control-label">设置名称:</label>
 				<div class="controls">
-					<input type="text" data-ng-model="name" placeholder="名称"/>
+					<input type="text" data-ng-model="question.update.obj.name" placeholder="名称"/>
 				</div>
 			</div>
 			<div class="control-group info">
-				<label class="control-label" for="password">设置序号</label>
+				<label class="control-label">设置序号:</label>
 				<div class="controls">
-					<input type="password" data-ng-model="xuhao" placeholder="序号"/>
-				</div>
-			</div>
-			<div class="control-group">
-				<div class="controls">
-					<input class="btn btn-info" value="确定" type="button" data-ng-click=""/>
-					<input class="btn" value="取消" type="button" data-ng-click=""/>
+					<input type="text" data-ng-model="question.update.obj.order" placeholder="序号"
+                      onkeyup="this.value=this.value.replace(/\D/g,'')" />
 				</div>
 			</div>
 		</form>
+		<div style="text-align: center;">
+			<input class="btn btn-info" value="确定" type="button" style="margin: 0 10px;" data-ng-click="question.update.exec()"/>
+			<input class="btn" value="取消" type="button" style="margin: 0 10px;" data-ng-click="question.update.cancel()"/>
+		</div>
 	</div>
-	<div data-loading data-ng-model="loader" data-config="{type:bool}"></div>
+    <div data-dialog data-ng-model="setAbs" data-config="{width:500,height:300}" class="ng-hide">
+        <div class="abs">
+            <div class="alert ng-hide" data-ng-show="abs.msg.show" style="position: absolute;top: 0px;left: 190px;">
+                <button type="button" class="close" data-ng-click="abs.msg.close()">&times;</button>
+                <span data-ng-bind="abs.msg.text" style=""></span>
+            </div>
+            <form class="form-inline" 
+                style="margin-bottom: 6px;" data-file-upload="abs.upload.options">
+                                          学号: <input type="text" class="input-small" data-ng-model="abs.examNo" style="width: 100px;" placeholder="学号">
+                <button type="button" class="btn btn-info" data-ng-click="abs.add()" style="margin-right: 10px;"
+                  data-ng-disabled="abs.examNo == null || abs.examNo == ''">添加</button>
+                <input type="file" class="input-small" style="width: 113px;"
+                  data-nv-file-select="" data-uploader="abs.upload.uploader">
+                <button type="button" class="btn btn-info" data-ng-click="abs.upload.exec()" 
+                  data-ng-disabled="abs.upload.uploader.queue.length == 0 || abs.upload.uploader.queue[0].isUploading || 
+                  abs.upload.uploader.queue[0].isSuccess || abs.typeError">上传</button>
+            </form>
+            <table id="absFix" class="table table-bordered table-hover" style="margin-bottom: 0px;height: 220px;">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>考号</th>
+                        <th>姓名</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr data-ng-repeat="a in abs.list">
+                        <td data-ng-bind="a.id"></td>
+                        <td data-ng-bind="a.examNo"></td>
+                        <td data-ng-bind="a.studentName"></td>
+                        <td><a href="javascript:void(0)" data-ng-click="abs.del(a.id)">删除</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+	<div data-loading data-ng-model="loader" data-config="{type:bool, width: 140}"></div>
 	<div data-confirm data-ng-model="confirm"></div>
   	<div data-alert data-ng-model="alert"></div>
 	<script data-main="js/ng/main" src="js/lib/require.js"></script>

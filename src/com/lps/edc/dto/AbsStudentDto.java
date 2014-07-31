@@ -4,6 +4,13 @@ public class AbsStudentDto {
 	private int id;
 	private String examNo;
 	private String studentName;
+	public AbsStudentDto() {
+	}
+	public AbsStudentDto(int id, String examNo, String studentName) {
+		this.id = id;
+		this.examNo = examNo;
+		this.studentName = studentName;
+	}
 	public int getId() {
 		return id;
 	}

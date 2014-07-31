@@ -1,13 +1,4 @@
-function Main($scope, $rootScope, BaseData, Question, Count) {
-	$scope.dialog = function() {
-		$scope.dialog = {show: true};
-	};
-	$scope.loading = function() {
-		$scope.loader = {
-			show: true,
-			text: 'test...'
-		};
-	};
+function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, FileUploader) {
 	$scope.query = {
 		gradeId: '',
 		examId: '',
@@ -16,16 +7,32 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 		classList: [],
 		questionList: [],
 		type: 'score',
-		action: function() {
+		exec: function() {
 			
 		}
 	};
 	$scope.count = {
 		type: false,
-		action: function() {
+		exec: function() {
 			var type = $scope.count.type ? 1 : 0;
+			$scope.loader = {
+				show: true,
+				text: '统计中...'
+			};
 			Count.countScore({examId: $scope.query.examId, type: type}, function() {
-				
+				$scope.loader.show = false;
+				$scope.alert = {
+					show: true,
+					text: '统计成功!',
+					title: '通知'
+				};
+			}, function() {
+				$scope.loader.show = false;
+				$scope.alert = {
+					show: true,
+					text: '统计失败!',
+					title: '通知'
+				};
 			});
 		}
 	};
@@ -55,9 +62,8 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 		list: null,
 		value: '',
 		change: function(gradeId) {
-			$scope.query.greadeId = gradeId;
+			$scope.query.gradeId = gradeId;
 			BaseData.getClasses({id: gradeId}, function(data) {
-				console.log(data);
 				for (var i = 0; i < data.length; i++) {
 					data[i].checked = true;
 				}
@@ -149,6 +155,175 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 					data[i].child[j].checked = checked;
 				}
 			 }
+		},
+		update: {
+			obj: null,
+			to: function(question) {
+				$scope.updateQuestion = {
+					show: true,
+					title: '修改试题'
+				};
+				this.obj = question;
+			},
+			exec: function() {
+				var param = {
+					name: this.obj.name,
+					order: this.obj.order
+				};
+				var $this = this;
+				Question.update({id: this.obj.id}, param, function() {
+					$scope.updateQuestion.show = false;
+					var data = $scope.question.list;
+					for (var i = 0; i < data.length; i++) {
+						if (data[i].id == $this.obj.id) {
+							data[i].name = $this.obj.name;
+							data[i].order = $this.obj.order;
+							data[i].show =  $this.replace(data[i].show, $this.obj);
+							break;
+						}
+						for (var j = 0; j < data[i].child.length; j++) {
+							data[i].child[j].show =  $this.replace(data[i].child[j].show, $this.obj);
+							break;
+						};
+					};
+				}, function() {
+					$scope.updateQuestion.show = false;
+					$scope.alert = {
+						show: true,
+						text: '更新失败!',
+						title: '请注意'
+					};
+				});
+			},
+			cancel: function() {
+				$scope.updateQuestion.show = false;
+			},
+			replace: function(str, q) {
+				var s = str.split(',');
+				var s1 = s[0].split(':');
+				s1[1] = q.name;
+				var s2 = s[1].split(':');
+				s2[1] = q.order;
+				var rs = s1[0] + ':' + s1[1];
+				rs += ',' + s2[0] + ':' + s2[1];
+				for ( var i = 2; i < s.length; i++) {
+					rs += ',' + s[i][0] + ':' + s[i][1];
+				}
+				return rs;
+			}
+		}
+	};
+	
+	$scope.abs = {
+		list: null,
+		examNo: '',
+		typeError: false,
+		open: function() {
+			this.list = Student.query({id: $scope.query.examId}, function() {
+				$timeout(function() {
+					Util.fixTable('absFix', 0, {maxHeight: 220});
+				});
+			});
+			$scope.setAbs = {
+				show: true,
+				title: '设置缺考学生'
+			};
+		},
+		add: function() {
+			var param = {
+				examId: $scope.query.examId,
+				examNo: this.examNo,
+				gradeId: $scope.query.gradeId
+			};
+			Student.save(param, function(data) {
+				if (data.status) {
+					$scope.abs.list.push(data.obj);
+				} else {
+					$scope.abs.msg.set(data.msg);
+				}
+			}, function() {
+				$scope.abs.msg.set('添加失败!');
+			});
+		},
+		del: function(id) {
+			Student.remove({id: id}, function() {
+				var list = $scope.abs.list;
+				for ( var i = 0; i < list.length; i++) {
+					if (list[i].id == id) {
+						list.splice(i,1);
+						break;
+					}
+				}
+			}, function() {
+				$scope.abs.msg.set('删除失败!');
+			});
+		},
+		msg: {
+			show: false,
+			text: '',
+			timeout: null,
+			close: function() {
+				this.show = false;
+				this.timeout = null;
+			},
+			set: function(text) {
+				this.text = text;
+				this.show = true;
+				this.timeout = $timeout(function() {
+					$scope.abs.msg.close();
+				},5000);
+			}
+		},
+		upload: {
+			uploader: new FileUploader({
+			    scope: $scope,
+			    url: 'student/upload',
+			    autoUpload: false,   // 自动开始上传
+			    formData: [{ 
+			    	  examId: $scope.query.examId,
+			    	  gradeId: $scope.query.gradeId
+			    }],
+			    filters: [{
+		            name: 'customFilter',
+		            fn: function(item /*{File|FileLikeObject}*/, options) {
+		            	if (item.type == 'text/plain') {
+		            		$scope.abs.typeError = false;
+						} else {
+							$scope.abs.typeError = true;
+							$scope.abs.msg.set('请选择txt文件!');
+						}
+		                return item.type == 'text/plain';
+		            }
+		        }]
+			}),
+			exec: function() {
+				if (this.uploader.queue.length > 0) {
+					var item = this.uploader.queue[this.uploader.queue.length-1];
+					for ( var i = 0; i < this.uploader.queue.length-1; i++) {
+						this.uploader.queue[i].remove();
+					}
+					item.formData = [{
+						examId: $scope.query.examId,
+						gradeId: $scope.query.gradeId	
+					}];
+					if (item.isSuccess) {
+						$scope.abs.msg.set('该文件已近上传!');
+					} else if (item.isUploading) {
+						$scope.abs.msg.set('上传中...');
+					} else {
+						if ('text/plain' == item.file.type) {
+							item.onSuccess = function(response, status, headers) {
+								item.remove();
+							};
+							item.upload();
+						} else {
+							$scope.abs.msg.set('请选择txt文件!');
+						}
+					}
+				} else {
+					$scope.abs.msg.set('请选择文件!');
+				}
+			}
 		}
 	};
 	
@@ -171,5 +346,5 @@ function Main($scope, $rootScope, BaseData, Question, Count) {
 			width = 1024;
 		}
 		$('body').width(width);
-	} 
-}
+	};
+};

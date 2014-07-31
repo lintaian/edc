@@ -6,6 +6,7 @@ import java.util.List;
 public class QuestionDto {
 	private String id;
 	private String name;
+	private int order;
 	private String show;
 	private List<QuestionDto> child = new ArrayList<QuestionDto>();
 	public String getId() {
@@ -20,6 +21,9 @@ public class QuestionDto {
 	public List<QuestionDto> getChild() {
 		return child;
 	}
+	public int getOrder() {
+		return order;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -31,5 +35,8 @@ public class QuestionDto {
 	}
 	public void setChild(List<QuestionDto> child) {
 		this.child = child;
+	}
+	public void setOrder(int order) {
+		this.order = order;
 	}
 }

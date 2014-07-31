@@ -3,23 +3,22 @@ define(['jquery', 'angular'], function($, angular) {
 		return {
 			restrict: 'AE',
 	        require: 'ngModel',
-	        template: "<div data-ng-show=\"confirm.show\"> " +
-	        		"<div class=\"Pane_shade\" data-ng-show=\"confirm.modal\"></div>"
-	        		+ "<div class=\"Pane_layer confirmBody\" style=\"width:340px;height:230px;\"" +
-	        				"data-ng-style=\"style\">"
-	        		+ "<h2 data-ng-bind=\"confirm.title\"></h2>"
-	        		+ "<div class=\"alert_con\">"	
-	        		+ "<center>"
-	        		+ "<p data-ng-bind=\"confirm.text\"></p>"
-	        		+ "<p><input class=\"confirm Btn\" type=\"button\" value=\"确定\"" +
-	        				"data-ng-click=\"confirm.ok()\">"
-	        		+ "<input class=\"cancel Btn\"  type=\"button\" value=\"取消\"" +
-	        				"data-ng-click=\"confirm.cancel()\"></p>"       
-	        		+ "</center>"	
-	        		+ "</div>" 	
-	        		+ "<input type=\"button\" class=\"close_layer\" value=\"close\"" +
-	        				"data-ng-click=\"confirm.close()\">"
-	        		+ "</div></div>",
+	        template: '<div data-ng-show="confirm.show">' +
+	        	      '<div class="modal" data-ng-show="confirm.modal"></div>' +
+	        	      '<div id="confirm" class="dialog" data-ng-style="style">' +
+	        	          '<div class="title">' +
+	        	              '<span class="text" data-ng-bind="confirm.title"></span>' +
+	        	              '<i class="icon-remove close-btn" data-ng-click="confirm.close()"></i>' +
+	        	          '</div>' +
+	        	          '<div class="content">' +
+	        	              '<span data-ng-bind="confirm.text"></span>' +
+	        	          '</div>' +
+	        	          '<div class="bottom">' +
+	        	              '<button class="btn btn-info" data-ng-click="confirm.ok()">确定</button>' +
+	        	              '<button class="btn" data-ng-click="confirm.cancel()">取消</button>' +
+	        	          '</div>' +
+	        	      '</div>' +
+	        	  '</div>',
 	        scope: {
 	            ngModel: "=ngModel"
 	        },
@@ -48,11 +47,11 @@ define(['jquery', 'angular'], function($, angular) {
 	        	scope.$watch('ngModel', function() {
 	        		angular.extend(scope.confirm, scope.ngModel);
 	        		if(scope.confirm.show) {
-	        			var width = $('.confirmBody').width();
-	        			var height = $('.confirmBody').height();
+	        			var width = $('#confirm').width();
+	        			var height = $('#confirm').height();
 	        			scope.style = {
 	        				left: (Util.getWinWidth() - width) / 2,
-	        				top: (Util.getWinHeight() - height) / 2
+	        				top: (Util.getWinHeight() - height) / 2 - 50
 	        			};
 	        			if(scope.confirm.useEsc) {
 	        				$(window).bind('keydown', function(event){
@@ -75,21 +74,21 @@ define(['jquery', 'angular'], function($, angular) {
 		return {
 			restrict: 'AE',
 	        require: 'ngModel',
-	        template: "<div data-ng-show=\"alert.show\"> " +
-	        		"<div class=\"Pane_shade\" data-ng-show=\"alert.modal\"></div>"
-	        		+ "<div class=\"Pane_layer alertBody\" data-ng-style=\"style\"" +
-	        				"style=\"width:340px;height:230px;\">"
-	        		+ "<h2 data-ng-bind=\"alert.title\"></h2>"
-	        		+ "<div class=\"alert_con\">"	
-	        		+ "<center>"
-	        		+ "<p data-ng-bind=\"alert.text\"></p>"
-	        		+ "<p><input class=\"confirm Btn\" type=\"button\" value=\"确定\"" +
-	        				"data-ng-click=\"alert.ok()\"></p>"       
-	        		+ "</center>"	
-	        		+ "</div>" 	
-	        		+ "<input type=\"button\" class=\"close_layer\" value=\"close\"" +
-	        				"data-ng-click=\"alert.close()\">"
-	        		+ "</div></div>",
+	        template:'<div data-ng-show="alert.show">' +
+	        	      '<div class="modal" data-ng-show="alert.modal"></div>' +
+	        	      '<div id="alert" class="dialog" data-ng-style="style">' +
+	        	          '<div class="title">' +
+	        	              '<span class="text" data-ng-bind="alert.title"></span>' +
+	        	              '<i class="icon-remove close-btn" data-ng-click="alert.close()"></i>' +
+	        	          '</div>' +
+	        	          '<div class="content">' +
+	        	              '<span data-ng-bind="alert.text"></span>' +
+	        	          '</div>' +
+	        	          '<div class="bottom">' +
+	        	              '<button class="btn btn-info" data-ng-click="alert.ok()">确定</button>' +
+	        	          '</div>' +
+	        	      '</div>' +
+	        	  '</div>',
 	        scope: {
 	            ngModel: "=ngModel"
 	        },
@@ -111,11 +110,11 @@ define(['jquery', 'angular'], function($, angular) {
 	        	scope.$watch('ngModel', function() {
 	        		angular.extend(scope.alert, scope.ngModel);
 	        		if(scope.alert.show) {
-	        			var width = $('.alertBody').width();
-	        			var height = $('.alertBody').height();
+	        			var width = $('#alert').width();
+	        			var height = $('#alert').height();
 	        			scope.style = {
 	        				left: (Util.getWinWidth() - width) / 2,
-	        				top: (Util.getWinHeight() - height) / 2
+	        				top: (Util.getWinHeight() - height) / 2 - 50
 	        			};
 	        			if(scope.alert.useEsc) {
 	        				$(window).bind('keydown', function(event){
@@ -137,14 +136,18 @@ define(['jquery', 'angular'], function($, angular) {
 		return {
 			restrict: 'AE',
 	        require: 'ngModel',
-	        template: "<div data-ng-show=\"dialog.show\"> " +
-	        		"<div class=\"Pane_shade\" data-ng-show=\"dialog.modal\"></div>"
-	        		+ "<div class=\"Pane_layer dialogBody\" data-ng-style=\"style\">"
-	        		+ "<h2 data-ng-bind=\"dialog.title\"></h2>"
-	        		+ "<div data-ng-transclude></div>"
-	        		+ "<input type=\"button\" class=\"close_layer\" value=\"close\"" +
-	        				"data-ng-click=\"dialog.close()\">"
-	        		+ "</div></div>",
+	        template: '<div data-ng-show="dialog.show">' +
+	        	      '<div class="modal" data-ng-show="dialog.modal"></div>' +
+	        	      '<div id="dialog" class="dialog" data-ng-style="style">' +
+	        	          '<div class="title">' +
+	        	              '<span class="text" data-ng-bind="dialog.title"></span>' +
+	        	              '<i class="icon-remove close-btn" data-ng-click="dialog.close()"></i>' +
+	        	          '</div>' +
+	        	          '<div class="content-dialog">' +
+	        	              '<div data-ng-transclude></div>' +
+	        	          '</div>' +
+	        	      '</div>' +
+	        	  '</div>',
 	        scope: {
 	            ngModel: "=ngModel"
 	        },
@@ -172,11 +175,11 @@ define(['jquery', 'angular'], function($, angular) {
 	        	scope.$watch('ngModel', function() {
 	        		angular.extend(scope.dialog, scope.ngModel);
 	        		if(scope.dialog.show) {
-	        			var width = config.width ? config.width : $('.dialogBody').width();
-	        			var height = config.height ? config.height : $('.dialogBody').height();
+	        			var width = config.width ? config.width : $('#dialog').width();
+	        			var height = config.height ? config.height : $('#dialog').height();
 	        			angular.extend(scope.style, {
 	        				left: (Util.getWinWidth() - width) / 2,
-	        				top: (Util.getWinHeight() - height) / 2
+	        				top: (Util.getWinHeight() - height) / 2 - 50
 	        			});
 	        			if(scope.dialog.useEsc) {
 	        				$(window).bind('keydown', function(event){

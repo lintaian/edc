@@ -97,6 +97,9 @@ ul li.info{
 	cursor: pointer;
 	width: 700px;
 }
+#questions ul.sidebar2 li {
+	width: 677px;
+}
 #questions ul li .edit {
 	background-color: rgb(0, 0, 0);
 	opacity: 0.25;
@@ -121,5 +124,24 @@ ul li.info{
 }
 .icon-pencil.child {
 	left: 2%;
+}
+
+td,th {
+	min-width: 50px;
+	max-width: 200px;
+}
+td.edit-td {
+	position: relative;
+}
+td .edit-icon,.edit-icon2 {
+	position: absolute;
+}
+.edit-icon {
+	top: 0;
+	left: 76%;
+}
+.edit-icon2 {
+	top: 0;
+	left: 50%;
 }
 

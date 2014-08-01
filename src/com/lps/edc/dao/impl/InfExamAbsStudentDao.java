@@ -1,8 +1,6 @@
 package com.lps.edc.dao.impl;
 
 import java.util.List;
-import java.util.UUID;
-
 import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
 

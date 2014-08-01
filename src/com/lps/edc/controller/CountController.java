@@ -1,7 +1,11 @@
 package com.lps.edc.controller;
 
+import java.util.List;
+
 import javax.annotation.Resource;
+
 import net.sf.json.JSONObject;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lps.edc.dto.TableDto;
 import com.lps.edc.service.interfaces.CountServiceIF;
+import com.lps.edc.util.Helper;
 
 @Controller
 @RequestMapping("count")
@@ -38,7 +43,8 @@ public class CountController {
 		TableDto data = countService.getClassAgv(reqBody.getString("gradeId"), reqBody.getString("examId"), 
 				reqBody.getJSONArray("classList"), reqBody.getJSONArray("questionList"), 
 				reqBody.getString("studentName"), reqBody.getString("examNo"));
-		return JSONObject.fromObject(data);
+		JSONObject obj = JSONObject.fromObject(data);
+		return obj;
 	}
 	@ResponseBody
 	@RequestMapping(value="/originalAnswer", method=RequestMethod.POST)
@@ -46,15 +52,39 @@ public class CountController {
 		TableDto data = countService.getOriginalAnswer(reqBody.getString("gradeId"), reqBody.getString("examId"), 
 				reqBody.getJSONArray("classList"), reqBody.getJSONArray("questionList"), 
 				reqBody.getString("studentName"), reqBody.getString("examNo"));
-		return JSONObject.fromObject(data);
+		data.setData(Helper.converToObj(data.getData()));
+		JSONObject obj = JSONObject.fromObject(data);
+		return obj;
 	}
+	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value="/questionScore", method=RequestMethod.POST)
 	public JSONObject getQuestionScore(@RequestBody JSONObject reqBody) throws Exception {
 		TableDto data = countService.getQuestionScore(reqBody.getString("gradeId"), reqBody.getString("examId"), 
 				reqBody.getJSONArray("classList"), reqBody.getJSONArray("questionList"), 
 				reqBody.getString("studentName"), reqBody.getString("examNo"));
-		return JSONObject.fromObject(data);
+		List<Object> title = data.getTitle();
+		title.set(0, "班级");
+		title.set(1, "班级ID");
+		title.set(2, "学生名字");
+		title.set(3, "学生ID");
+		title.set(4, "考号");
+		title.add(5, "总分");
+		data.setTitle(title);
+		List<Object> d = data.getData();
+		for (Object object : d) {
+			List<Object> d2 = (List<Object>) object;
+			double score = 0 ;
+			double temp = 0;
+			for (int i = 5; i < d2.size(); i++) {
+				temp = "".equals(d2.get(i)) ? 0 : Double.parseDouble(d2.get(i).toString());
+				score += temp;
+			}
+			d2.add(5, score);
+		}
+		data.setData(d);
+		JSONObject obj = JSONObject.fromObject(data);
+		return obj;
 	}
 	@ResponseBody
 	@RequestMapping(value="/classKnowledge/{id}", method=RequestMethod.GET)

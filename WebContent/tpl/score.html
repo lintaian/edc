@@ -1,12 +1,59 @@
-<table class="table table-bordered">
-	<thead>
-		<tr>
-			<th>test</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>aaa</td>
-		</tr>
-	</tbody>
-</table>
+<div class="navbar" style="margin-bottom: 5px;">
+	<div class="navbar-inner">
+		<ul class="nav">
+			<li data-ng-class="{active: nav.current == 'avg'}">
+				<a href="javascript:void(0)" data-ng-click="nav.change('avg', false)">班级均分</a>
+			</li>
+			<li data-ng-class="{active: nav.current == 'detail'}">
+				<a href="javascript:void(0)" data-ng-click="nav.change('detail', false)">成绩详情</a>
+			</li>
+			<li data-ng-class="{active: nav.current == 'num'}">
+				<a href="javascript:void(0)" data-ng-click="nav.change('num', false)">答案数量</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div data-ng-show="nav.current=='avg'">
+	<table id="classAvg" class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th data-ng-repeat="t in avg.data.title" data-ng-bind="t"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="data in avg.data.data">
+				<td data-ng-repeat="col in data track by $index" data-ng-bind="col"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<div data-ng-show="nav.current=='detail'">
+	<table id="scoreDetail" class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th data-ng-repeat="t in detail.data.title" data-ng-bind="t"
+				data-ng-if="$index!=1&&$index!=3"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="data in detail.data.data">
+				<td data-ng-repeat="col in data track by $index" data-ng-bind="col"
+				data-ng-if="$index!=1&&$index!=3"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<div data-ng-show="nav.current=='num'">
+	<table id="answerNum" class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th data-ng-repeat="t in num.data.title" data-ng-bind="t"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="data in num.data.data">
+				<td data-ng-repeat="col in data track by $index" data-ng-bind="col"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

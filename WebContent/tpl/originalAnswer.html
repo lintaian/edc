@@ -1,1 +1,20 @@
-originalAnswer
+<div>
+	<table id="originalAnswer" class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th data-ng-repeat="t in answer.data.title" data-ng-bind="t"
+				data-ng-if="$index!=1&&$index!=3&&$index!=5"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="data in answer.data.data">
+				<td class="edit-td" data-ng-repeat="col in data track by $index" data-ng-if="$index!=1&&$index!=3&&$index!=5"
+				data-ng-mouseenter="col.edit=true" data-ng-mouseleave="col.edit=false">
+					<span data-ng-bind="col.value"></span>
+					<i class="icon-pencil edit-icon" data-ng-show="col.edit" data-ng-click=""></i>
+					<i class="icon-pencil edit-icon2" data-ng-show="col.edit" data-ng-click=""></i>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

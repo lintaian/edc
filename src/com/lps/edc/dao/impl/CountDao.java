@@ -170,7 +170,8 @@ public class CountDao extends BaseDao implements CountDAOIF {
 		while (rs.next()) {
 			List<Object> temp = new ArrayList<Object>();
 			for (int i = 1; i <= length; i++) {
-				temp.add(rs.getString(i));
+				String str = rs.getString(i) == null ? "" : rs.getString(i);
+				temp.add(str);
 			}
 			data.add(temp);
 		}

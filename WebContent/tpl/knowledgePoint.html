@@ -1,1 +1,40 @@
-knowledgePoint
+<div class="navbar" style="margin-bottom: 5px;">
+	<div class="navbar-inner">
+		<ul class="nav">
+			<li data-ng-class="{active: nav.current == 'avg'}">
+				<a href="javascript:void(0)" data-ng-click="nav.change('avg', false)">班级均分</a>
+			</li>
+			<li data-ng-class="{active: nav.current == 'detail'}">
+				<a href="javascript:void(0)" data-ng-click="nav.change('detail', false)">得分详情</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div data-ng-show="nav.current=='avg'">
+	<table id="classAvgKnowledge" class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th data-ng-repeat="t in avg.data.title" data-ng-bind="t"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="data in avg.data.data">
+				<td data-ng-repeat="col in data track by $index" data-ng-bind="col"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<div data-ng-show="nav.current=='detail'">
+	<table id="scoreDetailKnowledge" class="table table-bordered table-hover">
+		<thead>
+			<tr>
+				<th data-ng-repeat="t in detail.data.title" data-ng-bind="t"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-ng-repeat="data in detail.data.data">
+				<td data-ng-repeat="col in data track by $index" data-ng-bind="col"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

@@ -125,7 +125,10 @@ define(['jquery'], function(jquery) {
 		    var oldTable = $("#" + TableID),
 		        tableLayout = $("#" + TableID + "_tableLayout");
 		    height = oldTable.height()+17;
-
+		    
+		    oldTable.data('config', config);
+		    oldTable.data('col', FixColumnNumber);
+		    
 		    if (tableLayout.length != 0) {
 		        tableLayout.css({height:height});
 		        width = tableLayout.width();
@@ -195,7 +198,7 @@ define(['jquery'], function(jquery) {
 		    var tableFixTable = $("#" + TableID + "_tableFix table");
 		    if (tableHead.width() > tableFixTable.width()) {
 		        tableHead.css("width", tableFixTable.width());
-		        tableData.css("width", tableFixTable.width() + 17);
+		        tableData.css("width", tableFixTable.width() + 18);
 		    }
 		    var tableColumnTable = $("#" + TableID + "_tableColumn table");
 		    if (tableColumn.height() > tableColumnTable.height()) {

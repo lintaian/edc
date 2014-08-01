@@ -1,4 +1,7 @@
-function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, FileUploader) {
+function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, FileUploader, $location) {
+	if (angular.isUndefined($scope.query) && ($location.path() != '' || $location.path() != '/')) {
+		window.location.href = 'main#/';
+	}
 	$scope.query = {
 		gradeId: '',
 		examId: '',
@@ -8,7 +11,46 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 		questionList: [],
 		type: 'score',
 		exec: function() {
-			
+			window.location.href = 'main#/' + this.type;
+		},
+		getParams: function() {
+			var params = {
+				gradeId: this.gradeId,
+				examId: this.examId,
+				examNo: this.examNo,
+				studentName: this.studentName
+			};
+			var classList = [];
+			var list = $scope.classes.list;
+			for (var i = 0; i < list.length; i++) {
+				if (list[i].checked) {
+					classList.push({
+						id: list[i].id,
+						name: list[i].name
+					});
+				}
+			}
+			var questionList = [];
+			list = $scope.question.list;
+			for (var i = 0; i < list.length; i++) {
+				if (list[i].checked) {
+					questionList.push({
+						id: list[i].id,
+						name: list[i].name
+					});
+				}
+				for (var j = 0; j < list[i].child.length; j++) {
+					if (list[i].child[j].checked) {
+						questionList.push({
+							id: list[i].child[j].id,
+							name: list[i].child[j].name
+						});
+					}
+				}
+			}
+			params.classList = classList;
+			params.questionList = questionList;
+			return params;
 		}
 	};
 	$scope.count = {
@@ -36,14 +78,8 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 			});
 		}
 	};
-	
 	$scope.school = {
-		list: BaseData.getSchools(function(data) {
-			if (data.length > 0) {
-				var schoolId = data[0].id;
-				$scope.school.change(schoolId);
-			}
-		}),
+		list: null,
 		value: '',
 		change: function(schoolId) {
 			$scope.grade.list = BaseData.getGrades({id: schoolId}, function(data) {
@@ -56,8 +92,18 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 					$scope.batch.change(data[0].id);
 				}
 			});
+		},
+		init: function() {
+			BaseData.getSchools(function(data) {
+				if (data.length > 0) {
+					var schoolId = data[0].id;
+					$scope.school.change(schoolId);
+				}
+				$scope.school.list = data;
+			});
 		}
 	};
+	$scope.school.init();
 	$scope.grade = {
 		list: null,
 		value: '',
@@ -306,16 +352,24 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 						examId: $scope.query.examId,
 						gradeId: $scope.query.gradeId	
 					}];
-					if (item.isSuccess) {
-						$scope.abs.msg.set('该文件已近上传!');
-					} else if (item.isUploading) {
+					if (item.isUploading) {
 						$scope.abs.msg.set('上传中...');
 					} else {
 						if ('text/plain' == item.file.type) {
 							item.onSuccess = function(response, status, headers) {
-								item.remove();
+								$scope.loader.show = false;
+								if (response.status) {
+//									item.remove();
+									for (var i = 0; i < response.list.length; i++) {
+										$scope.abs.list.push(response.list[i]);
+									}
+								}
 							};
 							item.upload();
+							$scope.loader = {
+								show: true,
+								text: '上传中...'
+							};
 						} else {
 							$scope.abs.msg.set('请选择txt文件!');
 						}
@@ -334,6 +388,14 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 			resize();
 		});
 	});
+	$scope.getTableHeight = function() {
+		var height = Util.getWinHeight();
+		if (height < 600) {
+			height = 600;
+		}
+		return height - 180;
+	}
+
 	function resize() {
 		var height = Util.getWinHeight();
 		if (height < 600) {
@@ -346,5 +408,20 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 			width = 1024;
 		}
 		$('body').width(width);
+
+		/*var ids = ['classAvg','scoreDetail', 'answerNum','classAvgKnowledge',
+		           'scoreDetailKnowledge', 'classAvgPower', 'scoreDetailPower', 
+		           'originalAnswer'];
+		for (var i = 0; i < ids.length; i++) {
+			if ($('#' + ids[i] + ':visible').length > 0) {
+				var id =  ids[i];
+				var col = $('#'+id).data('col');
+				var height = Util.getWinHeight();
+				if (height < 600) {
+					height = 600;
+				}
+				Util.fixTable(id, col, {maxHeight: height - 180});
+			}
+		}*/
 	};
 };

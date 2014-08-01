@@ -19,18 +19,22 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	  	<div class="span5" style="text-align: center;">
 	  		<form class="form-inline">
 	  			学校:&nbsp;<select class="input-small width-select" data-ng-model="school.value" data-ng-change="school.change(school.value)">
-					  <option data-ng-repeat="s in school.list" data-ng-value="s.id" data-ng-bind="s.name"></option>
+					  <option data-ng-repeat="s in school.list" data-ng-value="s.id" data-ng-bind="s.name"
+					  data-ng-selected="s.id == school.value"></option>
 					</select>&nbsp;&nbsp;
-				年级:&nbsp;<select class="input-small width-select">
-					  <option data-ng-repeat="g in grade.list" data-ng-value="g.id" data-ng-bind="g.name"></option>
+				年级:&nbsp;<select class="input-small width-select" data-ng-model="grade.value" data-ng-change="grade.change(grade.value)">
+					  <option data-ng-repeat="g in grade.list" data-ng-value="g.id" data-ng-bind="g.name"
+					  data-ng-selected="g.id == grade.value"></option>
 					</select>
 	  		</form>
 			<form class="form-inline middleForm">
 	  			批次:&nbsp;<select class="input-small width-select" data-ng-model="batch.value" data-ng-change="batch.change(batch.value)">
-					  <option data-ng-repeat="b in batch.list" data-ng-value="b.id" data-ng-bind="b.name"></option>
+					  <option data-ng-repeat="b in batch.list" data-ng-value="b.id" data-ng-bind="b.name"
+					  data-ng-selected="b.id == batch.value"></option>
 					</select>&nbsp;&nbsp;
 				考试:&nbsp;<select class="input-small width-select" data-ng-model="subject.value" data-ng-change="subject.change(subject.value)">
-					  <option data-ng-repeat="s in subject.list" data-ng-value="s.id" data-ng-bind="s.name"></option>
+					  <option data-ng-repeat="s in subject.list" data-ng-value="s.id" data-ng-bind="s.name"
+					  data-ng-selected="s.id == subject.value"></option>
 					</select>
 	  		</form>
 			<form class="form-inline last">
@@ -64,12 +68,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				  <input type="radio" name="countType" value="score" data-ng-model="query.type"> 题目分
 				</label>
 	  			<label class="radio">
-				  <input type="radio" name="countType" value="knowledge" data-ng-model="query.type"> 知识点&nbsp;&nbsp;&nbsp;&nbsp;
+				  <input type="radio" name="countType" value="knowledgePoint" data-ng-model="query.type"> 知识点&nbsp;&nbsp;&nbsp;&nbsp;
 				</label>
 	  		</form>
 	  		<form class="form-inline middleForm">
 	  			<label class="radio" style="padding-right: 50px;">
-				  <input type="radio" name="countType" value="power" data-ng-model="query.type"> 能力值
+				  <input type="radio" name="countType" value="capability" data-ng-model="query.type"> 能力值
 				</label>
 	  			<label class="radio">
 				  <input type="radio" name="countType" value="originalAnswer" data-ng-model="query.type"> 原始答案
@@ -145,8 +149,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		    	</div>
 	    	</div>
 	    </div>
-	    <div id="report" class="span10" style="margin-left: 0.1%;width: 80%;overflow: auto;">
-	      <div data-ng-view style="margin: 5px 0 0 10px;"></div>
+	    <div id="report" class="span10" style="margin-left: 0.1%;width: 80.2%;overflow: auto;">
+	      <div data-ng-view style="margin: 5px 0 0 10px;background: #fff;"></div>
 	    </div>
 	  </div>
 	</div>
@@ -186,7 +190,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                   data-nv-file-select="" data-uploader="abs.upload.uploader">
                 <button type="button" class="btn btn-info" data-ng-click="abs.upload.exec()" 
                   data-ng-disabled="abs.upload.uploader.queue.length == 0 || abs.upload.uploader.queue[0].isUploading || 
-                  abs.upload.uploader.queue[0].isSuccess || abs.typeError">上传</button>
+                  abs.typeError">上传</button>
             </form>
             <table id="absFix" class="table table-bordered table-hover" style="margin-bottom: 0px;height: 220px;">
                 <thead>

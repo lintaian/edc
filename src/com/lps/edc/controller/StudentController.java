@@ -1,10 +1,12 @@
 package com.lps.edc.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -77,8 +79,39 @@ public class StudentController {
 	@RequestMapping(value="/upload", method=RequestMethod.POST)
 	public JSONObject upload(String examId, String gradeId, 
 			MultipartHttpServletRequest req) throws Exception {
+		JSONObject json = new JSONObject();
 		MultipartFile file = req.getFile("file");
-		return null;
+		InputStreamReader read = new InputStreamReader(file.getInputStream(), "utf-8");//考虑到编码格式
+        BufferedReader bufferedReader = new BufferedReader(read);
+        List<String> examNos = new ArrayList<String>();
+        String lineTxt = null;
+        while((lineTxt = bufferedReader.readLine()) != null){
+        	examNos.add(lineTxt);
+        }
+        read.close();
+        List<InfExamAbsStudent> absStudents = new ArrayList<InfExamAbsStudent>();
+        List<String> examNoDo = new ArrayList<String>();
+        for (String examNo : examNos) {
+    		if (absStudentService.queryExceptAbs(gradeId, examNo) != null 
+    				&& absStudentService.query(examId, examNo) == null) {
+    			InfExamAbsStudent as = new InfExamAbsStudent();
+    			as.setExamid(examId);
+    			as.setExamno(examNo);
+    			as.setInserttime(new Date());
+    			absStudents.add(as);
+    			examNoDo.add(examNo);
+    		}
+		}
+        absStudentService.add(absStudents);
+        List<AbsStudentDto> absStudentDtos = new ArrayList<AbsStudentDto>();
+        for (String examNo : examNoDo) {
+        	AbsStudentDto abs = absStudentService.query(examId, examNo);
+        	absStudentDtos.add(abs);
+		}
+        json.put("status", true);
+        json.put("list", absStudentDtos);
+        Thread.sleep(5000);
+		return json;
 	}
 	
 	@ResponseBody

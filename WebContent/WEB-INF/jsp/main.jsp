@@ -80,8 +80,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</label>
 	  		</form>
 	  		<form class="form-inline last">
-	  			<button class="btn btn-info" data-ng-click="query.exec()">查询</button>
-	  			<button class="btn btn-info" >导出表格</button>
+	  			<button class="btn btn-info" data-ng-click="query.exec()" style="width: 186px;">查询</button>
 	  		</form>
 	  	</div>
         <div class="span1" style="width: 10%;text-align: center;">

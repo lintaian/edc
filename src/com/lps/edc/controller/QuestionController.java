@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lps.edc.dto.QuestionDto;
+import com.lps.edc.entity.InfExamQuestion;
 import com.lps.edc.entity.InfExamQuestionResultKg;
 import com.lps.edc.entity.InfExamQuestionResultZg;
+import com.lps.edc.entity.SysWord;
 import com.lps.edc.service.interfaces.InfExamQuestionResultKgServiceIF;
 import com.lps.edc.service.interfaces.InfExamQuestionResultZgServiceIF;
 import com.lps.edc.service.interfaces.InfExamQuestionServiceIF;
@@ -48,41 +50,46 @@ public class QuestionController {
 		return json;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@ResponseBody
-	@RequestMapping(value="/zg", method=RequestMethod.PUT)
+	@RequestMapping(value="/answer", method=RequestMethod.PUT)
 	public JSONObject updateZg(@RequestBody JSONObject reqBody) throws Exception {
 		JSONObject json = new JSONObject();
+		json.put("status", true);
 		String examId = reqBody.getString("examId");
-		String questionId = reqBody.getString("questionId");
+		String questionName = reqBody.getString("questionName");
 		String result = reqBody.getString("result");
 		String imageId = reqBody.getString("imageId");
-		InfExamQuestionResultZg zg = new InfExamQuestionResultZg();
-		zg.setExamId(examId);
-		zg.setImageId(imageId);
-		zg.setQuestionId(questionId);
-		zg.setResult(result);
-		zg.setInsertTime(new Date());
-		questionResutlZgService.update(zg);
-		json.put("status", true);
+		InfExamQuestion question = questionService.get(examId, questionName);
+		if (question != null) {
+			String questionId = question.getQuestionId();
+			SysWord type = questionService.getQuestionType(questionId);
+			if (type != null) {
+				if ("主观题".equals(type.getWordInfo())) {
+					InfExamQuestionResultZg zg = new InfExamQuestionResultZg();
+					zg.setExamId(examId);
+					zg.setImageId(imageId);
+					zg.setQuestionId(questionId);
+					zg.setResult(result);
+					zg.setInsertTime(new Date());
+					questionResutlZgService.update(zg);
+				} else {
+					InfExamQuestionResultKg kg = new InfExamQuestionResultKg();
+					kg.setExamId(examId);
+					kg.setImageId(imageId);
+					kg.setQuestionId(questionId);
+					kg.setResult(result);
+					kg.setInsertTime((new Date()).toLocaleString());
+					questionResutlKgService.update(kg);
+				}
+			} else {
+				json.put("status", false);
+				json.put("msg", "题目类型错误");
+			}
+		} else {
+			json.put("status", false);
+			json.put("msg", "题目名字错误");
+		}
 		return json;
 	}
-	
-	@ResponseBody
-	@RequestMapping(value="/kg", method=RequestMethod.PUT)
-	public JSONObject updateKg(@RequestBody JSONObject reqBody) throws Exception {
-		JSONObject json = new JSONObject();
-		String examId = reqBody.getString("examId");
-		String questionId = reqBody.getString("questionId");
-		String result = reqBody.getString("result");
-		String imageId = reqBody.getString("imageId");
-		InfExamQuestionResultKg kg = new InfExamQuestionResultKg();
-		kg.setExamId(examId);
-		kg.setImageId(imageId);
-		kg.setQuestionId(questionId);
-		kg.setResult(result);
-		questionResutlKgService.update(kg);
-		json.put("status", true);
-		return json;
-	}
-	
 }

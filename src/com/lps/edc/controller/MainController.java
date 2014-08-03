@@ -98,11 +98,9 @@ public class MainController {
 		return "main";
 	}
 	
-	@RequestMapping("image/{id}/{questionName}")
-	public void image(HttpServletResponse resp, @PathVariable String id, @PathVariable String questionName) throws Exception {
-//		String questionId = questionService.getByName(questionName).getQuestionId();
-		String questionId = "89016565-3562-4A61-BC81-E96B69633113";
-		id = "034EDF63-BC0C-467C-AFD5-C48CF7252F27";
+	@RequestMapping("image/{id}")
+	public void image(HttpServletResponse resp,@PathVariable String id, String examId, String questionName) throws Exception {
+		String questionId = questionService.get(examId, questionName).getQuestionId();
 		byte[] temp = imageService.getOneExamQuestion(id, questionId);
 		resp.setContentType("image/png");
 		OutputStream os = resp.getOutputStream();
@@ -134,6 +132,10 @@ public class MainController {
 		questionList.add(ql2);
 		JSONArray a = JSONArray.fromObject(countDao.getQuestionScore(gradeId, examId, classList, questionList, "", ""));
 		System.out.println(a);
+	}
+	@RequestMapping(value="logout")
+	public void logout(HttpServletRequest req) {
+		req.getSession().invalidate();
 	}
 	
 }

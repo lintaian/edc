@@ -1,3 +1,13 @@
+<div class="navbar" style="margin-bottom: 5px;">
+	<div class="navbar-inner">
+		<ul class="nav">
+			<li class="active">
+				<a href="javascript:void(0)">原始答案</a>
+			</li>
+		</ul>
+		<button class="btn btn-info" data-ng-click="$parent.query.download()" style="float: right;">导出表格</button>
+	</div>
+</div>
 <div>
 	<table id="originalAnswer" class="table table-bordered table-hover">
 		<thead>
@@ -7,14 +17,33 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr data-ng-repeat="data in answer.data.data">
+			<tr data-ng-repeat="data in answer.data.data" data-ng-init="index = $index">
 				<td class="edit-td" data-ng-repeat="col in data track by $index" data-ng-if="$index!=1&&$index!=3&&$index!=5"
-				data-ng-mouseenter="col.edit=true" data-ng-mouseleave="col.edit=false">
+				data-ng-mouseenter="col.edit=true" data-ng-mouseleave="col.edit=false" data-ng-init="index2=$index">
 					<span data-ng-bind="col.value"></span>
-					<i class="icon-pencil edit-icon" data-ng-show="col.edit" data-ng-click=""></i>
-					<i class="icon-pencil edit-icon2" data-ng-show="col.edit" data-ng-click=""></i>
+					<i class="icon-pencil edit-icon2" data-ng-show="col.edit" data-ng-click="answer.update.open(col.value, index, index2)"></i>
+					<i class="icon-picture edit-icon" data-ng-show="col.edit" data-ng-click="answer.image.open(index, index2)"></i>
 				</td>
 			</tr>
 		</tbody>
 	</table>
+</div>
+<div data-dialog data-ng-model="updateQuestionAnswer" data-config="{width:327,height:125}" class="ng-hide">
+	<form class="form-horizontal" style="margin-left: -88px;">
+		<div class="control-group info">
+			<label class="control-label">答案或分数:</label>
+			<div class="controls">
+				<input type="text" data-ng-model="answer.update.value" placeholder="答案或分数"/>
+			</div>
+		</div>
+	</form>
+	<div style="text-align: center;">
+		<input class="btn btn-info" value="确定" type="button" style="margin: 0 10px;" data-ng-click="answer.update.exec()"/>
+		<input class="btn" value="取消" type="button" style="margin: 0 10px;" data-ng-click="answer.update.cancel()"/>
+	</div>
+</div>
+<div data-dialog data-ng-model="imageFloat" data-config="{width: 800, height: 400}" class="ng-hide">
+	<div style="text-align: center;">
+		<img data-ng-src="image/{{answer.image.id}}?examId={{answer.image.examId}}&questionName={{answer.image.questionName}}">
+	</div>
 </div>

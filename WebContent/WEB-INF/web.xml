@@ -12,6 +12,9 @@
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
+  <listener> 
+    <listener-class>com.lps.edc.interceptor.MySessionListener</listener-class> 
+  </listener> 
   <filter>
     <filter-name>OpenSessionInViewFilter</filter-name>
     <filter-class>
@@ -94,6 +97,10 @@
   <servlet-mapping>
     <servlet-name>default</servlet-name>
     <url-pattern>*.map</url-pattern>
+  </servlet-mapping>
+    <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>*.cvs</url-pattern>
   </servlet-mapping>
   <session-config>
     <session-timeout>0</session-timeout>

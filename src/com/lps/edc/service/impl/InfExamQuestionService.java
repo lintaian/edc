@@ -15,6 +15,7 @@ import com.lps.edc.dao.interfaces.SysWordDaoIF;
 import com.lps.edc.dto.QuestionDto;
 import com.lps.edc.dto.SimpleDto;
 import com.lps.edc.entity.InfExamQuestion;
+import com.lps.edc.entity.SysWord;
 import com.lps.edc.service.interfaces.InfExamQuestionServiceIF;
 
 @Service("questionService")
@@ -44,6 +45,14 @@ public class InfExamQuestionService implements InfExamQuestionServiceIF {
 	public List<QuestionDto> getQuestionDto(String examId) throws Exception {
 		List<InfExamQuestion> questions = questionDao.getByExam(examId);
 		return parse(questions);
+	}
+	@Override
+	public InfExamQuestion get(String examId, String name) throws Exception {
+		return questionDao.get(examId, name);
+	}
+	@Override
+	public SysWord getQuestionType(String id) throws Exception {
+		return questionDao.getQuestionType(id);
 	}
 	private List<QuestionDto> parse(List<InfExamQuestion> questions) throws Exception {
 		List<QuestionDto> dtos = new ArrayList<QuestionDto>();

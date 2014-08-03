@@ -2,8 +2,10 @@ package com.lps.edc.entity;
 
 import java.sql.Clob;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -15,7 +17,7 @@ import javax.persistence.TemporalType;
  *
  */
 @Entity
-@Table(name = "Inf_Exam_Question_Result_ZG", catalog = "Lps_Data")
+@Table(name = "Inf_Exam_Question_Result_ZG")
 public class InfExamQuestionResultZg implements java.io.Serializable {
 
 	private static final long serialVersionUID = -2971312128470602863L;
@@ -28,6 +30,7 @@ public class InfExamQuestionResultZg implements java.io.Serializable {
 	private Date insertTime;
 
 	@Id
+	@GeneratedValue
 	@Column(name = "ID", unique = true, nullable = false)
 	public int getId() {
 		return this.id;

@@ -10,6 +10,7 @@ function KnowledgePoint($scope, Count, $timeout) {
 	$scope.avg = {
 		data: null,
 		init: function(reQuery) {
+			$parent.query.reportType.current = $parent.query.reportType.obj.CLASSKNOWLEDGE.value;
 			if (reQuery || this.data == null) {
 				var params = {id: $parent.query.examId};
 				$parent.loader = {
@@ -28,6 +29,7 @@ function KnowledgePoint($scope, Count, $timeout) {
 	$scope.detail = {
 		data: null,
 		init: function(reQuery) {
+			$parent.query.reportType.current = $parent.query.reportType.obj.STUDENTKNOWLEDGE.value;
 			if (reQuery || this.data == null) {
 				var params = {id: $parent.query.examId};
 				$parent.loader = {

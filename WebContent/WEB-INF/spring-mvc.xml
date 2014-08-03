@@ -39,6 +39,7 @@
         </property>
     </bean>
 	<bean id="loginIntercrptor" class="com.lps.edc.interceptor.LoginInterceptor"></bean>
+	<bean id="sessionListener" class="com.lps.edc.interceptor.MySessionListener"></bean>
     <bean id="urlMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
 		<property name="interceptors">
 			<list>

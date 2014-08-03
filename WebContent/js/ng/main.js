@@ -19,6 +19,7 @@ require.config({
 		kp: 'controllers/knowledgePoint',
 		score: 'controllers/score',
 		capability: 'controllers/capability',
+		index: 'controllers/index',
 		oa: 'controllers/originalAnswer'
 	},
 	shim: {
@@ -37,6 +38,6 @@ require.config({
 
 require(['angular', 'angularResource', 'angularRoute', 'jquery', 'bootstrap',
          'filter', 'resource', 'util', 'dialog', 'loading', 'ngFileUpload', 'app', 
-         'appCtrl', 'kp', 'score', 'capability', 'oa'], function (angular) {
+         'appCtrl', 'kp', 'score', 'capability', 'oa', 'index'], function (angular) {
 	angular.bootstrap(document, ['mainApp']);
 });

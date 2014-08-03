@@ -10,6 +10,7 @@ function Score($scope, Count, $timeout) {
 	$scope.avg = {
 		data: null,
 		init: function(reQuery) {
+			$parent.query.reportType.current = $parent.query.reportType.obj.CLASSAVG.value;
 			if (reQuery || this.data == null) {
 				var params = $parent.query.getParams();
 				$parent.loader = {
@@ -28,6 +29,7 @@ function Score($scope, Count, $timeout) {
 	$scope.detail = {
 		data: null,
 		init: function(reQuery) {
+			$parent.query.reportType.current = $parent.query.reportType.obj.QUESTIONSCORE.value;
 			if (reQuery || this.data == null) {
 				var params = $parent.query.getParams();
 				$parent.loader = {
@@ -46,6 +48,7 @@ function Score($scope, Count, $timeout) {
 	$scope.num = {
 			data: null,
 			init: function(reQuery) {
+				$parent.query.reportType.current = $parent.query.reportType.obj.ANSWERNUMBER.value;
 				if (reQuery || this.data == null) {
 					var params = $parent.query.getParams();
 					$parent.loader = {

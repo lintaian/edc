@@ -20,8 +20,7 @@ define(['angular'], function(angular) {
 	}]).factory('Question', ['$resource', 'cfg', function($resource, cfg) {
 		return $resource(cfg.baseUrl + 'question/:id',{},{
 			'update' : {method: 'PUT'},
-			'updateKg' : {method: 'PUT', url: cfg.baseUrl + 'question/kg'},
-			'updateZg' : {method: 'PUT', url: cfg.baseUrl + 'question/zg'},
+			'updateAnswer' : {method: 'PUT', url: cfg.baseUrl + 'question/answer'},
 			'query' : {method: 'GET', url: cfg.baseUrl + 'question/exam/:id', isArray: true}
 		});
 	}]).factory('Student', ['$resource', 'cfg', function($resource, cfg) {

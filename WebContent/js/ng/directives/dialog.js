@@ -164,12 +164,14 @@ define(['jquery', 'angular'], function($, angular) {
         			}
 	        	};
 	        	var config = scope.$eval(attrs.config);
-	        	if(!config.width) {
-	        		throw 'you need config the width';
-	        	}
-	        	if(!config.height) {
-	        		throw 'you need config the height';
-	        	}
+//	        	if(!config.width) {
+//	        		config.width = 500;
+//	        		throw 'you need config the width';
+//	        	}
+//	        	if(!config.height) {
+//	        		config.height = 300;
+//	        		throw 'you need config the height';
+//	        	}
 	        	scope.style = {};
 	        	angular.extend(scope.style, config);
 	        	scope.$watch('ngModel', function() {

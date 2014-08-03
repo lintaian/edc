@@ -10,8 +10,55 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 		classList: [],
 		questionList: [],
 		type: 'score',
+		reportType: {
+			obj: {
+				ANSWERNUMBER: {
+					value: 'ANSWERNUMBER',
+					name: '答题数目表'
+				},
+				CLASSAVG: {
+					value: 'CLASSAVG',
+					name: '班级均分表'
+				},
+				QUESTIONSCORE: {
+					value: 'QUESTIONSCORE',
+					name: '小题得分表'
+				},
+				ORIGIALANSWER: {
+					value: 'ORIGIALANSWER',
+					name: '原始答案表'
+				},
+				CLASSPOWER: {
+					value: 'CLASSPOWER',
+					name: '能力值均分表'
+				},
+				STUDENTPOWER: {
+					value: 'STUDENTPOWER',
+					name: '学生能力值表'
+				},
+				CLASSKNOWLEDGE: {
+					value: 'CLASSKNOWLEDGE',
+					name: '知识点均分表'
+				},
+				STUDENTKNOWLEDGE: {
+					value: 'STUDENTKNOWLEDGE',
+					name: '学生知识点表'
+				}
+			},
+			current: ''
+		},
 		exec: function() {
-			window.location.href = 'main#/' + this.type;
+			window.location.href = 'main#/type/' + this.type;
+		},
+		download: function() {
+			if (this.reportType.current != '' && this.reportType.obj[this.reportType.current] != null) {
+				window.location.href = 'count/download/' + this.reportType.current + '/' + this.getFileName();
+			}
+		},
+		getFileName: function() {
+			var examName = $scope.subject.getName();
+			var reportName = this.reportType.obj[this.reportType.current].name;
+			return examName + '--' + reportName;
 		},
 		getParams: function() {
 			var params = {
@@ -180,6 +227,13 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 				}
 			}
 			return '';
+		},
+		getName: function() {
+			for (var i = 0; i < this.list.length; i++) {
+				if (this.list[i].id == $scope.query.examId) {
+					return this.list[i].name;
+				}
+			}
 		}
 	};
 	$scope.classes = {

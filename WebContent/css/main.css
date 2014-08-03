@@ -139,9 +139,11 @@ td .edit-icon,.edit-icon2 {
 .edit-icon {
 	top: 0;
 	left: 76%;
+	cursor: pointer;
 }
 .edit-icon2 {
 	top: 0;
 	left: 50%;
+	cursor: pointer;
 }
 

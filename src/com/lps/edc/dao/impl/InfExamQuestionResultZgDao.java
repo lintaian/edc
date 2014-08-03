@@ -14,8 +14,8 @@ public class InfExamQuestionResultZgDao extends BaseDao implements InfExamQuesti
 	}
 	@Override
 	public void del(InfExamQuestionResultZg zg) throws Exception {
-		String hql = "del InfExamQuestionResultZg a where a.examId=? and a.questionId=? and a.imageId=?";
-		Query q = getSession().createQuery(hql);
+		String hql = "delete from InfExamQuestionResultZg a where a.examId=? and a.questionId=? and a.imageId=?";
+		Query q = getSession(true).createQuery(hql);
 		q.setString(0, zg.getExamId());
 		q.setString(1, zg.getQuestionId());
 		q.setString(2, zg.getImageId());

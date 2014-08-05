@@ -10,6 +10,12 @@
 	opacity: 0.25;
 	filter:alpha(opacity=25)
 }
+.modal-loader {
+	z-index: 19891036;
+}
+.modal-alert, .modal-confirm {
+	z-index: 19891034;
+}
 .dialog {
 	position: fixed;
 	z-index: 19891033;
@@ -25,6 +31,9 @@
 	border:0px solid #bdbdbd;
 	box-shadow: 0px 0px 10px #aaa;
 }
+.dialog-alert, .dialog-confirm {
+	z-index: 19891035;
+}
 .dialog .title {
 	padding: 5px 2px;
 }
@@ -34,6 +43,7 @@
 .dialog .title .close-btn {
 	float: right;
 	padding-right: 6px;
+	cursor: pointer;
 }
 .dialog .content {
 	padding: 18px 2px;
@@ -53,7 +63,7 @@
 
 .loader {
 	position: fixed;
-	z-index: 19891033;
+	z-index: 19891037;
 	width: 300px;
 	height: 30px;
 	left: 50%;

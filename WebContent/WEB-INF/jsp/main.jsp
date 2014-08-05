@@ -84,7 +84,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	  		</form>
 	  	</div>
         <div class="span1" style="width: 10%;text-align: center;">
-	  			<button class="btn btn-info" style="width: 60px;padding: 10px;height: 60px;margin-top: 26px;" >统计报表</button>
+  			<button class="btn btn-info" style="width: 60px;padding: 10px;height: 60px;margin-top: 26px;" 
+  				data-ng-click="countReport.open()">统计报表</button>
         </div>
 	  </div>
 	  <div class="row-fluid">
@@ -211,7 +212,191 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             </table>
         </div>
     </div>
-	<div data-loading data-ng-model="loader" data-config="{type:bool, width: 140}"></div>
+    <div data-dialog data-ng-model="report" data-config="{width:900,height:600}" class="ng-hide">
+        <div class="report">
+	      <table class="table">
+	      	<tr>
+	      		<td>
+	      			<form class="form-inline">
+	      				批次:&nbsp;&nbsp;<select class="input-small width-select" data-ng-model="countReport.batch.value" 
+	      					data-ng-change="countReport.batch.change(countReport.batch.value)">
+						  <option data-ng-repeat="b in batch.list" data-ng-value="b.id" data-ng-bind="b.name"
+						  data-ng-selected="b.id == batch.value"></option>
+						</select>
+	      			</form>
+	      		</td>
+	      		<td>
+	      			<form class="form-inline">
+		      			年级:&nbsp;&nbsp;<select class="input-small width-select" data-ng-model="countReport.grade.value" 
+		      				data-ng-change="countReport.grade.change(countReport.grade.value)">
+						  <option data-ng-repeat="g in grade.list" data-ng-value="g.id" data-ng-bind="g.name"
+						  data-ng-selected="g.id == grade.value"></option>
+						</select>
+	      			</form>
+	      		</td>
+	      	</tr>
+	      	<tr>
+	      		<td>
+	      			<form class="form-inline">
+	      				选择考试:&nbsp;&nbsp;
+	      				<label class="checkbox">
+			      			<input type="checkbox" data-ng-model="countReport.exam.checkAll"
+			      				data-ng-change="countReport.exam.checkAllFn(countReport.exam.checkAll)">&nbsp;全选
+	      				</label>
+	      			</form>
+	      			<div class="list">
+	      				<table class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<th>选择</th>
+									<th>考试</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="e in countReport.exam.list">
+									<td>
+										<input type="checkbox" data-ng-model="e.checked">
+									</td>
+									<td>
+										<span data-ng-bind="e.name"></span>
+									</td>
+								</tr>
+							</tbody>
+	      				</table>
+	      			</div>
+	      		</td>
+	      		<td>
+	      			<form class="form-inline">
+	      				选择班级:&nbsp;&nbsp;
+	      				<label class="checkbox">
+			      			<input type="checkbox" data-ng-model="countReport.classes.checkAll"
+			      				data-ng-change="countReport.classes.checkAllFn(countReport.classes.checkAll)">&nbsp;全选
+	      				</label>
+	      			</form>
+	      			<div class="list">
+	      				<table class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<th>选择</th>
+									<th>班级</th>
+									<th>文理</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="c in countReport.classes.list">
+									<td>
+										<input type="checkbox" data-ng-model="c.checked">
+									</td>
+									<td>
+										<span data-ng-bind="c.name"></span>
+									</td>
+									<td>
+										<span data-ng-bind="c.wlType"></span>
+									</td>
+								</tr>
+							</tbody>
+	      				</table>
+	      			</div>
+	      		</td>
+	      	</tr>
+	      	<tr>
+	      		<td>
+	      			<form class="form-inline">
+	      				统计项目:&nbsp;&nbsp;
+	      				<label class="checkbox">
+			      			<input type="checkbox" data-ng-model="countReport.project.checkAll"
+			      				data-ng-change="countReport.project.checkAllFn(countReport.project.checkAll)">&nbsp;全选
+	      				</label>
+	      			</form>
+	      			<div class="list">
+	      				<table class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<th>选择</th>
+									<th>统计项目</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="p in countReport.project.list">
+									<td>
+										<input type="checkbox" data-ng-model="p.checked">
+									</td>
+									<td>
+										<span data-ng-bind="p.name"></span>
+									</td>
+								</tr>
+							</tbody>
+	      				</table>
+	      			</div>
+	      		</td>
+	      		<td>
+	      			<form class="form-inline">
+		      			达标线:&nbsp;<select class="small" data-ng-model="countReport.standard.add.subjectId">
+						  <option data-ng-repeat="s in countReport.standard.subjects" data-ng-value="s.id" data-ng-bind="s.name"
+						  data-ng-selected="s.id == countReport.standard.add.subjectId"></option>
+						</select>
+						<select class="small" data-ng-model="countReport.standard.add.subjectTypeId">
+						  <option data-ng-repeat="s in countReport.standard.subjectTypes" data-ng-value="s.id" data-ng-bind="s.name"
+						  data-ng-selected="s.id == countReport.standard.add.subjectTypeId"></option>
+						</select>
+						<select class="small" data-ng-model="countReport.standard.add.standardTypeId">
+						  <option data-ng-repeat="s in countReport.standard.standardTypes" data-ng-value="s.id" data-ng-bind="s.name"
+						  data-ng-selected="s.id == countReport.standard.add.standardTypeId"></option>
+						</select>
+						<input type="text" style="width: 30px;" placeholder="分数" data-ng-model="countReport.standard.add.score"/>
+						<button class="btn btn-info" style="width: auto;" data-ng-click="countReport.standard.add.exec()">添加</button>
+	      			</form>
+	      			<div class="list">
+	      				<table class="table table-bordered table-hover">
+							<thead>
+								<tr>
+									<th>科目</th>
+									<th>文理</th>
+									<th>一本</th>
+									<th>本科</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="s in countReport.standard.list">
+									<td>
+										<span data-ng-bind="s.subjectName"></span>
+									</td>
+									<td>
+										<span data-ng-bind="s.subjectTypeName"></span>
+									</td>
+									<td>
+										<span data-ng-bind="s.score1" data-ng-show="s.standard1 != 0 && !s.edit"></span>
+										<input data-ng-model="s.score1" data-ng-show="s.standard1 != 0 && s.edit"
+											style="width: 30px;">
+									</td>
+									<td>
+										<span data-ng-bind="s.score2" data-ng-show="s.standard2 != 0 && !s.edit"></span>
+										<input data-ng-model="s.score2" data-ng-show="s.standard2 != 0 && s.edit"
+											style="width: 30px;">
+									</td>
+									<td>
+										<a href="javascript:void(0)" data-ng-click="countReport.standard.update.open($index)"
+											data-ng-show="!s.edit">修改</a>
+										<a href="javascript:void(0)" data-ng-click="countReport.standard.update.exec($index)"
+											data-ng-show="s.edit">保存</a><br/>
+										<a href="javascript:void(0)" data-ng-click="countReport.standard.del($index)">删除</a>
+									</td>
+								</tr>
+							</tbody>
+	      				</table>
+	      			</div>
+	      		</td>
+	      	</tr>
+	      	<tr>
+	      		<td colspan="2">
+					<button class="btn btn-info" data-ng-click="countReport.exec()">开始统计</button>
+	      		</td>
+	      	</tr>
+	      </table>
+	  </div>
+    </div>
+	<div data-loading data-ng-model="loader" data-config="{type:bool, width: 200}"></div>
 	<div data-confirm data-ng-model="confirm"></div>
   	<div data-alert data-ng-model="alert"></div>
 	<script data-main="js/ng/main" src="js/lib/require.js"></script>

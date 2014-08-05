@@ -7,7 +7,7 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 			var params = $parent.query.getParams();
 			$parent.loader = {
 				show: true,
-				text: '统计中...'
+				text: '统计中,请稍候...'
 			}
 			this.data = Count.originalAnswer(params, function(data) {
 				$parent.loader.show = false;

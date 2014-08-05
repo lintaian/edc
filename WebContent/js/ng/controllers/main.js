@@ -1,5 +1,7 @@
-function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, FileUploader, $location) {
-	if (angular.isUndefined($scope.query) && ($location.path() != '' || $location.path() != '/')) {
+function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
+		FileUploader, $location, Standard, StatisticalCategory, User) {
+	if (angular.isUndefined($scope.query) && 
+			($location.path() != '' || $location.path() != '/')) {
 		window.location.href = 'main#/';
 	}
 	$scope.query = {
@@ -106,7 +108,7 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 			var type = $scope.count.type ? 1 : 0;
 			$scope.loader = {
 				show: true,
-				text: '统计中...'
+				text: '统计中,请稍候...'
 			};
 			Count.countScore({examId: $scope.query.examId, type: type}, function() {
 				$scope.loader.show = false;
@@ -407,7 +409,7 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 						gradeId: $scope.query.gradeId	
 					}];
 					if (item.isUploading) {
-						$scope.abs.msg.set('上传中...');
+						$scope.abs.msg.set('上传中,请稍候...');
 					} else {
 						if ('text/plain' == item.file.type) {
 							item.onSuccess = function(response, status, headers) {
@@ -434,6 +436,234 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 			}
 		}
 	};
+	
+	$scope.countReport = {
+		open: function() {
+			$scope.report = {
+				show: true,
+				title: '统计报表'
+			}
+			this.batch.change($scope.batch.list[0].id);
+			this.grade.change($scope.grade.list[0].id);
+			this.standard.init();
+		},
+		batch: {
+			value: '',
+			change: function(value) {
+				BaseData.getSubjects({id: value}, function(data) {
+					for (var i = 0; i < data.length; i++) {
+						data[i].checked = true;
+					}
+					$scope.countReport.exam.list = data;
+				});
+			}
+		},
+		grade: {
+			value: '',
+			change: function(value) {
+				BaseData.getClasses({id: value}, function(data) {
+					for (var i = 0; i < data.length; i++) {
+						data[i].checked = true;
+					}
+					$scope.countReport.classes.list = data;
+				});
+			}
+		},
+		exam: {
+			checkAll: true,
+			list: [],
+			checkAllFn: function(checked) {
+				for (var i = 0; i < this.list.length; i++) {
+					this.list[i].checked = checked;
+				}
+			}
+		},
+		classes: {
+			checkAll: true,
+			list: [],
+			checkAllFn: function(checked) {
+				for (var i = 0; i < this.list.length; i++) {
+					this.list[i].checked = checked;
+				}
+			}
+		},
+		project: {
+			checkAll: true,
+			list: StatisticalCategory.query(function(data) {
+				for (var i = 0; i < data.length; i++) {
+					data[i].checked = true;
+				}
+				$scope.countReport.project.list = data;
+			}),
+			checkAllFn: function(checked) {
+				for (var i = 0; i < this.list.length; i++) {
+					this.list[i].checked = checked;
+				}
+			}
+		},
+		standard: {
+			list: [],
+			subjects: Standard.querySubjects(),
+			subjectTypes: Standard.querySubjectTypes(),
+			standardTypes: Standard.queryStandardTypes(),
+			init: function() {
+				var schoolId = $scope.school.value || $scope.school.list[0].id;
+				Standard.query({id: schoolId}, function(data) {
+					$scope.countReport.standard.list = data;
+				});
+			},
+			add: {
+				subjectId: '',
+				subjectTypeId: '',
+				standardTypeId: '',
+				score: '',
+				exec: function() {
+					var schoolId= $scope.school.value || $scope.school.list[0].id,
+					subjectId = this.subjectId || $scope.countReport.standard.subjects[0].id,
+					subjectTypeId = this.subjectTypeId || $scope.countReport.standard.subjectTypes[0].id,
+					standardTypeId = this.standardTypeId || $scope.countReport.standard.standardTypes[0].id,
+					score = this.score;
+					if (subjectId == '' || subjectTypeId == '' || standardTypeId == '' || score == '') {
+						
+					} else {
+						Standard.save({
+							schoolId: schoolId,
+							subjectId: subjectId,
+							subjectTypeId: subjectTypeId,
+							standardTypeId: standardTypeId,
+							score: this.score
+						}, function(data) {
+							$scope.countReport.standard.init();
+						});
+					}
+				}
+			},
+			update: {
+				open: function(index) {
+					$scope.countReport.standard.list[index].edit = true;
+				},
+				exec: function(index) {
+					var obj = $scope.countReport.standard.list[index];
+					var params = [];
+					if (obj.standardId1 != 0) {
+						params.push({
+							id: obj.standardId1,
+							score: obj.score1,
+						});
+					}
+					if (obj.standardId2 != 0) {
+						params.push({
+							id: obj.standardId2,
+							score: obj.score2,
+						});
+					}
+					Standard.update({
+						objs: params
+					}, function() {
+						obj.edit = false;
+					}, function() {
+						$scope.alert = {
+							show: true,
+							text: '修改失败!'
+						}
+					})
+				}
+			},
+			del: function(index) {
+				var ids =  '';
+				if (this.list[index].standardId1 != '') {
+					ids += this.list[index].standardId1;
+				}
+				if (this.list[index].standardId2 != '') {
+					ids += ',' + this.list[index].standardId2;
+				}
+				$scope.confirm = {
+					show: true,
+					title: '请注意',
+					text: '你确定要删除该记录?',
+					yes: function() {
+						Standard.del({ids: ids}, function() {
+							$scope.countReport.standard.init();
+						}, function() {
+							$scope.alert = {
+								show: true,
+								text: '添加失败!'
+							}
+						})
+					}
+				}
+			}
+		},
+		exec: function() {
+			$scope.loader = {
+				show: true,
+				text: '统计中,请稍候...'
+			}
+			var examIds = [],
+				classesIds = [],
+				projectIds = [],
+				standardIds = [];
+			var exams = this.exam.list,
+				classess = this.classes.list,
+				projects = this.project.list,
+				standards = this.standard.list;
+			for (var i = 0; i < exams.length; i++) {
+				if (exams[i].checked) {
+					examIds.push(exams[i].id);
+				}
+			}
+			for (var i = 0; i < classess.length; i++) {
+				if (classess[i].checked) {
+					classesIds.push(classess[i].id);
+				}
+			}
+			for (var i = 0; i < projects.length; i++) {
+				if (projects[i].checked) {
+					projectIds.push({
+						proclass: projects[i].code,
+						proname: projects[i].name
+					});
+				}
+			}
+			for (var i = 0; i < standards.length; i++) {
+				if (standards[i].standardId1 != 0) {
+					standardIds.push({
+						subjectid: standards[i].subjectId,
+						WLtype: standards[i].subjectTypeName,
+						StandardType: standards[i].standardTypeName1,
+						StandardScore: standards[i].score1
+					});
+				}
+				if (standards[i].standardId2 != 0) {
+					standardIds.push({
+						subjectid: standards[i].subjectId,
+						WLtype: standards[i].subjectTypeName,
+						StandardType: standards[i].standardTypeName2,
+						StandardScore: standards[i].score2
+					});
+				}
+			}
+			User.report({
+				exams: examIds,
+				classes: classesIds,
+				projects: projectIds,
+				standards: standardIds,
+				schoolId: $scope.school.value || $scope.school.list[0].id,
+				gradeId: $scope.countReport.grade.value || $scope.grade.list[0].id,
+				batchId: $scope.countReport.batch.value || $scope.batch.list[0].id
+				
+			}, function(data) {
+				$scope.loader.show = false;
+				window.location.href = data.url;
+			}, function() {
+				$scope.loader.show = false;
+				$scope.alert = {
+					show: true,
+					text: '导出报表失败!'
+				}
+			});
+		}
+	}
 	
 	
 	$(function() {

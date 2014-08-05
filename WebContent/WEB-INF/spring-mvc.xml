@@ -26,7 +26,7 @@
 	    <property name="locations">
 	        <list>
            		<value>/WEB-INF/db.properties</value>
-           		<value>/WEB-INF/image_api.properties</value>
+           		<value>/WEB-INF/api.properties</value>
 	        </list>
 	    </property>
     </bean>
@@ -91,6 +91,9 @@
 		<property name="imageGetUrl" value="${image.get.url}"></property>
 		<property name="imageGetMethod" value="${image.get.method}"></property>
 		<property name="fmt" value="${image.get.fmt}"></property>
+    </bean>
+    <bean id="reportConfig" class="com.lps.edc.util.ReportConfig">
+		<property name="url" value="${report.url}"></property>
     </bean>
     
 </beans>

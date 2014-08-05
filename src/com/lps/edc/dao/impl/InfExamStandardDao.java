@@ -2,6 +2,7 @@ package com.lps.edc.dao.impl;
 
 import java.util.List;
 
+import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
 
 import com.lps.edc.dao.interfaces.InfExamStandardDaoIF;
@@ -29,5 +30,13 @@ public class InfExamStandardDao extends BaseDao implements InfExamStandardDaoIF 
 		String hql = "from InfExamStandard a where a.schoolId=? and a.teacherId=?";
 		List<InfExamStandard> examStandards = (List<InfExamStandard>)getHibernateTemplate().find(hql, schoolId, teacherId);
 		return examStandards;
+	}
+	@Override
+	public void update(int id, double score) throws Exception {
+		String hql = "update InfExamStandard a set a.score = ? where a.id = ?";
+		Query q = getSession(true).createQuery(hql);
+		q.setDouble(0, score);
+		q.setInteger(1, id);
+		q.executeUpdate();
 	}
 }

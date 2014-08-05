@@ -27,7 +27,7 @@ public class ImageService implements ImageServiceIF {
 		url.append("&fmt=");
 		url.append(config.getFmt());
 		HttpEntity data = new StringEntity(url.toString());
-		return HttpHelper.post(config.getImageGetUrl(), data);
+		return HttpHelper.post(config.getImageGetUrl(), data, "application/x-www-form-urlencoded", "application/octet-stream");
 	}
 	
 	@Resource(name="imageGetConfig")

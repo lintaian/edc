@@ -147,3 +147,22 @@ td .edit-icon,.edit-icon2 {
 	cursor: pointer;
 }
 
+.report .list {
+	width: 350px;
+	height: 188px;
+	padding-left: 70px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.report table tr td,.report table tr th {
+	text-align: center;
+}
+.report .small {
+	width: 80px;
+}
+.report .form-inline {
+	margin-bottom: 0px;
+}
+.report table {
+	margin-bottom: 0px;
+}

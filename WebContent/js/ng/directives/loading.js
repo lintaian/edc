@@ -5,7 +5,7 @@ define(['angular'], function(angular) {
 	        require: 'ngModel',
 	        priority: 0,
 	        template: '<div data-ng-show="loading.show">' +
-	        	      '<div class="modal" data-ng-show="loading.modal"></div>' +
+	        	      '<div class="modal modal-loader" data-ng-show="loading.modal"></div>' +
 	        	      '<div class="loader" data-ng-style="style">' +
 	        	          '<img src="img/loader.gif" class="load_icon"/>' +
 	        	          '<span class="text" data-ng-bind="loading.text"></span>' +

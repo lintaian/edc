@@ -9,6 +9,7 @@ import net.sf.json.JSONArray;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lps.edc.entity.StatisticalCategory;
 import com.lps.edc.service.interfaces.StatisticalCategoryServiceIF;
@@ -18,6 +19,7 @@ import com.lps.edc.service.interfaces.StatisticalCategoryServiceIF;
 public class StatisticalCategoryController {
 	@Resource
 	private StatisticalCategoryServiceIF statisticalCategoryService;
+	@ResponseBody
 	@RequestMapping(value="", method=RequestMethod.GET)
 	public JSONArray query() throws Exception {
 		List<StatisticalCategory> categories = statisticalCategoryService.query();

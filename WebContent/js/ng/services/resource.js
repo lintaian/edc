@@ -6,7 +6,8 @@ define(['angular'], function(angular) {
 		baseUrl: ''
 	}).factory('User', ['$resource', 'cfg', function($resource, cfg) {
 		return $resource(cfg.baseUrl + 'login',{},{
-			'login' : {method: 'POST'}
+			'login' : {method: 'POST'},
+			'report': {method: 'POST', url: cfg.baseUrl + 'report'}
 		});
 	}]).factory('BaseData', ['$resource', 'cfg', function($resource, cfg) {
 		return $resource(cfg.baseUrl + 'batch/:id',{},{
@@ -34,7 +35,8 @@ define(['angular'], function(angular) {
 			'del' : {method: 'DELETE', url: cfg.baseUrl + 'standard/:ids'},
 			'query' : {method: 'GET', url: cfg.baseUrl + 'standard/:id', isArray: true},
 			'querySubjects' : {method: 'GET', url: cfg.baseUrl + 'standard/subjects', isArray: true},
-			'querySubjectTypes' : {method: 'GET', url: cfg.baseUrl + 'standard/subjectTyeps', isArray: true}
+			'querySubjectTypes' : {method: 'GET', url: cfg.baseUrl + 'standard/subjectTypes', isArray: true},
+			'queryStandardTypes' : {method: 'GET', url: cfg.baseUrl + 'standard/standardTypes', isArray: true}
 		});
 	}]).factory('Count', ['$resource', 'cfg', function($resource, cfg) {
 		return $resource(cfg.baseUrl + 'count/:id',{},{

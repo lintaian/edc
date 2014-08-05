@@ -4,7 +4,7 @@ define(['jquery', 'angular'], function($, angular) {
 			restrict: 'AE',
 	        require: 'ngModel',
 	        template: '<div data-ng-show="confirm.show">' +
-	        	      '<div class="modal" data-ng-show="confirm.modal"></div>' +
+	        	      '<div class="modal modal-confirm" data-ng-show="confirm.modal"></div>' +
 	        	      '<div id="confirm" class="dialog" data-ng-style="style">' +
 	        	          '<div class="title">' +
 	        	              '<span class="text" data-ng-bind="confirm.title"></span>' +
@@ -75,7 +75,7 @@ define(['jquery', 'angular'], function($, angular) {
 			restrict: 'AE',
 	        require: 'ngModel',
 	        template:'<div data-ng-show="alert.show">' +
-	        	      '<div class="modal" data-ng-show="alert.modal"></div>' +
+	        	      '<div class="modal modal-alert" data-ng-show="alert.modal"></div>' +
 	        	      '<div id="alert" class="dialog" data-ng-style="style">' +
 	        	          '<div class="title">' +
 	        	              '<span class="text" data-ng-bind="alert.title"></span>' +

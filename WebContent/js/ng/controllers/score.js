@@ -15,7 +15,7 @@ function Score($scope, Count, $timeout) {
 				var params = $parent.query.getParams();
 				$parent.loader = {
 					show: true,
-					text: '统计中...'
+					text: '统计中,请稍候...'
 				}
 				this.data = Count.classAvg(params, function(data) {
 					$parent.loader.show = false;
@@ -34,7 +34,7 @@ function Score($scope, Count, $timeout) {
 				var params = $parent.query.getParams();
 				$parent.loader = {
 					show: true,
-					text: '统计中...'
+					text: '统计中,请稍候...'
 				}
 				this.data = Count.questionScore(params, function(data) {
 					$parent.loader.show = false;
@@ -53,7 +53,7 @@ function Score($scope, Count, $timeout) {
 					var params = $parent.query.getParams();
 					$parent.loader = {
 							show: true,
-							text: '统计中...'
+							text: '统计中,请稍候...'
 					}
 					this.data = Count.answerNum(params, function(data) {
 						$parent.loader.show = false;

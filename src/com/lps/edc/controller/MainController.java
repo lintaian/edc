@@ -2,6 +2,8 @@ package com.lps.edc.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,13 +18,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.lps.edc.dao.interfaces.CountDAOIF;
+import com.lps.edc.dto.ClassStructDto;
+import com.lps.edc.dto.ExamDto;
+import com.lps.edc.dto.RespDto;
+import com.lps.edc.entity.InfExamQuestion;
 import com.lps.edc.entity.SysTeacher;
 import com.lps.edc.entity.SysUser;
 import com.lps.edc.service.interfaces.ImageServiceIF;
 import com.lps.edc.service.interfaces.InfExamQuestionServiceIF;
+import com.lps.edc.service.interfaces.ReportServiceIF;
 import com.lps.edc.service.interfaces.SysTeacherServiceIF;
 import com.lps.edc.service.interfaces.SysUserServiceIF;
+import com.lps.edc.util.Helper;
 
 @Controller
 @RequestMapping("")
@@ -36,7 +43,7 @@ public class MainController {
 	@Resource
 	private InfExamQuestionServiceIF questionService;
 	@Resource
-	private CountDAOIF countDao;
+	private ReportServiceIF reportService;
 	
 	@RequestMapping(value="login", method=RequestMethod.GET)
 	public String loginGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -100,42 +107,50 @@ public class MainController {
 	
 	@RequestMapping("image/{id}")
 	public void image(HttpServletResponse resp,@PathVariable String id, String examId, String questionName) throws Exception {
-		String questionId = questionService.get(examId, questionName).getQuestionId();
+		InfExamQuestion q = questionService.get(examId, questionName);
+		String questionId = q.getQuestionId();
 		byte[] temp = imageService.getOneExamQuestion(id, questionId);
 		resp.setContentType("image/png");
 		OutputStream os = resp.getOutputStream();
 		os.write(temp);
 		os.close();
 	}
-	@RequestMapping("test")
-	public void test() throws Exception {
-//		JSONArray a = JSONArray.fromObject(countDao.getStudentKnowledge("86E4C0D1-7377-4863-B2FD-6A8E6417FD27"));
-		String examId = "54578b79-e80b-426b-a27e-f0eb7852156d";
-		String gradeId = "2cc22950-52ec-4d95-8077-4453956b008f";
-		JSONArray classList = new JSONArray();
-		JSONObject cl1 = new JSONObject();
-		cl1.put("id", "cdb8cc81-2f76-40dc-ad57-9dbdf371ee45");
-		cl1.put("name", "4班");
-		classList.add(cl1);
-		JSONObject cl2 = new JSONObject();
-		cl2.put("id", "7a2bf0dc-0d80-4207-b645-16757aeb0495");
-		cl2.put("name", "5班");
-		classList.add(cl2);
-		JSONArray questionList = new JSONArray();
-		JSONObject ql1 = new JSONObject();
-		ql1.put("id", "4562ADB3-D43E-4907-9E27-F727A3521E2A");
-		ql1.put("name", "1");
-		questionList.add(ql1);
-		JSONObject ql2 = new JSONObject();
-		ql2.put("id", "C559D614-0E53-4E5C-8C25-A8A54CB97243");
-		ql2.put("name", "2");
-		questionList.add(ql2);
-		JSONArray a = JSONArray.fromObject(countDao.getQuestionScore(gradeId, examId, classList, questionList, "", ""));
-		System.out.println(a);
-	}
 	@RequestMapping(value="logout")
 	public void logout(HttpServletRequest req) {
 		req.getSession().invalidate();
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="report", method=RequestMethod.POST)
+	public JSONObject report(HttpServletRequest req, HttpServletResponse resp, @RequestBody JSONObject body) throws Exception {
+		JSONArray examIds = body.getJSONArray("exams");
+		JSONArray classIds = body.getJSONArray("classes");
+		JSONArray projectIds = body.getJSONArray("projects");
+		JSONArray standardIds = body.getJSONArray("standards");
+		String schoolId = body.getString("schoolId");
+		String gradeId = body.getString("gradeId");
+		String batchId = body.getString("batchId");
+		List<String> cIds = Helper.covertJsonArrayToList(classIds);
+		List<ClassStructDto> classes = reportService.queryClass(cIds, schoolId, gradeId);
+		String tId = "";
+		if ("admin".equals(req.getSession().getAttribute("role").toString())) {
+			SysUser user = (SysUser) req.getSession().getAttribute("user");
+			tId = user.getUserId();
+		} else {
+			SysTeacher teacher = (SysTeacher) req.getSession().getAttribute("user");
+			tId = teacher.getTeacherid();
+		}
+		List<String> eIds = Helper.covertJsonArrayToList(examIds);
+		List<ExamDto> exams = reportService.queryExam(eIds, batchId, schoolId, tId);
+		RespDto respDto = new RespDto(classes, exams, null, null);
+		JSONObject dto = JSONObject.fromObject(respDto);
+		dto.put("prolist", projectIds);
+		dto.put("standlist", standardIds);
+		String url = reportService.getUrl(dto.toString());
+		JSONObject rs = JSONObject.fromObject(url);
+		rs.put("url", "http://localhost:801/1.rar");
+		Thread.sleep(5000);
+		return rs;
 	}
 	
 }

@@ -8,18 +8,18 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 public class HttpHelper {
-	public static byte[] post(String url, HttpEntity param) throws Exception {
+	public static byte[] post(String url, HttpEntity param, String reqContentType, String respContentType) throws Exception {
 		byte[] rs = null;
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpPost req = new HttpPost(url);
-		req.setHeader("Content-Type", "application/x-www-form-urlencoded");
+		req.setHeader("Content-Type", reqContentType);
 		req.setEntity(param);
 		CloseableHttpResponse resp = client.execute(req);
 		try {
 			HttpEntity entity = resp.getEntity();
 			if (entity != null) {
 				String contentType = entity.getContentType().getValue();
-				if ("application/octet-stream".equals(contentType)) {
+				if (respContentType.equals(contentType)) {
 					InputStream is = entity.getContent();
 					int length = (int) entity.getContentLength();
 					rs = new byte[length];
@@ -30,7 +30,7 @@ public class HttpHelper {
 					}
 					is.close();
 				} else {
-					throw new Exception("error");
+//					throw new Exception("error");
 				}
 			}
 		} finally {

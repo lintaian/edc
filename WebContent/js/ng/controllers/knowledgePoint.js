@@ -15,7 +15,7 @@ function KnowledgePoint($scope, Count, $timeout) {
 				var params = {id: $parent.query.examId};
 				$parent.loader = {
 					show: true,
-					text: '统计中...'
+					text: '统计中,请稍候...'
 				}
 				this.data = Count.classKnowledge(params, function(data) {
 					$parent.loader.show = false;
@@ -34,7 +34,7 @@ function KnowledgePoint($scope, Count, $timeout) {
 				var params = {id: $parent.query.examId};
 				$parent.loader = {
 					show: true,
-					text: '统计中...'
+					text: '统计中,请稍候...'
 				}
 				this.data = Count.studentKnowledge(params, function(data) {
 					$parent.loader.show = false;

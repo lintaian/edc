@@ -148,8 +148,6 @@ public class MainController {
 		dto.put("standlist", standardIds);
 		String url = reportService.getUrl(dto.toString());
 		JSONObject rs = JSONObject.fromObject(url);
-		rs.put("url", "http://localhost:801/1.rar");
-		Thread.sleep(5000);
 		return rs;
 	}
 	

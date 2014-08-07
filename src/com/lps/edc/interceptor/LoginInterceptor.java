@@ -18,18 +18,17 @@ public class LoginInterceptor implements HandlerInterceptor{
 		
 	}
 	public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object arg2) throws Exception {
-//		if(req.getSession().getAttribute("user") != null) {
-//			return true;
-//		} else {
-//			String str = req.getServletPath();
-//			if("/login".equals(str)) {
-//				return true;
-//			} else {
-//				resp.sendRedirect(req.getScheme()+"://"+req.getServerName()+":"
-//						+req.getServerPort()+req.getContextPath()+"/login");
-//				return false;
-//			}
-//		}
-		return true;
+		if(req.getSession().getAttribute("user") != null) {
+			return true;
+		} else {
+			String str = req.getServletPath();
+			if("/login".equals(str)) {
+				return true;
+			} else {
+				resp.sendRedirect(req.getScheme()+"://"+req.getServerName()+":"
+						+req.getServerPort()+req.getContextPath()+"/login");
+				return false;
+			}
+		}
 	}
 }

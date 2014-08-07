@@ -12,6 +12,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css">
 	<!-- <link rel="stylesheet" type="text/css" href="css/main.css"> -->
+	<style type="text/css">
+		.ng-hide {
+			display: none;
+		}
+	</style>
 </head>
 <body data-ng-controller="Login" style="background-image: url(img/bg1.jpg);">
 	<div style="margin: 300px auto; width: 500px;position: relative;">

@@ -24,7 +24,7 @@ public class ReportDao extends BaseDao implements ReportDaoIF {
 				+ "a.SchoolName as schoolname, a.ExamTime as examtime, "
 				+ "b.score1 as standscore1, b.score2 as standscore2 from "
 				+ "(select distinct a.BatchId, b.BatchName, a.ExamId, a.ExamName, a.SubjectId, c.WordInfo, "
-				+ "d.SchoolName, a.ExamTime from Inf_Exam_Subject a, Inf_Exam_Batch b, Sys_Word c, Sys_School d "
+				+ "d.SchoolName, a.ExamTime, d.SchoolID from Inf_Exam_Subject a, Inf_Exam_Batch b, Sys_Word c, Sys_School d "
 				+ "where a.ExamId in (:ids) "
 				+ "and a.BatchId = :batchId "
 				+ "and d.SchoolID = :schoolId and a.BatchId = b.BatchId "
@@ -38,7 +38,7 @@ public class ReportDao extends BaseDao implements ReportDaoIF {
 				+ "(select  a.SchoolId, a.TeacherId, a.SubjectId, a.Score from Inf_Exam_Standard a, Sys_Word b "
 				+ "where a.StandardTypeId = b.WordId and b.WordInfo = '本科') as b on "
 				+ "a.SchoolId = b.SchoolId and a.TeacherId = b.TeacherId and a.SubjectId = b.SubjectId) as b "
-				+ "on a.SubjectId = b.SubjectId and b.SchoolID = b.SchoolId and b.TeacherId = :teacherId";
+				+ "on a.SubjectId = b.SubjectId and a.SchoolID = b.SchoolId and b.TeacherId = :teacherId";
 		SQLQuery q = getSession(true).createSQLQuery(sql);
 		q.addScalar("batchid", Hibernate.STRING);
 		q.addScalar("batchname", Hibernate.STRING);

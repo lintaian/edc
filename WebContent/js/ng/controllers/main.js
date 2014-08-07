@@ -654,7 +654,14 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout,
 				
 			}, function(data) {
 				$scope.loader.show = false;
-				window.location.href = data.url;
+				if (data.result) {
+					window.location.href = data.message;
+				} else {
+					$scope.alert = {
+						show: true,
+						text: data.message
+					}
+				}
 			}, function() {
 				$scope.loader.show = false;
 				$scope.alert = {

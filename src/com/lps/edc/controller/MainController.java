@@ -72,6 +72,7 @@ public class MainController {
 				if (user != null) {
 					if (password.equals(user.getPassword())) {
 						re.put("status", true);
+						re.put("user", user);
 						req.getSession().setAttribute("user", user);
 						req.getSession().setAttribute("role", role);
 					} else {
@@ -85,6 +86,7 @@ public class MainController {
 				if (teacher != null) {
 					if (password.equals(teacher.getPassword())) {
 						re.put("status", true);
+						re.put("user", teacher);
 						req.getSession().setAttribute("user", teacher);
 						req.getSession().setAttribute("role", role);
 					} else {

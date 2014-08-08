@@ -5,7 +5,7 @@ define(['jquery', 'angular'], function($, angular) {
 	        require: 'ngModel',
 	        template: '<div data-ng-show="confirm.show">' +
 	        	      '<div class="modal modal-confirm" data-ng-show="confirm.modal"></div>' +
-	        	      '<div id="confirm" class="dialog" data-ng-style="style">' +
+	        	      '<div id="confirm" class="dialog dialog-confirm" data-ng-style="style">' +
 	        	          '<div class="title">' +
 	        	              '<span class="text" data-ng-bind="confirm.title"></span>' +
 	        	              '<i class="icon-remove close-btn" data-ng-click="confirm.close()"></i>' +
@@ -76,7 +76,7 @@ define(['jquery', 'angular'], function($, angular) {
 	        require: 'ngModel',
 	        template:'<div data-ng-show="alert.show">' +
 	        	      '<div class="modal modal-alert" data-ng-show="alert.modal"></div>' +
-	        	      '<div id="alert" class="dialog" data-ng-style="style">' +
+	        	      '<div id="alert" class="dialog dialog-alert" data-ng-style="style">' +
 	        	          '<div class="title">' +
 	        	              '<span class="text" data-ng-bind="alert.title"></span>' +
 	        	              '<i class="icon-remove close-btn" data-ng-click="alert.close()"></i>' +

@@ -20,6 +20,12 @@ function KnowledgePoint($scope, Count, $timeout) {
 				this.data = Count.classKnowledge(params, function(data) {
 					$parent.loader.show = false;
 					$timeout(function() {
+//						$('#classAvgKnowledge').fixedHeaderTable({ 
+//							height: $parent.getTableHeight(),
+//							altClass: 'odd', 
+//							fixedColumn: true, 
+//							fixedColumns: 1 
+//						});
 						Util.fixTable('classAvgKnowledge', 1, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -39,6 +45,12 @@ function KnowledgePoint($scope, Count, $timeout) {
 				this.data = Count.studentKnowledge(params, function(data) {
 					$parent.loader.show = false;
 					$timeout(function() {
+//						$('#scoreDetailKnowledge').fixedHeaderTable({ 
+//							height: $parent.getTableHeight(),
+//							altClass: 'odd', 
+//							fixedColumn: true, 
+//							fixedColumns: 3 
+//						});
 						Util.fixTable('scoreDetailKnowledge', 3, {maxHeight: $parent.getTableHeight()});
 					});
 				});

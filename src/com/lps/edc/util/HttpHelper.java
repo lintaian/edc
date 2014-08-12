@@ -18,12 +18,13 @@ public class HttpHelper {
 		CloseableHttpResponse resp = client.execute(req);
 		try {
 			HttpEntity entity = resp.getEntity();
-			if (entity != null) {
+			if (entity != null && entity.getContentType() != null) {
 				String contentType = entity.getContentType().getValue();
 				if (respContentType.equals(contentType)) {
-					InputStream is = entity.getContent();
-					int length = (int) entity.getContentLength();
+					long l = entity.getContentLength();
+					int length = l > 0 ? (int) l : 2048;
 					rs = new byte[length];
+					InputStream is = entity.getContent();
 					int flag = 0;
 					int a = 0;
 					while ((a = is.read(rs, flag, length)) > 0) {

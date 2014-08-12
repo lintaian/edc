@@ -27,10 +27,18 @@ public class ReportService implements ReportServiceIF {
 	private ReportDaoIF reportDao;
 	@SuppressWarnings("deprecation")
 	@Override
-	public String getUrl(String param) throws Exception {
+	public String getUrl(String param, String qid) throws Exception {
 		param = URLEncoder.encode(param, HTTP.UTF_8);
 		StringEntity se = new StringEntity(param);
-		byte[] rs = HttpHelper.post(config.getUrl(), se, "application/json", "text/html; charset=utf-8");
+		byte[] rs = HttpHelper.post(config.getUrl() + "?methon=TongJi&qid=" + qid, se, "application/json", "text/html; charset=utf-8");
+		return new String(rs, "utf-8");
+	}
+	@SuppressWarnings("deprecation")
+	@Override
+	public String getStatus(String param, String qid) throws Exception {
+		param = URLEncoder.encode(param, HTTP.UTF_8);
+		StringEntity se = new StringEntity(param);
+		byte[] rs = HttpHelper.post(config.getUrl() + "?methon=Progress&qid=" + qid, se, "application/json", "text/html; charset=utf-8");
 		return new String(rs, "utf-8");
 	}
 	@Override

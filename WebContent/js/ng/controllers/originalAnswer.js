@@ -12,6 +12,12 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 			this.data = Count.originalAnswer(params, function(data) {
 				$parent.loader.show = false;
 				$timeout(function() {
+					/*$('#originalAnswer').fixedHeaderTable({ 
+						height: $parent.getTableHeight(),
+						altClass: 'odd', 
+						fixedColumn: true, 
+						fixedColumns: 3 
+					});*/
 					Util.fixTable('originalAnswer', 3, {maxHeight: $parent.getTableHeight()});
 				});
 			});

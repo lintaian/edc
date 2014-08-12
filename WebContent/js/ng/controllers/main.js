@@ -1,4 +1,4 @@
-function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
+function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, $interval,
 		FileUploader, $location, Standard, StatisticalCategory, User) {
 	if (angular.isUndefined($scope.query) && 
 			($location.path() != '' || $location.path() != '/')) {
@@ -595,7 +595,7 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout,
 			}
 		},
 		exec: function() {
-			$scope.loader = {
+			$scope.loaderReport = {
 				show: true,
 				text: '统计中,请稍候...'
 			}
@@ -653,7 +653,8 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout,
 				batchId: $scope.countReport.batch.value || $scope.batch.list[0].id
 				
 			}, function(data) {
-				$scope.loader.show = false;
+				$interval.cancel($scope.interval);
+				$scope.loaderReport.show = false;
 				if (data.result) {
 					window.location.href = data.message;
 				} else {
@@ -663,12 +664,18 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout,
 					}
 				}
 			}, function() {
-				$scope.loader.show = false;
+				$interval.cancel($scope.interval);
+				$scope.loaderReport.show = false;
 				$scope.alert = {
 					show: true,
 					text: '导出报表失败!'
 				}
 			});
+			$scope.interval = $interval(function() {
+				User.reportStatus(function(data) {
+					$scope.loaderReport.text = data.message;
+				})
+			}, 3000);
 		}
 	}
 	

@@ -8,7 +8,8 @@ import com.lps.edc.dto.StandardClassDto;
 import com.lps.edc.dto.TongJiProDto;
 
 public interface ReportServiceIF {
-	public String getUrl(String param) throws Exception;
+	public String getUrl(String param, String qid) throws Exception;
+	public String getStatus(String param, String qid) throws Exception;
 	public List<ExamDto> queryExam(List<String> ids, String batchId,String schoolId,String teacherId) throws Exception;
 	public List<ClassStructDto> queryClass(List<String> ids, String schoolId, String gradeId) throws Exception;
 	public List<TongJiProDto> queryProject(String ids) throws Exception;

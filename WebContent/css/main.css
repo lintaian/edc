@@ -166,3 +166,11 @@ td .edit-icon,.edit-icon2 {
 .report table {
 	margin-bottom: 0px;
 }
+
+.fht-table thead tr th,
+.fht-table thead tr td,
+.fht-table tbody tr td {
+    background-color: #fff;
+    padding: 10px;
+    text-align: center;
+}

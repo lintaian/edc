@@ -20,6 +20,12 @@ function Capability($scope, Count, $timeout) {
 				this.data = Count.classPower(params, function(data) {
 					$parent.loader.show = false;
 					$timeout(function() {
+//						$('#classAvgPower').fixedHeaderTable({ 
+//							height: $parent.getTableHeight(),
+//							altClass: 'odd', 
+//							fixedColumn: true, 
+//							fixedColumns: 1 
+//						});
 						Util.fixTable('classAvgPower', 1, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -39,6 +45,12 @@ function Capability($scope, Count, $timeout) {
 				this.data = Count.studentPower(params, function(data) {
 					$parent.loader.show = false;
 					$timeout(function() {
+//						$('#scoreDetailPower').fixedHeaderTable({ 
+//							height: $parent.getTableHeight(),
+//							altClass: 'odd', 
+//							fixedColumn: true, 
+//							fixedColumns: 3 
+//						});
 						Util.fixTable('scoreDetailPower', 3, {maxHeight: $parent.getTableHeight()});
 					});
 				});

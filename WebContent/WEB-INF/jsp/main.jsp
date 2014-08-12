@@ -10,6 +10,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   <title>考试数据检查</title>
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css">
+  <link rel="stylesheet" type="text/css" href="css/defaultTheme.css">
+<!--   <link rel="stylesheet" type="text/css" href="css/960.css">
+  <link rel="stylesheet" type="text/css" href="css/demo.css"> -->
   <link rel="stylesheet" type="text/css" href="css/main.css">
   <link rel="stylesheet" type="text/css" href="css/dialog.css">
 </head>
@@ -397,6 +400,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	  </div>
     </div>
 	<div data-loading data-ng-model="loader" data-config="{type:bool, width: 200}"></div>
+	<div data-loading data-ng-model="loaderReport" data-config="{type:bool, width: 400}"></div>
 	<div data-confirm data-ng-model="confirm"></div>
   	<div data-alert data-ng-model="alert"></div>
 	<script data-main="js/ng/main" src="js/lib/require.js"></script>

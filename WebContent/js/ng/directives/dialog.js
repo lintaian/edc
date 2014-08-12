@@ -181,7 +181,7 @@ define(['jquery', 'angular'], function($, angular) {
 	        			var height = config.height ? config.height : $('#dialog').height();
 	        			angular.extend(scope.style, {
 	        				left: (Util.getWinWidth() - width) / 2,
-	        				top: (Util.getWinHeight() - height) / 2 - 50
+	        				top: (Util.getWinHeight() - height) / 2
 	        			});
 	        			if(scope.dialog.useEsc) {
 	        				$(window).bind('keydown', function(event){

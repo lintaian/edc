@@ -148,8 +148,25 @@ public class MainController {
 		JSONObject dto = JSONObject.fromObject(respDto);
 		dto.put("prolist", projectIds);
 		dto.put("standlist", standardIds);
-		String url = reportService.getUrl(dto.toString());
+		String qid = tId + System.currentTimeMillis();
+		req.getSession().setAttribute("qid", qid);
+		String url = reportService.getUrl(dto.toString(), qid);
 		JSONObject rs = JSONObject.fromObject(url);
+		return rs;
+	}
+	@ResponseBody
+	@RequestMapping(value="report/status", method=RequestMethod.GET)
+	public JSONObject getReportStatus(HttpServletRequest req) throws Exception {
+		JSONObject args = new JSONObject();
+		String qid = req.getSession().getAttribute("qid").toString();
+		String data = reportService.getStatus(args.toString(), qid);
+		JSONObject rs = new JSONObject();
+		if (!"".equals(data)) {
+			try {
+				rs = JSONObject.fromObject(data);
+			} catch (Exception e) {
+			}
+		}
 		return rs;
 	}
 	

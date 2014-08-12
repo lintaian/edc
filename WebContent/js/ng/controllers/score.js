@@ -20,6 +20,12 @@ function Score($scope, Count, $timeout) {
 				this.data = Count.classAvg(params, function(data) {
 					$parent.loader.show = false;
 					$timeout(function() {
+//						$('#classAvg').fixedHeaderTable({ 
+//							height: $parent.getTableHeight(),
+//							altClass: 'odd', 
+//							fixedColumn: true, 
+//							fixedColumns: 1 
+//						});
 						Util.fixTable('classAvg', 1, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -39,6 +45,12 @@ function Score($scope, Count, $timeout) {
 				this.data = Count.questionScore(params, function(data) {
 					$parent.loader.show = false;
 					$timeout(function() {
+//						$('#scoreDetail').fixedHeaderTable({ 
+//							height: $parent.getTableHeight(),
+//							altClass: 'odd', 
+//							fixedColumn: true, 
+//							fixedColumns: 3 
+//						});
 						Util.fixTable('scoreDetail', 3, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -58,6 +70,10 @@ function Score($scope, Count, $timeout) {
 					this.data = Count.answerNum(params, function(data) {
 						$parent.loader.show = false;
 						$timeout(function() {
+//							$('#answerNum').fixedHeaderTable({ 
+//								height: $parent.getTableHeight(),
+//								altClass: 'odd', 
+//							});
 							Util.fixTable('answerNum', 0, {maxHeight: $parent.getTableHeight()});
 						});
 					});

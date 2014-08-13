@@ -44,6 +44,7 @@ function Score($scope, Count, $timeout) {
 				}
 				this.data = Count.questionScore(params, function(data) {
 					$parent.loader.show = false;
+					$scope.detail.more.hasMore = data.data.length < $scope.detail.more.per_page ? false : true;
 					$timeout(function() {
 //						$('#scoreDetail').fixedHeaderTable({ 
 //							height: $parent.getTableHeight(),
@@ -54,6 +55,35 @@ function Score($scope, Count, $timeout) {
 						Util.fixTable('scoreDetail', 3, {maxHeight: $parent.getTableHeight()});
 					});
 				});
+			}
+		},
+		more: {
+			page: 1,
+			per_page: 100,
+			hasMore: false,
+			exec: function() {
+				if (this.hasMore) {
+					this.page++;
+					Count.questionScorePage({page: this.page, per_page: this.per_page}, function(data) {
+						$scope.detail.data.data = $scope.detail.data.data.concat(data);
+						$scope.detail.more.hasMore = data.length < $scope.detail.more.per_page ? false : true;
+						var ele = '';
+						for (var i = 0; i < data.length; i++) {
+							ele += '<tr>';
+							for (var j = 0; j < data[i].length; j++) {
+								if (j != 1 && j != 3) {
+									ele += '<td>';
+									ele += data[i][j];
+									ele += '</td>';
+								}
+							}
+							ele += '</tr>';
+						}
+						$timeout(function() {
+							$('#scoreDetail_tableColumn table tbody tr:last').before(ele);
+						});
+					});
+				}
 			}
 		}
 	}

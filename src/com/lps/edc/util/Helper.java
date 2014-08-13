@@ -64,4 +64,13 @@ public class Helper {
 		}
 		return list;
 	} 
+	public static List<Object> spliceList(List<Object> data, int page, int per_page) {
+		List<Object> rs = new ArrayList<Object>();
+		int start = (page - 1) * per_page;
+		int end = page * per_page > data.size() ? data.size() : page * per_page;
+		for (int i = start; i < end; i++) {
+			rs.add(data.get(i));
+		}
+		return rs;
+	}
 }

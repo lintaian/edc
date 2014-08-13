@@ -11,6 +11,7 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 			}
 			this.data = Count.originalAnswer(params, function(data) {
 				$parent.loader.show = false;
+				$scope.answer.more.hasMore = data.data.length < $scope.answer.more.per_page ? false : true;
 				$timeout(function() {
 					/*$('#originalAnswer').fixedHeaderTable({ 
 						height: $parent.getTableHeight(),
@@ -21,6 +22,35 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 					Util.fixTable('originalAnswer', 3, {maxHeight: $parent.getTableHeight()});
 				});
 			});
+		},
+		more: {
+			page: 1,
+			per_page: 100,
+			hasMore: false,
+			exec: function() {
+				if (this.hasMore) {
+					this.page++;
+					Count.originalAnswerPage({page: this.page, per_page: this.per_page}, function(data) {
+						$scope.answer.data.data = $scope.answer.data.data.concat(data);
+						$scope.answer.more.hasMore = data.length < $scope.answer.more.per_page ? false : true;
+						var ele = '';
+						for (var i = 0; i < data.length; i++) {
+							ele += '<tr>';
+							for (var j = 0; j < data[i].length; j++) {
+								if (j != 1 && j != 3 && j != 5) {
+									ele += '<td>';
+									ele += data[i][j].value;
+									ele += '</td>';
+								}
+							}
+							ele += '</tr>';
+						}
+						$timeout(function() {
+							$('#originalAnswer_tableColumn table tbody tr:last').before(ele);
+						});
+					});
+				}
+			}
 		},
 		update: {
 			value: '',

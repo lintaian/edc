@@ -41,6 +41,12 @@
 				<td data-ng-repeat="col in data track by $index" data-ng-bind="col"
 				data-ng-if="$index!=1&&$index!=3"></td>
 			</tr>
+			<tr data-ng-show="detail.more.hasMore">
+				<td>
+					<a href="javascript:void(0)" data-ng-click="detail.more.exec()">更多</a>
+				</td>
+				<td data-ng-repeat="t in detail.data.title" data-ng-if="$index>2"></td>
+			</tr>
 		</tbody>
 	</table>
 </div>

@@ -45,11 +45,15 @@ define(['angular'], function(angular) {
 			'answerNum' : {method: 'POST', url: cfg.baseUrl + 'count/answerNum'},
 			'classAvg' : {method: 'POST', url: cfg.baseUrl + 'count/classAvg'},
 			'originalAnswer' : {method: 'POST', url: cfg.baseUrl + 'count/originalAnswer'},
+			'originalAnswerPage' : {method: 'GET', url: cfg.baseUrl + 'count/originalAnswer', isArray: true},
 			'questionScore' : {method: 'POST', url: cfg.baseUrl + 'count/questionScore'},
-			'classKnowledge' : {method: 'GET', url: cfg.baseUrl + 'count/classKnowledge/:id'},
-			'classPower' : {method: 'GET', url: cfg.baseUrl + 'count/classPower/:id'},
-			'studentKnowledge' : {method: 'GET', url: cfg.baseUrl + 'count/studentKnowledge/:id'},
-			'studentPower' : {method: 'GET', url: cfg.baseUrl + 'count/studentPower/:id'}
+			'questionScorePage' : {method: 'GET', url: cfg.baseUrl + 'count/questionScore', isArray: true},
+			'classKnowledge' : {method: 'POST', url: cfg.baseUrl + 'count/classKnowledge/:id'},
+			'classPower' : {method: 'POST', url: cfg.baseUrl + 'count/classPower/:id'},
+			'studentKnowledge' : {method: 'POST', url: cfg.baseUrl + 'count/studentKnowledge/:id'},
+			'studentKnowledgePage' : {method: 'GET', url: cfg.baseUrl + 'count/studentKnowledge/:id', isArray: true},
+			'studentPower' : {method: 'POST', url: cfg.baseUrl + 'count/studentPower/:id'},
+			'studentPowerPage' : {method: 'GET', url: cfg.baseUrl + 'count/studentPower/:id', isArray: true}
 		});
 	}]).factory('StatisticalCategory', ['$resource', 'cfg', function($resource, cfg) {
 		return $resource(cfg.baseUrl + 'statisticalCategory/:id',{},{});

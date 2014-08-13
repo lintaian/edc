@@ -1,5 +1,5 @@
 define(['angular', 'jquery'], function(angular, $) {
-	return angular.module('scrollLoading', []).directive('scrollLoading', ['Source', function(Source) {
+	return angular.module('scrollLoading', []).directive('scrollLoading', ['Count', function(Count) {
 		return {
 			restrict: 'AE',
 	        priority: 1,
@@ -7,7 +7,7 @@ define(['angular', 'jquery'], function(angular, $) {
 	        	var config = scope.$eval(attrs.scrollLoadingConfig);
 	        	var option = {
         			page: 1,
-        			per_page: 15,
+        			per_page: 50,
         			method: 'get'
 	        	};
 	        	angular.extend(option, config);
@@ -15,12 +15,13 @@ define(['angular', 'jquery'], function(angular, $) {
 	        	var loading = false;
 	        	addData(true);
 	        	function addData(first, callback) {
-	        		if(option.service == 'source') {
+	        		if(option.service == 'count') {
 	        			loading = true;
-	        			scope[option.data].push(Source[option.method]({page: option.page, per_page: option.per_page}, function(data) {
+	        			Count[option.method]({page: option.page, per_page: option.per_page}, function(data) {
+	        				scope[option.data].concat(data);
 	        				option.page++;
 	        				loading = false;
-	        				if(data.content.length < option.per_page) {
+	        				if(data.length < option.per_page) {
 	        					$(element).unbind('scroll');
 	        				}
 	        				if(callback) callback();
@@ -36,7 +37,7 @@ define(['angular', 'jquery'], function(angular, $) {
 	        						}
 	        					});
 	        				}
-	        			}));
+	        			});
 	        		}
 	        	};
 	        }

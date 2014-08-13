@@ -6,6 +6,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.springframework.stereotype.Controller;
@@ -60,8 +61,18 @@ public class CountController {
 				reqBody.getString("studentName"), reqBody.getString("examNo"));
 		CSV.create(data, req, ReportType.ORIGIALANSWER);
 		data.setData(Helper.converToObj(data.getData()));
+		req.getSession().setAttribute("tempCount", data.getData());
+		data.setData(Helper.spliceList(data.getData(), 1, 100));
 		JSONObject obj = JSONObject.fromObject(data);
 		return obj;
+	}
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value="/originalAnswer", method=RequestMethod.GET)
+	public JSONArray getOriginalAnswerPage(HttpServletRequest req, int page, int per_page) throws Exception {
+		List<Object> data = (List<Object>) req.getSession().getAttribute("tempCount");
+		List<Object> rs = Helper.spliceList(data, page, per_page);
+		return JSONArray.fromObject(rs);
 	}
 	@SuppressWarnings("unchecked")
 	@ResponseBody
@@ -89,38 +100,67 @@ public class CountController {
 			}
 			d2.add(5, score);
 		}
-		data.setData(d);
 		CSV.create(data, req, ReportType.QUESTIONSCORE);
+		req.getSession().setAttribute("tempCount", d);
+		data.setData(Helper.spliceList(d, 1, 100));
 		JSONObject obj = JSONObject.fromObject(data);
 		return obj;
 	}
+	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value="/classKnowledge/{id}", method=RequestMethod.GET)
+	@RequestMapping(value="/questionScore", method=RequestMethod.GET)
+	public JSONArray getQuestionScorePage(HttpServletRequest req, int page, int per_page) throws Exception {
+		List<Object> data = (List<Object>) req.getSession().getAttribute("tempCount");
+		List<Object> rs = Helper.spliceList(data, page, per_page);
+		return JSONArray.fromObject(rs);
+	}
+	@ResponseBody
+	@RequestMapping(value="/classKnowledge/{id}", method=RequestMethod.POST)
 	public JSONObject getClassKnowledge(@PathVariable String id, HttpServletRequest req) throws Exception {
 		TableDto data = countService.getClassKnowledge(id);
 		CSV.create(data, req, ReportType.CLASSKNOWLEDGE);
 		return JSONObject.fromObject(data);
 	}
 	@ResponseBody
-	@RequestMapping(value="/classPower/{id}", method=RequestMethod.GET)
+	@RequestMapping(value="/classPower/{id}", method=RequestMethod.POST)
 	public JSONObject getClassPower(@PathVariable String id, HttpServletRequest req) throws Exception {
 		TableDto data = countService.getClassPower(id);
 		CSV.create(data, req, ReportType.CLASSPOWER);
 		return JSONObject.fromObject(data);
 	}
 	@ResponseBody
-	@RequestMapping(value="/studentKnowledge/{id}", method=RequestMethod.GET)
+	@RequestMapping(value="/studentKnowledge/{id}", method=RequestMethod.POST)
 	public JSONObject getStudentKnowledge(@PathVariable String id, HttpServletRequest req) throws Exception {
 		TableDto data = countService.getStudentKnowledge(id);
 		CSV.create(data, req, ReportType.STUDENTKNOWLEDGE);
+		req.getSession().setAttribute("tempCount", data.getData());
+		data.setData(Helper.spliceList(data.getData(), 1, 100));
 		return JSONObject.fromObject(data);
 	}
+	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value="/studentPower/{id}", method=RequestMethod.GET)
+	@RequestMapping(value="/studentKnowledge/{id}", method=RequestMethod.GET)
+	public JSONArray getStudentKnowledgePage(HttpServletRequest req, int page, int per_page) throws Exception {
+		List<Object> data = (List<Object>) req.getSession().getAttribute("tempCount");
+		List<Object> rs = Helper.spliceList(data, page, per_page);
+		return JSONArray.fromObject(rs);
+	}
+	@ResponseBody
+	@RequestMapping(value="/studentPower/{id}", method=RequestMethod.POST)
 	public JSONObject getStudentPower(@PathVariable String id, HttpServletRequest req) throws Exception {
 		TableDto data = countService.getStudentPower(id);
 		CSV.create(data, req, ReportType.STUDENTPOWER);
+		req.getSession().setAttribute("tempCount", data.getData());
+		data.setData(Helper.spliceList(data.getData(), 1, 100));
 		return JSONObject.fromObject(data);
+	}
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value="/studentPower/{id}", method=RequestMethod.GET)
+	public JSONArray getStudentPowerPage(HttpServletRequest req, int page, int per_page) throws Exception {
+		List<Object> data = (List<Object>) req.getSession().getAttribute("tempCount");
+		List<Object> rs = Helper.spliceList(data, page, per_page);
+		return JSONArray.fromObject(rs);
 	}
 	@RequestMapping(value="/download/{type}/{filename}")
 	public void download(HttpServletRequest req, HttpServletResponse resp, @PathVariable ReportType type, @PathVariable String filename) {

@@ -25,6 +25,12 @@
 					<i class="icon-picture edit-icon" data-ng-show="col.edit" data-ng-click="answer.image.open(index, index2)"></i>
 				</td>
 			</tr>
+			<tr data-ng-show="answer.more.hasMore">
+				<td>
+					<a href="javascript:void(0)" data-ng-click="answer.more.exec()">更多</a>
+				</td>
+				<td data-ng-repeat="t in answer.data.title" data-ng-if="$index > 3"></td>
+			</tr>
 		</tbody>
 	</table>
 </div>

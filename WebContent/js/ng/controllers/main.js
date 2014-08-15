@@ -443,8 +443,8 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 				show: true,
 				title: '统计报表'
 			}
-			this.batch.change($scope.batch.list[0].id);
-			this.grade.change($scope.grade.list[0].id);
+			this.batch.change($scope.batch.value || $scope.batch.list[0].id);
+			this.grade.change($scope.grade.value || $scope.grade.list[0].id);
 			this.standard.init();
 		},
 		batch: {

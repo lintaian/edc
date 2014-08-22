@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%
 String path = request.getContextPath();
 String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
-%><!DOCTYPE html>
+%>
+<!DOCTYPE html>
 <html xmlns:ng="http://angularjs.org" id="ng-app">
 <head>
   <base href="<%=basePath%>">
@@ -11,10 +12,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css">
   <link rel="stylesheet" type="text/css" href="css/defaultTheme.css">
-<!--   <link rel="stylesheet" type="text/css" href="css/960.css">
-  <link rel="stylesheet" type="text/css" href="css/demo.css"> -->
   <link rel="stylesheet" type="text/css" href="css/main.css">
   <link rel="stylesheet" type="text/css" href="css/dialog.css">
+  <!--[if lte IE 9]>
+    <script src="js/lib/html5shiv.js"></script>
+    <script src="js/lib/json3.js"></script>
+    <script src="js/lib/ie-fix.js"></script>
+  <![endif]-->
 </head>
 <body data-ng-controller="Main" data-nv-file-drop="" data-uploader="abs.upload.uploader" data-filters="queueLimit, customFilter">
 	<div class="container-fluid main">

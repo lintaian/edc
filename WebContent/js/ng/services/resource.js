@@ -8,7 +8,7 @@ define(['angular'], function(angular) {
 		return $resource(cfg.baseUrl + 'login',{},{
 			'login' : {method: 'POST'},
 			'report': {method: 'POST', url: cfg.baseUrl + 'report'},
-			'reportStatus': {method: 'GET', url: cfg.baseUrl + 'report/status'},
+			'reportStatus': {method: 'GET', url: cfg.baseUrl + 'report/status'}
 		});
 	}]).factory('BaseData', ['$resource', 'cfg', function($resource, cfg) {
 		return $resource(cfg.baseUrl + 'batch/:id',{},{

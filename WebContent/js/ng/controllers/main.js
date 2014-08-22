@@ -548,13 +548,13 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 					if (obj.standardId1 != 0) {
 						params.push({
 							id: obj.standardId1,
-							score: obj.score1,
+							score: obj.score1
 						});
 					}
 					if (obj.standardId2 != 0) {
 						params.push({
 							id: obj.standardId2,
-							score: obj.score2,
+							score: obj.score2
 						});
 					}
 					Standard.update({

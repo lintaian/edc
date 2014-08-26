@@ -13,12 +13,6 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 				$parent.loader.show = false;
 				$scope.answer.more.hasMore = data.data.length < $scope.answer.more.per_page ? false : true;
 				$timeout(function() {
-					/*$('#originalAnswer').fixedHeaderTable({ 
-						height: $parent.getTableHeight(),
-						altClass: 'odd', 
-						fixedColumn: true, 
-						fixedColumns: 3 
-					});*/
 					Util.fixTable('originalAnswer', 3, {maxHeight: $parent.getTableHeight()});
 				});
 			});
@@ -30,6 +24,10 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 			exec: function() {
 				if (this.hasMore) {
 					this.page++;
+					$parent.loader = {
+						show: true,
+						text: '加载中,请稍候...'
+					}
 					Count.originalAnswerPage({page: this.page, per_page: this.per_page}, function(data) {
 						$scope.answer.data.data = $scope.answer.data.data.concat(data);
 						$scope.answer.more.hasMore = data.length < $scope.answer.more.per_page ? false : true;
@@ -48,6 +46,7 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 						$timeout(function() {
 							$('#originalAnswer_tableColumn table tbody tr:last').before(ele);
 						});
+						$parent.loader.show = false;
 					});
 				}
 			}

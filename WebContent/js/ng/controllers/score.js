@@ -20,12 +20,6 @@ function Score($scope, Count, $timeout) {
 				this.data = Count.classAvg(params, function(data) {
 					$parent.loader.show = false;
 					$timeout(function() {
-//						$('#classAvg').fixedHeaderTable({ 
-//							height: $parent.getTableHeight(),
-//							altClass: 'odd', 
-//							fixedColumn: true, 
-//							fixedColumns: 1 
-//						});
 						Util.fixTable('classAvg', 1, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -46,12 +40,6 @@ function Score($scope, Count, $timeout) {
 					$parent.loader.show = false;
 					$scope.detail.more.hasMore = data.data.length < $scope.detail.more.per_page ? false : true;
 					$timeout(function() {
-//						$('#scoreDetail').fixedHeaderTable({ 
-//							height: $parent.getTableHeight(),
-//							altClass: 'odd', 
-//							fixedColumn: true, 
-//							fixedColumns: 3 
-//						});
 						Util.fixTable('scoreDetail', 3, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -64,6 +52,10 @@ function Score($scope, Count, $timeout) {
 			exec: function() {
 				if (this.hasMore) {
 					this.page++;
+					$parent.loader = {
+						show: true,
+						text: '加载中,请稍候...'
+					}
 					Count.questionScorePage({page: this.page, per_page: this.per_page}, function(data) {
 						$scope.detail.data.data = $scope.detail.data.data.concat(data);
 						$scope.detail.more.hasMore = data.length < $scope.detail.more.per_page ? false : true;
@@ -82,6 +74,7 @@ function Score($scope, Count, $timeout) {
 						$timeout(function() {
 							$('#scoreDetail_tableColumn table tbody tr:last').before(ele);
 						});
+						$parent.loader.show = false;
 					});
 				}
 			}
@@ -100,10 +93,6 @@ function Score($scope, Count, $timeout) {
 					this.data = Count.answerNum(params, function(data) {
 						$parent.loader.show = false;
 						$timeout(function() {
-//							$('#answerNum').fixedHeaderTable({ 
-//								height: $parent.getTableHeight(),
-//								altClass: 'odd', 
-//							});
 							Util.fixTable('answerNum', 0, {maxHeight: $parent.getTableHeight()});
 						});
 					});

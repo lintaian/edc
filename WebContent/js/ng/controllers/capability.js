@@ -20,12 +20,6 @@ function Capability($scope, Count, $timeout) {
 				this.data = Count.classPower(params, {}, function(data) {
 					$parent.loader.show = false;
 					$timeout(function() {
-//						$('#classAvgPower').fixedHeaderTable({ 
-//							height: $parent.getTableHeight(),
-//							altClass: 'odd', 
-//							fixedColumn: true, 
-//							fixedColumns: 1 
-//						});
 						Util.fixTable('classAvgPower', 1, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -46,12 +40,6 @@ function Capability($scope, Count, $timeout) {
 					$parent.loader.show = false;
 					$scope.detail.more.hasMore = data.data.length < $scope.detail.more.per_page ? false : true;
 					$timeout(function() {
-//						$('#scoreDetailPower').fixedHeaderTable({ 
-//							height: $parent.getTableHeight(),
-//							altClass: 'odd', 
-//							fixedColumn: true, 
-//							fixedColumns: 3 
-//						});
 						Util.fixTable('scoreDetailPower', 3, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -64,6 +52,10 @@ function Capability($scope, Count, $timeout) {
 			exec: function() {
 				if (this.hasMore) {
 					this.page++;
+					$parent.loader = {
+						show: true,
+						text: '加载中,请稍候...'
+					}
 					Count.studentPowerPage({id: $parent.query.examId, page: this.page, per_page: this.per_page}, function(data) {
 						$scope.detail.data.data = $scope.detail.data.data.concat(data);
 						$scope.detail.more.hasMore = data.length < $scope.detail.more.per_page ? false : true;
@@ -80,6 +72,7 @@ function Capability($scope, Count, $timeout) {
 						$timeout(function() {
 							$('#scoreDetailPower_tableColumn table tbody tr:last').before(ele);
 						});
+						$parent.loader.show = false;
 					});
 				}
 			}

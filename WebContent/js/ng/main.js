@@ -9,7 +9,6 @@ require.config({
 		angularResource: '../lib/angular-resource',
 		angularRoute: '../lib/angular-route',
 		ngFileUpload: '../lib/angular-file-upload',
-		fixed: '../lib/jquery.fixedheadertable.min',
 		filter: 'filters/filters',
 		resource: 'services/resource',
 		dialog: 'directives/dialog',
@@ -33,13 +32,12 @@ require.config({
 		loading: {deps: ['angular']},
 		bootstrap: {deps: ['jquery']},
 		util: {deps: ['jquery']},
-		ngFileUpload: {deps: ['angular']},
-		fixed: {deps: ['jquery']}
+		ngFileUpload: {deps: ['angular']}
 	}
 });
 
 require(['angular', 'angularResource', 'angularRoute', 'jquery', 'bootstrap',
          'filter', 'resource', 'util', 'dialog', 'loading', 'ngFileUpload', 'app', 
-         'appCtrl', 'kp', 'score', 'capability', 'oa', 'index', 'fixed'], function (angular) {
+         'appCtrl', 'kp', 'score', 'capability', 'oa', 'index'], function (angular) {
 	angular.bootstrap(document, ['mainApp']);
 });

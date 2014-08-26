@@ -20,12 +20,6 @@ function KnowledgePoint($scope, Count, $timeout) {
 				this.data = Count.classKnowledge(params, {}, function(data) {
 					$parent.loader.show = false;
 					$timeout(function() {
-//						$('#classAvgKnowledge').fixedHeaderTable({ 
-//							height: $parent.getTableHeight(),
-//							altClass: 'odd', 
-//							fixedColumn: true, 
-//							fixedColumns: 1 
-//						});
 						Util.fixTable('classAvgKnowledge', 1, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -46,12 +40,6 @@ function KnowledgePoint($scope, Count, $timeout) {
 					$parent.loader.show = false;
 					$scope.detail.more.hasMore = data.data.length < $scope.detail.more.per_page ? false : true;
 					$timeout(function() {
-//						$('#scoreDetailKnowledge').fixedHeaderTable({ 
-//							height: $parent.getTableHeight(),
-//							altClass: 'odd', 
-//							fixedColumn: true, 
-//							fixedColumns: 3 
-//						});
 						Util.fixTable('scoreDetailKnowledge', 3, {maxHeight: $parent.getTableHeight()});
 					});
 				});
@@ -64,7 +52,12 @@ function KnowledgePoint($scope, Count, $timeout) {
 			exec: function() {
 				if (this.hasMore) {
 					this.page++;
+					$parent.loader = {
+						show: true,
+						text: '加载中,请稍候...'
+					}
 					Count.studentKnowledgePage({id: $parent.query.examId, page: this.page, per_page: this.per_page}, function(data) {
+						$parent.loader.show = false;
 						$scope.detail.data.data = $scope.detail.data.data.concat(data);
 						$scope.detail.more.hasMore = data.length < $scope.detail.more.per_page ? false : true;
 						var ele = '';

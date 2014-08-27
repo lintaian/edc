@@ -19,6 +19,9 @@ function Login($scope, User) {
 			$scope.setErrorMsg('用户名和密码不能为空!');
 		}
 	}
+	$scope.setRole = function(role) {
+		$scope.user.role = role;
+	}
 	
 	$scope.setErrorMsg = function(msg) {
 		$scope.errorMsg = msg;

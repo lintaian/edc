@@ -3,7 +3,7 @@
 
 define(['angular'], function (angular) {
 	return angular.module('mainApp', ['myFilters', 'resource', 'ngRoute', 'dialog', 'loading', 'angularFileUpload']).
-	  config(['$routeProvider', function($routeProvider) {
+	  config(['$routeProvider', '$sceProvider', function($routeProvider, $sceProvider) {
 		  $routeProvider.
 		      when('/', {templateUrl: 'tpl/index.html'}).
 		      when('/type/:type', {templateUrl: 'tpl/index.html', controller: Index}).
@@ -12,5 +12,6 @@ define(['angular'], function (angular) {
 		      when('/capability', {templateUrl: 'tpl/capability.html', controller: Capability}).
 		      when('/originalAnswer', {templateUrl: 'tpl/originalAnswer.html', controller: OriginalAnswer}).
 		      otherwise({redirectTo: '/'});
-		}]);
+		  $sceProvider.enabled(false);
+	  }]);
 });

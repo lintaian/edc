@@ -8,7 +8,8 @@
 				<a href="javascript:void(0)" data-ng-click="nav.change('detail', false)">得分详情</a>
 			</li>
 		</ul>
-		<button class="btn btn-info" data-ng-click="$parent.query.download()" style="float: right;">导出表格</button>
+		<button class="btn btn-info" data-ng-click="$parent.query.download()" style="float: right;"
+			data-ng-disabled="downloadDisable">导出表格</button>
 	</div>
 </div>
 <div data-ng-show="nav.current=='avg'">

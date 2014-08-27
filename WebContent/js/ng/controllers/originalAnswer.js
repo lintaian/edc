@@ -9,12 +9,22 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 				show: true,
 				text: '统计中,请稍候...'
 			}
-			this.data = Count.originalAnswer(params, function(data) {
+			Count.originalAnswer(params, function(data) {
+				$scope.answer.data = data;
 				$parent.loader.show = false;
+				$scope.downloadDisable = false;
 				$scope.answer.more.hasMore = data.data.length < $scope.answer.more.per_page ? false : true;
 				$timeout(function() {
 					Util.fixTable('originalAnswer', 3, {maxHeight: $parent.getTableHeight()});
 				});
+			}, function() {
+				$parent.loader.show = false;
+				$scope.downloadDisable = true;
+				$parent.alert = {
+					show: true,
+					text: '获取数据失败!',
+					title: '提示'
+				}
 			});
 		},
 		more: {
@@ -47,6 +57,13 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 							$('#originalAnswer_tableColumn table tbody tr:last').before(ele);
 						});
 						$parent.loader.show = false;
+					}, function() {
+						$parent.loader.show = false;
+						$parent.alert = {
+							show: true,
+							text: '获取数据失败!',
+							title: '提示'
+						}
 					});
 				}
 			}
@@ -77,6 +94,11 @@ function OriginalAnswer($scope, Count, $timeout, Question) {
 					$scope.answer.data.data[$this.index][$this.index2].value = $this.value;
 				}, function() {
 					$scope.updateQuestionAnswer.show = false;
+					$parent.alert = {
+						show: true,
+						text: '更新失败!',
+						title: '提示'
+					}
 				});
 			},
 			cancel: function() {

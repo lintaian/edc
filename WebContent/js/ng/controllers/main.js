@@ -135,10 +135,20 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 				if (data.length > 0) {
 					$scope.grade.change(data[0].id);
 				}
+			}, function() {
+				$scope.alert = {
+					show: true,
+					text: '获取年级数据失败!'
+				}
 			});
 			$scope.batch.list = BaseData.getBatches({id: schoolId}, function(data) {
 				if (data.length > 0) {
 					$scope.batch.change(data[0].id);
+				}
+			}, function() {
+				$scope.alert = {
+					show: true,
+					text: '获取考试批次数据失败!'
 				}
 			});
 		},
@@ -149,6 +159,11 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 					$scope.school.change(schoolId);
 				}
 				$scope.school.list = data;
+			}, function() {
+				$scope.alert = {
+					show: true,
+					text: '获取学校数据失败!'
+				}
 			});
 		}
 	};
@@ -164,6 +179,11 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 				}
 				$scope.classes.list = data;
 				$scope.classes.checkAll = true;
+			}, function() {
+				$scope.alert = {
+					show: true,
+					text: '获取班级数据失败!'
+				}
 			});
 		}
 	};
@@ -174,6 +194,11 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 			$scope.subject.list = BaseData.getSubjects({id: batchId}, function(data) {
 				if (data.length > 0) {
 					$scope.subject.change(data[0].id);
+				}
+			}, function() {
+				$scope.alert = {
+					show: true,
+					text: '获取考试科目数据失败!'
 				}
 			});
 		}
@@ -193,6 +218,11 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 				 }
 				 $scope.question.list = data;
 				 $scope.question.checkAll = true;
+			}, function() {
+				$scope.alert = {
+					show: true,
+					text: '获取考试题目数据失败!'
+				}
 			});
 			$scope.subject.setState(subjectId);
 		},
@@ -215,6 +245,11 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 						data[i].state = state;
 						break;
 					}
+				}
+			}, function() {
+				$scope.alert = {
+					show: true,
+					text: '设置考试状态失败!'
 				}
 			});
 		},
@@ -325,6 +360,8 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 				$timeout(function() {
 					Util.fixTable('absFix', 0, {maxHeight: 220});
 				});
+			}, function() {
+				$scope.abs.msg.set('获取缺考名单失败!');
 			});
 			$scope.setAbs = {
 				show: true,
@@ -455,6 +492,11 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 						data[i].checked = true;
 					}
 					$scope.countReport.exam.list = data;
+				}, function() {
+					$scope.alert = {
+						show: true,
+						text: '获取考试科目数据失败!'
+					}
 				});
 			}
 		},
@@ -466,6 +508,11 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 						data[i].checked = true;
 					}
 					$scope.countReport.classes.list = data;
+				}, function() {
+					$scope.alert = {
+						show: true,
+						text: '获取班级数据失败!'
+					}
 				});
 			}
 		},
@@ -494,6 +541,11 @@ function Main($scope, $rootScope, BaseData, Question, Count, Student, $timeout, 
 					data[i].checked = true;
 				}
 				$scope.countReport.project.list = data;
+			}, function() {
+				$scope.alert = {
+					show: true,
+					text: '获取统计项目失败!'
+				}
 			}),
 			checkAllFn: function(checked) {
 				for (var i = 0; i < this.list.length; i++) {

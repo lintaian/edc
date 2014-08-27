@@ -17,11 +17,21 @@ function Score($scope, Count, $timeout) {
 					show: true,
 					text: '统计中,请稍候...'
 				}
-				this.data = Count.classAvg(params, function(data) {
+				Count.classAvg(params, function(data) {
+					$scope.avg.data = data;
 					$parent.loader.show = false;
+					$scope.downloadDisable = false;
 					$timeout(function() {
 						Util.fixTable('classAvg', 1, {maxHeight: $parent.getTableHeight()});
 					});
+				}, function() {
+					$parent.loader.show = false;
+					$scope.downloadDisable = true;
+					$parent.alert = {
+						show: true,
+						text: '获取数据失败!',
+						title: '提示'
+					}
 				});
 			}
 		}
@@ -36,12 +46,23 @@ function Score($scope, Count, $timeout) {
 					show: true,
 					text: '统计中,请稍候...'
 				}
-				this.data = Count.questionScore(params, function(data) {
+				Count.questionScore(params, function(data) {
+					$scope.detail.data = data;
 					$parent.loader.show = false;
+					$scope.downloadDisable = false;
+					$scope.downloadDisable = false;
 					$scope.detail.more.hasMore = data.data.length < $scope.detail.more.per_page ? false : true;
 					$timeout(function() {
 						Util.fixTable('scoreDetail', 3, {maxHeight: $parent.getTableHeight()});
 					});
+				}, function() {
+					$parent.loader.show = false;
+					$scope.downloadDisable = true;
+					$parent.alert = {
+						show: true,
+						text: '获取数据失败!',
+						title: '提示'
+					}
 				});
 			}
 		},
@@ -75,6 +96,13 @@ function Score($scope, Count, $timeout) {
 							$('#scoreDetail_tableColumn table tbody tr:last').before(ele);
 						});
 						$parent.loader.show = false;
+					}, function() {
+						$parent.loader.show = false;
+						$parent.alert = {
+							show: true,
+							text: '获取数据失败!',
+							title: '提示'
+						}
 					});
 				}
 			}
@@ -90,11 +118,21 @@ function Score($scope, Count, $timeout) {
 							show: true,
 							text: '统计中,请稍候...'
 					}
-					this.data = Count.answerNum(params, function(data) {
+					Count.answerNum(params, function(data) {
+						$scope.num.data = data;
 						$parent.loader.show = false;
+						$scope.downloadDisable = false;
 						$timeout(function() {
 							Util.fixTable('answerNum', 0, {maxHeight: $parent.getTableHeight()});
 						});
+					}, function() {
+						$parent.loader.show = false;
+						$scope.downloadDisable = true;
+						$parent.alert = {
+							show: true,
+							text: '获取数据失败!',
+							title: '提示'
+						}
 					});
 				}
 			}

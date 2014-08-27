@@ -14,7 +14,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   <link rel="stylesheet" type="text/css" href="css/defaultTheme.css">
   <link rel="stylesheet" type="text/css" href="css/main.css">
   <link rel="stylesheet" type="text/css" href="css/dialog.css">
-  <!--[if lte IE 9]>
+  <script src="js/lib/es5-shim.js"></script>
+  <script src="js/lib/es5-sham.js"></script>
+  <!--[if lte IE 8]>
     <script src="js/lib/html5shiv.js"></script>
     <script src="js/lib/json3.js"></script>
     <script src="js/lib/ie-fix.js"></script>

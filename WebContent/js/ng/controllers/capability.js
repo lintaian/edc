@@ -17,11 +17,21 @@ function Capability($scope, Count, $timeout) {
 					show: true,
 					text: '统计中,请稍候...'
 				}
-				this.data = Count.classPower(params, {}, function(data) {
+				Count.classPower(params, {}, function(data) {
+					$scope.avg.data = data;
 					$parent.loader.show = false;
+					$scope.downloadDisable = false;
 					$timeout(function() {
 						Util.fixTable('classAvgPower', 1, {maxHeight: $parent.getTableHeight()});
 					});
+				}, function() {
+					$parent.loader.show = false;
+					$scope.downloadDisable = true;
+					$parent.alert = {
+						show: true,
+						text: '获取数据失败!',
+						title: '提示'
+					}
 				});
 			}
 		}
@@ -36,12 +46,22 @@ function Capability($scope, Count, $timeout) {
 					show: true,
 					text: '统计中,请稍候...'
 				}
-				this.data = Count.studentPower(params, {}, function(data) {
+				Count.studentPower(params, {}, function(data) {
+					$scope.detail.data = data;
 					$parent.loader.show = false;
+					$scope.downloadDisable = false;
 					$scope.detail.more.hasMore = data.data.length < $scope.detail.more.per_page ? false : true;
 					$timeout(function() {
 						Util.fixTable('scoreDetailPower', 3, {maxHeight: $parent.getTableHeight()});
 					});
+				}, function() {
+					$parent.loader.show = false;
+					$scope.downloadDisable = true;
+					$parent.alert = {
+						show: true,
+						text: '获取数据失败!',
+						title: '提示'
+					}
 				});
 			}
 		},
@@ -73,6 +93,13 @@ function Capability($scope, Count, $timeout) {
 							$('#scoreDetailPower_tableColumn table tbody tr:last').before(ele);
 						});
 						$parent.loader.show = false;
+					}, function() {
+						$parent.loader.show = false;
+						$parent.alert = {
+							show: true,
+							text: '获取数据失败!',
+							title: '提示'
+						}
 					});
 				}
 			}

@@ -17,11 +17,21 @@ function KnowledgePoint($scope, Count, $timeout) {
 					show: true,
 					text: '统计中,请稍候...'
 				}
-				this.data = Count.classKnowledge(params, {}, function(data) {
+				Count.classKnowledge(params, {}, function(data) {
+					$scope.avg.data = data;
+					$scope.downloadDisable = false;
 					$parent.loader.show = false;
 					$timeout(function() {
 						Util.fixTable('classAvgKnowledge', 1, {maxHeight: $parent.getTableHeight()});
 					});
+				}, function() {
+					$parent.loader.show = false;
+					$scope.downloadDisable = true;
+					$parent.alert = {
+						show: true,
+						text: '获取数据失败!',
+						title: '提示'
+					}
 				});
 			}
 		}
@@ -36,12 +46,22 @@ function KnowledgePoint($scope, Count, $timeout) {
 					show: true,
 					text: '统计中,请稍候...'
 				}
-				this.data = Count.studentKnowledge(params, {}, function(data) {
+				Count.studentKnowledge(params, {}, function(data) {
+					$scope.detail.data = data;
 					$parent.loader.show = false;
+					$scope.downloadDisable = false;
 					$scope.detail.more.hasMore = data.data.length < $scope.detail.more.per_page ? false : true;
 					$timeout(function() {
 						Util.fixTable('scoreDetailKnowledge', 3, {maxHeight: $parent.getTableHeight()});
 					});
+				}, function() {
+					$parent.loader.show = false;
+					$scope.downloadDisable = true;
+					$parent.alert = {
+						show: true,
+						text: '获取数据失败!',
+						title: '提示'
+					}
 				});
 			}
 		},
@@ -73,11 +93,16 @@ function KnowledgePoint($scope, Count, $timeout) {
 						$timeout(function() {
 							$('#scoreDetailKnowledge_tableColumn table tbody tr:last').before(ele);
 						});
+					}, function() {
+						$parent.loader.show = false;
+						$parent.alert = {
+							show: true,
+							text: '获取数据失败!'
+						}
 					});
 				}
 			}
 		}
 	}
-	
 	$scope.nav.change('avg', true);
 }

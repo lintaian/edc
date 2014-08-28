@@ -191,9 +191,9 @@ define(['jquery'], function(jquery) {
 		        tableHead.scrollLeft(tableData.scrollLeft());
 		        tableColumn.scrollTop(tableData.scrollTop());
 		    });
-		    tableFix.css({ "overflow": "hidden", "position": "relative", "z-index": "50", "background-color": "Silver" });
-		    tableHead.css({ "overflow": "hidden", "width": width - 17, "position": "relative", "z-index": "45", "background-color": "Silver" });
-		    tableColumn.css({ "overflow": "hidden", "height": height - 17, "position": "relative", "z-index": "40", "background-color": "Silver" });
+		    tableFix.css({ "overflow": "hidden", "position": "relative", "z-index": "50", "background-color": "rgb(170,205,225" });
+		    tableHead.css({ "overflow": "hidden", "width": width - 17, "position": "relative", "z-index": "45", "background-color": "rgb(170,205,225" });
+		    tableColumn.css({ "overflow": "hidden", "height": height - 17, "position": "relative", "z-index": "40", "background-color": "rgb(170,205,225" });
 		    tableData.css({ "overflow": "auto",overflowX:'auto',overflowY:'auto', "width": width, "height": height, "position": "relative", "z-index": "35" });
 		    var tableFixTable = $("#" + TableID + "_tableFix table");
 		    if (tableHead.width() > tableFixTable.width()) {

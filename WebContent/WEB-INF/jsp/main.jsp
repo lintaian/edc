@@ -180,8 +180,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			</div>
 		</form>
 		<div style="text-align: center;">
-			<input class="btn btn-info" value="确定" type="button" style="margin: 0 10px;" data-ng-click="question.update.exec()"/>
-			<input class="btn" value="取消" type="button" style="margin: 0 10px;" data-ng-click="question.update.cancel()"/>
+			<button class="btn btn-info" type="button" style="margin: 0 10px;" data-ng-click="question.update.exec()">确定</button>
+			<button class="btn" type="button" style="margin: 0 10px;" data-ng-click="question.update.cancel()">取消</button>
 		</div>
 	</div>
     <div data-dialog data-ng-model="setAbs" data-config="{width:500,height:300}" class="ng-hide">

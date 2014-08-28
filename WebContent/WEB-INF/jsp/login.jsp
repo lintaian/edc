@@ -8,9 +8,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <head>
 	<base href="<%=basePath%>">
 	<meta charset="utf-8">
-	<title>登陆</title>
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="css/bootstrap-responsive.min.css">
+	<title>乐培生师生平台考试数据检查与统计</title>
 	<script src="js/lib/es5-shim.js"></script>
 	<script src="js/lib/es5-sham.js"></script>
 	  <!--[if lte IE 8]>
@@ -20,75 +18,104 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	  <![endif]-->
 	<style type="text/css">
 		body {
-			width: 100%;
-			height: 100%;
-			overflow: hidden;
+			margin-left: 0px;
+			margin-top: 0px;
+			margin-right: 0px;
+			margin-bottom: 0px;
+			background-color: #016aa9;
+			overflow:hidden;
 		}
-		.ng-hide {
-			display: none;
+		.STYLE1 {
+			color: #000000;
+			font-size: 12px;
 		}
-		.bg {
-			position: absolute;
-			width: 100%;
-			height: 100%;
-			left: 0px;
-			top: 0px;
-			z-index: 0;
-		}
-		.bg .img {
-			width: 100%;
-			height: 100%;
-		}
-		.myLabel {
-			font: 20px bold;
-			width: 80px!important;
-			margin-right: 15px;
-		}
-		.controls {
-			margin-left: 0px!important;
-		} 
 	</style>
 </head>
+
 <body data-ng-controller="Login">
-	<div class="bg">
-		<img class="img" src="img/bg2.jpg">
-	</div>
-	<div style="width: 330px;position: absolute;top: 45%;left: 50%;background: rgb(237, 249, 255);">
-		<div class="errorMsg" style="text-align: center;position: absolute;top: -50px;">
-			<div class="alert alert-error ng-hide" data-ng-show="errorMsg != null">
-				<span data-ng-bind="errorMsg"></span>
-			</div>
-		</div>
-		<div class="tabbable"> <!-- Only required for left/right tabs -->
-		  <ul class="nav nav-tabs">
-		    <li data-ng-class="{active: user.role=='teacher'}">
-		    	<a href="#tab1" data-toggle="tab" data-ng-click="setRole('teacher')">教师</a>
-		    </li>
-		    <li data-ng-class="{active: user.role=='admin'}">
-		    	<a href="#tab2" data-toggle="tab" data-ng-click="setRole('admin')">运维</a>
-		    </li>
-		  </ul>
-		</div>
-		<form class="form-horizontal" id="loginForm" data-ng-submit="login()">
-			<div class="control-group info">
-				<label class="control-label myLabel" for="username">用户名:</label>
-				<div class="controls">
-					<input type="text" id="username" data-ng-model="user.username" placeholder="用户名"/>
-				</div>
-			</div>
-			<div class="control-group info">
-				<label class="control-label myLabel" for="password">密&nbsp;&nbsp;码:</label>
-				<div class="controls">
-					<input type="password" id="password" data-ng-model="user.password" placeholder="密码"/>
-				</div>
-			</div>
-			<div class="control-group">
-				<div class="controls" style="text-align: center;">
-					<input class="btn btn-info" value="登陆" type="submit" style="width: 90%;"/>
-				</div>
-			</div>
-		</form>				
-	</div>
+	<form data-ng-submit="login()">
+		<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td>
+					<table width="962" border="0" align="center" cellpadding="0" cellspacing="0">
+						<tr>
+							<td height="235" background="img/login_03.gif">&nbsp;</td>
+						</tr>
+						<tr>
+							<td height="53" style="position: relative;">
+								<span data-ng-bind="errorMsg"
+									style="position: absolute;top: -15px;text-align: center;width: 100%;font-size: 12px;color: red;"></span>
+								<table width="100%" border="0" cellspacing="0" cellpadding="0">
+									<tr>
+										<td width="394" height="78" background="img/login_05.gif">&nbsp;</td>
+										<td width="206" background="img/login_06.gif">
+											<table width="100%" border="0" cellspacing="0" cellpadding="0">
+												<tr>
+													<td width="16%" height="25">
+														<div align="right">
+															<span class="STYLE1">用户</span>
+														</div></td>
+													<td width="57%" height="25">
+														<div align="center">
+															<input type="text" data-ng-model="user.username" 
+																style="width: 105px; height: 17px; background-color: #292929; border: solid 1px #7dbad7; font-size: 12px; color: #6cd0ff">
+														</div>
+													</td>
+													<td width="27%" height="25">&nbsp;</td>
+												</tr>
+												<tr>
+													<td height="25">
+														<div align="right">
+															<span class="STYLE1">密码</span>
+														</div></td>
+													<td height="25">
+														<div align="center">
+															<input type="password" data-ng-model="user.password"
+																style="width: 105px; height: 17px; background-color: #292929; border: solid 1px #7dbad7; font-size: 12px; color: #6cd0ff">
+														</div>
+													</td>
+													<td height="25">&nbsp;</td>
+												</tr>
+												<tr>
+													<td height="25">
+														<div align="right">
+															<span class="STYLE1">角色</span>
+														</div></td>
+													<td height="25">
+														<div align="center" style="position: relative;">
+															<input type="radio" name="role" value="teacher" data-ng-model="user.role" data-ng-checked="user.role=='teacher'"
+																style="position: absolute;top: -7px;left: 5%;">
+															<span class="STYLE1" style="position: absolute;top: -5px;left: 25%;">教师</span>
+															<input type="radio" name="role" value="admin" data-ng-model="user.role" data-ng-checked="user.role=='admin'"
+																style="position: absolute;top: -7px;left: 50%;">
+															<span class="STYLE1" style="position: absolute;top: -5px;left: 70%;">运维</span>
+															<!-- <input type="password" style="width: 105px; height: 17px; background-color: #292929; border: solid 1px #7dbad7; font-size: 12px; color: #6cd0ff"> -->
+														</div>
+													</td>
+													<td height="25">
+														<div align="left">
+															<a href="javascript:void(0)" data-ng-click="login()">
+																<img src="img/dl.gif" width="49" height="18" border="0">
+															</a>
+														</div>
+													</td>
+												</tr>
+											</table>
+										</td>
+										<td width="362" background="img/login_07.gif">&nbsp;</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td height="213" background="img/login_08.gif">&nbsp;</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="" style="visibility: hidden;" >
+	</form>
 	<script data-main="js/ng/login" src="js/lib/require.js"></script>
 </body>
 </html>

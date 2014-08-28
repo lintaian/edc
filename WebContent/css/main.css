@@ -1,5 +1,5 @@
 body{
-	background: #FFF url(../img/bg3.jpg) no-repeat 0 0 fixed;
+	background: #FFF url(../img/bg4.jpg) no-repeat 0 0 fixed;
 }
 .bg1 {
 	/* background: #FFF url(../img/bg.jpg) no-repeat 0 0 fixed; */
@@ -84,10 +84,10 @@ ul li.last{
 	padding-bottom: 0;
 }
 ul li.success{
-	background-color: rgb(233,240,216);
+	background-color: rgb(176,209,228);
 }
 ul li.info{
-	background-color: rgb(217,237,247);
+	background-color: rgb(214,231,241);
 }
 #classes ul li {
 	padding-left: 18px;
@@ -173,4 +173,21 @@ td .edit-icon,.edit-icon2 {
     background-color: #fff;
     padding: 10px;
     text-align: center;
+}
+
+.ext_body{
+	background-color: rgb(202,224,237);
+}
+.ext_body .navbar-inner{
+	background: rgb(119,175,208)!important;
+}
+.navbar .nav>li>a {
+	color: #000!important;
+	text-shadow: none!important;
+}
+.navbar .nav>.active>a {
+	background: rgb(214,231,241);
+}
+input, select {
+	background: rgb(238,246,249)!important;
 }
